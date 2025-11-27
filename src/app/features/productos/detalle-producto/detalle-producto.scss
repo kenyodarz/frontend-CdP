@@ -1,0 +1,180 @@
+.detalle-producto-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .title-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    h2 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 500;
+      color: #333;
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+
+    button mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+mat-card {
+  mat-card-header {
+    margin-bottom: 16px;
+
+    mat-card-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: #333;
+    }
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .label {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .value {
+      font-size: 16px;
+      color: #333;
+    }
+  }
+}
+
+.precios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+
+  .precio-card {
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+
+    .precio-label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .precio-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #2e7d32;
+    }
+  }
+}
+
+.producto-imagen {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;
+}
+
+mat-chip {
+  font-size: 12px;
+  min-height: 24px;
+  padding: 4px 12px;
+
+  &.stock-bajo {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+
+  &.stock-normal {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.stock-alto {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+
+  &.estado-activo {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.estado-inactivo {
+    background-color: #fafafa;
+    color: #757575;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+
+    .actions {
+      width: 100%;
+
+      button {
+        flex: 1;
+      }
+    }
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .precios-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

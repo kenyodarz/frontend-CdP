@@ -1,1 +1,150 @@
-<p>form-cliente works!</p>
+<div class="form-cliente-container">
+  @if (loading()) {
+    <app-loading message="Cargando..." />
+  } @else if (error()) {
+    <app-error-message 
+      [title]="'Error'"
+      [message]="error()!"
+      (retry)="onRetry()" />
+  } @else {
+    <div class="form-header">
+      <h2>{{ isEditMode() ? 'Editar Cliente' : 'Nuevo Cliente' }}</h2>
+      <button mat-icon-button (click)="cancelar()" matTooltip="Cerrar">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <form [formGroup]="clienteForm" (ngSubmit)="onSubmit()">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Información General</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+            <!-- Código -->
+            <mat-form-field appearance="outline">
+              <mat-label>Código</mat-label>
+              <input matInput formControlName="codigo" placeholder="Ej: CLI001">
+              <mat-icon matPrefix>tag</mat-icon>
+            </mat-form-field>
+
+            <!-- Nombre -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nombre *</mat-label>
+              <input matInput formControlName="nombre" placeholder="Nombre del cliente">
+              <mat-icon matPrefix>person</mat-icon>
+              @if (clienteForm.get('nombre')?.hasError('required') && clienteForm.get('nombre')?.touched) {
+                <mat-error>El nombre es requerido</mat-error>
+              }
+              @if (clienteForm.get('nombre')?.hasError('minlength')) {
+                <mat-error>Mínimo 3 caracteres</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Tipo de Documento -->
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo de Documento</mat-label>
+              <mat-select formControlName="tipoDocumento">
+                @for (tipo of tiposDocumento; track tipo.value) {
+                  <mat-option [value]="tipo.value">{{ tipo.label }}</mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix>badge</mat-icon>
+            </mat-form-field>
+
+            <!-- Número de Documento -->
+            <mat-form-field appearance="outline">
+              <mat-label>Número de Documento</mat-label>
+              <input matInput formControlName="numeroDocumento" placeholder="Número">
+              <mat-icon matPrefix>numbers</mat-icon>
+            </mat-form-field>
+
+            <!-- Teléfono -->
+            <mat-form-field appearance="outline">
+              <mat-label>Teléfono</mat-label>
+              <input matInput formControlName="telefono" placeholder="Ej: 3001234567">
+              <mat-icon matPrefix>phone</mat-icon>
+            </mat-form-field>
+
+            <!-- Tipo de Negocio -->
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo de Negocio</mat-label>
+              <input matInput formControlName="tipoNegocio" placeholder="Ej: Tienda, Supermercado">
+              <mat-icon matPrefix>store</mat-icon>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Ubicación</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+            <!-- Dirección -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Dirección</mat-label>
+              <input matInput formControlName="direccion" placeholder="Dirección completa">
+              <mat-icon matPrefix>location_on</mat-icon>
+            </mat-form-field>
+
+            <!-- Barrio -->
+            <mat-form-field appearance="outline">
+              <mat-label>Barrio</mat-label>
+              <input matInput formControlName="barrio" placeholder="Barrio">
+              <mat-icon matPrefix>home</mat-icon>
+            </mat-form-field>
+
+            <!-- Comuna -->
+            <mat-form-field appearance="outline">
+              <mat-label>Comuna</mat-label>
+              <input matInput formControlName="comuna" placeholder="Comuna">
+              <mat-icon matPrefix>map</mat-icon>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Configuración Comercial</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+            <!-- Tipo de Tarifa -->
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo de Tarifa *</mat-label>
+              <mat-select formControlName="tipoTarifa">
+                @for (tipo of tiposTarifa; track tipo.value) {
+                  <mat-option [value]="tipo.value">{{ tipo.label }}</mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix>payments</mat-icon>
+              @if (clienteForm.get('tipoTarifa')?.hasError('required') && clienteForm.get('tipoTarifa')?.touched) {
+                <mat-error>El tipo de tarifa es requerido</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Horario de Entrega -->
+            <mat-form-field appearance="outline">
+              <mat-label>Horario de Entrega</mat-label>
+              <input matInput formControlName="horarioEntrega" placeholder="Ej: 8:00 AM - 12:00 PM">
+              <mat-icon matPrefix>schedule</mat-icon>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="form-actions">
+        <button mat-button type="button" (click)="cancelar()">
+          Cancelar
+        </button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
+          <mat-icon>save</mat-icon>
+          {{ isEditMode() ? 'Actualizar' : 'Crear' }} Cliente
+        </button>
+      </div>
+    </form>
+  }
+</div>
