@@ -1,0 +1,163 @@
+.movimientos-container {
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 24px;
+
+  h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 500;
+    color: #333;
+  }
+}
+
+.table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background-color: #fafafa;
+  border-bottom: 1px solid #e0e0e0;
+
+  .search-field {
+    flex: 1;
+    max-width: 400px;
+  }
+
+  .tipo-field {
+    width: 200px;
+  }
+}
+
+.movimientos-table {
+  width: 100%;
+
+  th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    color: #333;
+  }
+
+  td {
+    padding: 16px;
+  }
+
+  .lote-codigo {
+    font-family: monospace;
+    background-color: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+  }
+
+  .sin-lote {
+    color: #999;
+    font-style: italic;
+  }
+
+  .cantidad-positiva {
+    color: #2e7d32;
+    font-weight: 600;
+  }
+
+  .cantidad-negativa {
+    color: #c62828;
+    font-weight: 600;
+  }
+
+  .motivo {
+    display: block;
+    font-size: 14px;
+  }
+
+  .referencia {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+  }
+
+  mat-chip {
+    font-size: 12px;
+    min-height: 28px;
+    padding: 4px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    &.tipo-entrada {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    &.tipo-salida {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+
+    &.tipo-ajuste {
+      background-color: #e3f2fd;
+      color: #1976d2;
+    }
+  }
+}
+
+mat-paginator {
+  border-top: 1px solid #e0e0e0;
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #999;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  p {
+    margin: 8px 0;
+    font-size: 16px;
+
+    &.hint {
+      font-size: 14px;
+      color: #bbb;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+
+    .search-field,
+    .tipo-field {
+      max-width: none;
+      width: 100%;
+    }
+  }
+}
