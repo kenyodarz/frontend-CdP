@@ -51,96 +51,132 @@ export class Movimientos implements OnInit {
   protected readonly pageSizeOptions = [5, 10, 25, 50];
 
   protected readonly sortColumn = signal<string>('fechaMovimiento');
+  protected readonly sortDirection = signal<'asc' | 'desc'>('desc');
+
+  protected readonly tiposMovimiento = ['ENTRADA', 'SALIDA', 'AJUSTE'];
+
+  protected readonly displayedColumns: string[] = [
+    'fechaMovimiento',
+    'tipoMovimiento',
+    'productoNombre',
+    'loteCodigoLote',
+    'cantidad',
+    'stockAnterior',
+    'stockNuevo',
+    'motivo'
+  ];
+
+  protected readonly filteredData = computed(() => {
+    let data = this.movimientos();
+
+    const search = this.searchTerm().toLowerCase().trim();
+    if (search) {
+      data = data.filter(m =>
+        m.productoNombre.toLowerCase().includes(search) ||
+        m.loteCodigoLote?.toLowerCase().includes(search) ||
+        m.motivo?.toLowerCase().includes(search)
+      );
+    }
+
+    const tipo = this.tipoFiltro();
+    if (tipo) {
+      data = data.filter(m => m.tipoMovimiento === tipo);
+    }
+
+    const column = this.sortColumn();
+    const direction = this.sortDirection();
+    data = [...data].sort((a, b) => {
+      let aValue: any = a[column as keyof MovimientoInventario];
       let bValue: any = b[column as keyof MovimientoInventario];
 
-if (aValue === undefined || aValue === null) return 1;
-if (bValue === undefined || bValue === null) return -1;
+      if (aValue === undefined || aValue === null) return 1;
+      if (bValue === undefined || bValue === null) return -1;
 
-const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-return direction === 'asc' ? comparison : -comparison;
+      const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      return direction === 'asc' ? comparison : -comparison;
     });
 
-return data;
+    return data;
   });
 
   protected readonly paginatedData = computed(() => {
-  const data = this.filteredData();
-  const startIndex = this.pageIndex() * this.pageSize();
-  const endIndex = startIndex + this.pageSize();
-  return data.slice(startIndex, endIndex);
-});
+    const data = this.filteredData();
+    const startIndex = this.pageIndex() * this.pageSize();
+    const endIndex = startIndex + this.pageSize();
+    return data.slice(startIndex, endIndex);
+  });
 
   protected readonly totalItems = computed(() => this.filteredData().length);
 
-ngOnInit(): void {
-  this.cargarMovimientos();
-}
+  ngOnInit(): void {
+    this.cargarMovimientos();
+  }
 
   private cargarMovimientos(): void {
-  this.loading.set(true);
-  this.error.set(null);
+    this.loading.set(true);
+    this.error.set(null);
 
-  this.inventarioService.obtenerMovimientos().subscribe({
-    next: (movimientos) => {
-      this.movimientos.set(movimientos);
-      this.loading.set(false);
-    },
-    error: (err) => {
-      console.error('Error al cargar movimientos:', err);
-      this.error.set('No se pudieron cargar los movimientos.');
-      this.loading.set(false);
-    }
-  });
-}
+    this.inventarioService.obtenerMovimientos().subscribe({
+      next: (movimientos) => {
+        this.movimientos.set(movimientos);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error al cargar movimientos:', err);
+        this.error.set('No se pudieron cargar los movimientos.');
+        this.loading.set(false);
+      }
+    });
+  }
 
   protected onSearch(event: Event): void {
-  const value = (event.target as HTMLInputElement).value;
-  this.searchTerm.set(value);
-  this.pageIndex.set(0);
-}
+    const value = (event.target as HTMLInputElement).value;
+    this.searchTerm.set(value);
+    this.pageIndex.set(0);
+  }
 
   protected onTipoChange(): void {
-  this.pageIndex.set(0);
-}
+    this.pageIndex.set(0);
+  }
 
   protected onSort(sort: Sort): void {
-  this.sortColumn.set(sort.active);
-  this.sortDirection.set(sort.direction as 'asc' | 'desc' || 'asc');
-}
+    this.sortColumn.set(sort.active);
+    this.sortDirection.set(sort.direction as 'asc' | 'desc' || 'asc');
+  }
 
   protected onPageChange(event: PageEvent): void {
-  this.pageIndex.set(event.pageIndex);
-  this.pageSize.set(event.pageSize);
-}
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+  }
 
   protected onRetry(): void {
-  this.cargarMovimientos();
-}
+    this.cargarMovimientos();
+  }
 
   protected getTipoClass(tipo: string): string {
-  const classes: Record<string, string> = {
-    'ENTRADA': 'tipo-entrada',
-    'SALIDA': 'tipo-salida',
-    'AJUSTE': 'tipo-ajuste'
-  };
-  return classes[tipo] || '';
-}
+    const classes: Record<string, string> = {
+      'ENTRADA': 'tipo-entrada',
+      'SALIDA': 'tipo-salida',
+      'AJUSTE': 'tipo-ajuste'
+    };
+    return classes[tipo] || '';
+  }
 
   protected getTipoLabel(tipo: string): string {
-  const labels: Record<string, string> = {
-    'ENTRADA': 'Entrada',
-    'SALIDA': 'Salida',
-    'AJUSTE': 'Ajuste'
-  };
-  return labels[tipo] || tipo;
-}
+    const labels: Record<string, string> = {
+      'ENTRADA': 'Entrada',
+      'SALIDA': 'Salida',
+      'AJUSTE': 'Ajuste'
+    };
+    return labels[tipo] || tipo;
+  }
 
   protected getTipoIcon(tipo: string): string {
-  const icons: Record<string, string> = {
-    'ENTRADA': 'arrow_downward',
-    'SALIDA': 'arrow_upward',
-    'AJUSTE': 'sync_alt'
-  };
-  return icons[tipo] || 'help';
-}
+    const icons: Record<string, string> = {
+      'ENTRADA': 'arrow_downward',
+      'SALIDA': 'arrow_upward',
+      'AJUSTE': 'sync_alt'
+    };
+    return icons[tipo] || 'help';
+  }
 }
