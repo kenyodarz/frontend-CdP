@@ -1,0 +1,174 @@
+.detalle-orden-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .title-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    h2 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+      font-weight: 500;
+      color: #333;
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+
+    button mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+mat-card {
+  mat-card-header {
+    margin-bottom: 16px;
+
+    mat-card-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: #333;
+    }
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .label {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .value {
+      font-size: 16px;
+      color: #333;
+    }
+  }
+}
+
+.productos-table {
+  width: 100%;
+
+  th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+  }
+}
+
+.totales {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 16px;
+
+    &.total-final {
+      border-top: 2px solid #ddd;
+      margin-top: 8px;
+      padding-top: 16px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #2e7d32;
+    }
+
+    .descuento {
+      color: #c62828;
+    }
+  }
+}
+
+mat-chip {
+  font-size: 12px;
+  min-height: 24px;
+  padding: 4px 12px;
+
+  &.estado-pendiente {
+    background-color: #fff3e0;
+    color: #e65100;
+  }
+
+  &.estado-preparacion {
+    background-color: #e1f5fe;
+    color: #0277bd;
+  }
+
+  &.estado-lista {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+  }
+
+  &.estado-despachada {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.estado-cancelada {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+
+    .actions {
+      width: 100%;
+      flex-wrap: wrap;
+
+      button {
+        flex: 1;
+        min-width: 150px;
+      }
+    }
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}
