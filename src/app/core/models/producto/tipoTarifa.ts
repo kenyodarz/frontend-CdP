@@ -1,0 +1,8 @@
+export enum TipoTarifa {
+  PRECIO_0D = 'PRECIO_0D',
+  PRECIO_10D = 'PRECIO_10D',
+  PRECIO_5D = 'PRECIO_5D',
+  PRECIO_ES = 'PRECIO_ES',
+  PRECIO_JM = 'PRECIO_JM',
+  PRECIO_CR = 'PRECIO_CR'
+}

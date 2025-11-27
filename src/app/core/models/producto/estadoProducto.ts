@@ -1,0 +1,5 @@
+export enum EstadoProducto {
+  ACTIVO = 'ACTIVO',
+  INACTIVO = 'INACTIVO',
+  DESCONTINUADO = 'DESCONTINUADO'
+}
