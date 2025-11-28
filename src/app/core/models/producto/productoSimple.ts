@@ -1,4 +1,4 @@
-import {EstadoProducto} from './estadoProducto';
+import { EstadoProducto } from './estadoProducto';
 
 export interface ProductoSimple {
   idProducto: number;
@@ -9,4 +9,5 @@ export interface ProductoSimple {
   stockBajo: boolean;
   precio0D: number;
   estado: EstadoProducto;
+  diasVidaUtil?: number; // Para cálculo de vencimiento de lotes
 }

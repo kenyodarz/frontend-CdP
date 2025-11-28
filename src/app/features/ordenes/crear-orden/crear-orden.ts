@@ -19,7 +19,6 @@ import { CrearOrdenDTO } from '../../../core/models/orden/crearOrdenDTO';
 import { ClienteSimple } from '../../../core/models/cliente/clienteSimple';
 import { ProductoSimple } from '../../../core/models/producto/productoSimple';
 import { Loading } from '../../../shared/components/loading/loading';
-import { ErrorMessage } from '../../../shared/components/error-message/error-message';
 
 interface ProductoOrden {
   idProducto: number;
@@ -43,8 +42,7 @@ interface ProductoOrden {
     MatSnackBarModule,
     MatTableModule,
     CurrencyPipe,
-    Loading,
-    ErrorMessage
+    Loading
   ],
   templateUrl: './crear-orden.html',
   styleUrl: './crear-orden.scss',
