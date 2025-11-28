@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-productos',
-  imports: [],
-  templateUrl: './productos.html',
-  styleUrl: './productos.scss',
+  imports: [RouterOutlet],
+  template: `<router-outlet />`,
+  styles: ``
 })
 export class Productos {
 
