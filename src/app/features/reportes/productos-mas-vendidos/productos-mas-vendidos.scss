@@ -1,0 +1,171 @@
+.productos-vendidos-report {
+  padding: 24px;
+}
+
+.controles-card {
+  margin-bottom: 24px;
+
+  .controles {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    mat-form-field {
+      width: 200px;
+    }
+  }
+}
+
+.resumen-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px !important;
+  }
+
+  .stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff5722 0%, #ff7043 100%);
+
+    mat-icon {
+      color: white;
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .stat-info {
+    flex: 1;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: #ff5722;
+  }
+}
+
+.chart-card {
+  margin-bottom: 24px;
+
+  .chart-container {
+    height: 400px;
+    position: relative;
+  }
+}
+
+.ranking-card {
+  .ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: #f5f5f5;
+      border-color: #1976d2;
+    }
+
+    .ranking-position {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+
+      .position-number {
+        color: white;
+        font-size: 20px;
+        font-weight: 700;
+      }
+    }
+
+    .producto-info {
+      flex: 1;
+
+      .producto-nombre {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+      }
+
+      .producto-codigo {
+        font-size: 12px;
+        color: #999;
+      }
+    }
+
+    .producto-stats {
+      display: flex;
+      gap: 24px;
+
+      .stat {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+
+        .stat-label {
+          font-size: 12px;
+          color: #666;
+          margin-bottom: 4px;
+        }
+
+        .stat-value {
+          font-size: 14px;
+          font-weight: 600;
+          color: #1976d2;
+        }
+      }
+    }
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 48px;
+    color: #999;
+
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+    }
+
+    p {
+      font-size: 16px;
+      margin: 0;
+    }
+  }
+}

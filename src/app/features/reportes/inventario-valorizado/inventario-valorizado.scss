@@ -1,0 +1,108 @@
+.inventario-report {
+  padding: 24px;
+}
+
+.resumen-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px !important;
+  }
+
+  .stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+
+    mat-icon {
+      color: white;
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+
+    &.valor {
+      background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+    }
+
+    &.productos {
+      background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+    }
+
+    &.unidades {
+      background: linear-gradient(135deg, #9c27b0 0%, #ba68c8 100%);
+    }
+  }
+
+  .stat-info {
+    flex: 1;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+  }
+}
+
+.table-card {
+  mat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    button {
+      margin-left: auto;
+    }
+  }
+
+  .inventario-table {
+    width: 100%;
+
+    th {
+      font-weight: 600;
+      color: #1976d2;
+    }
+
+    .valor-total {
+      font-weight: 600;
+      color: #4caf50;
+    }
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 48px;
+    color: #999;
+
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+    }
+
+    p {
+      font-size: 16px;
+      margin: 0;
+    }
+  }
+}

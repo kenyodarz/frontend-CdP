@@ -1,1 +1,107 @@
-<p>productos-mas-vendidos works!</p>
+<div class="productos-vendidos-report">
+  @if (loading()) {
+  <app-loading message="Cargando productos..." />
+  } @else if (error()) {
+  <app-error-message [title]="'Error'" [message]="error()!" (retry)="onRetry()" />
+  } @else {
+  <!-- Controles -->
+  <mat-card class="controles-card">
+    <mat-card-content>
+      <div class="controles">
+        <mat-form-field appearance="outline">
+          <mat-label>Mostrar Top</mat-label>
+          <mat-select [(ngModel)]="limite" (ngModelChange)="onLimiteChange()">
+            @for (lim of limites; track lim) {
+            <mat-option [value]="lim">Top {{ lim }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="exportar()">
+          <mat-icon>download</mat-icon>
+          Exportar
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Resumen -->
+  <div class="resumen-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>shopping_cart</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Total Unidades Vendidas</div>
+          <div class="stat-value">{{ totalVendido() }}</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>attach_money</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Ingresos Totales</div>
+          <div class="stat-value">{{ totalIngresos() | currency:'COP':'symbol-narrow':'1.0-0' }}</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Gráfica -->
+  <mat-card class="chart-card">
+    <mat-card-header>
+      <mat-card-title>Top {{ limite() }} Productos Más Vendidos</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="chart-container">
+        <canvas baseChart [data]="barChartData" [options]="barChartOptions" type="bar">
+        </canvas>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Ranking -->
+  <mat-card class="ranking-card">
+    <mat-card-header>
+      <mat-card-title>Ranking Detallado</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="ranking-list">
+        @for (producto of topProductos(); track producto.idProducto; let i = $index) {
+        <div class="ranking-item">
+          <div class="ranking-position">
+            <span class="position-number">{{ i + 1 }}</span>
+          </div>
+          <div class="producto-info">
+            <div class="producto-nombre">{{ producto.nombre }}</div>
+            <div class="producto-codigo">{{ producto.codigo }}</div>
+          </div>
+          <div class="producto-stats">
+            <div class="stat">
+              <span class="stat-label">Vendido:</span>
+              <span class="stat-value">{{ producto.cantidadVendida }} unidades</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Ingresos:</span>
+              <span class="stat-value">{{ producto.totalVentas | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+
+      @if (topProductos().length === 0) {
+      <div class="no-data">
+        <mat-icon>inventory</mat-icon>
+        <p>No hay datos de ventas disponibles</p>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+  }
+</div>
