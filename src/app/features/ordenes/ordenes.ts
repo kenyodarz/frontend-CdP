@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-ordenes',
-  imports: [],
-  templateUrl: './ordenes.html',
-  styleUrl: './ordenes.scss',
+  imports: [RouterOutlet],
+  template: `<router-outlet />`,
+  styles: ``
 })
 export class Ordenes {
 
