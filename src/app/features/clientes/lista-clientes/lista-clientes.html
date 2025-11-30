@@ -67,10 +67,12 @@
       <ng-container matColumnDef="tipoTarifa">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo Tarifa</th>
         <td mat-cell *matCellDef="let cliente">
-          <mat-chip [class.tarifa-0d]="cliente.tipoTarifa === 'CERO_DIAS'"
-            [class.tarifa-8d]="cliente.tipoTarifa === 'OCHO_DIAS'"
-            [class.tarifa-15d]="cliente.tipoTarifa === 'QUINCE_DIAS'"
-            [class.tarifa-30d]="cliente.tipoTarifa === 'TREINTA_DIAS'">
+          <mat-chip [class.tarifa-0d]="cliente.tipoTarifa === 'PRECIO_0D'"
+            [class.tarifa-5d]="cliente.tipoTarifa === 'PRECIO_5D'"
+            [class.tarifa-10d]="cliente.tipoTarifa === 'PRECIO_10D'"
+            [class.tarifa-es]="cliente.tipoTarifa === 'PRECIO_ES'"
+            [class.tarifa-jm]="cliente.tipoTarifa === 'PRECIO_JM'"
+            [class.tarifa-cr]="cliente.tipoTarifa === 'PRECIO_CR'">
             {{ getTarifaLabel(cliente.tipoTarifa) }}
           </mat-chip>
         </td>

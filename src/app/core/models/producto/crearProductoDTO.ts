@@ -1,4 +1,4 @@
-import {PrecioProducto} from './precioProducto';
+import { PrecioDTO } from './precioDTO';
 
 export interface CrearProductoDTO {
   codigo?: string;
@@ -12,5 +12,5 @@ export interface CrearProductoDTO {
   requiereLote: boolean;
   diasVidaUtil?: number;
   imagenUrl?: string;
-  precios: PrecioProducto[];
+  precios: PrecioDTO[];
 }

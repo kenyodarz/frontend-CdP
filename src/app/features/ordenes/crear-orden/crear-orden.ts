@@ -157,8 +157,7 @@ export class CrearOrden implements OnInit {
       observaciones: this.ordenForm.value.observaciones,
       detalles: this.productosOrden().map(p => ({
         idProducto: p.idProducto,
-        cantidad: p.cantidad,
-        precioUnitario: p.precio
+        cantidad: p.cantidad
       }))
     };
 

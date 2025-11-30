@@ -190,10 +190,12 @@ export class ListaClientes implements OnInit {
 
   protected getTarifaLabel(tipoTarifa: string): string {
     const labels: Record<string, string> = {
-      'CERO_DIAS': '0 Días',
-      'OCHO_DIAS': '8 Días',
-      'QUINCE_DIAS': '15 Días',
-      'TREINTA_DIAS': '30 Días'
+      'PRECIO_0D': '0 Días',
+      'PRECIO_5D': '5 Días',
+      'PRECIO_10D': '10 Días',
+      'PRECIO_ES': 'Especial',
+      'PRECIO_JM': 'Jumbo',
+      'PRECIO_CR': 'Crédito'
     };
     return labels[tipoTarifa] || tipoTarifa;
   }

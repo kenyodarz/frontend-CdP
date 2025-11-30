@@ -64,10 +64,12 @@ export class FormProducto implements OnInit {
   ]);
 
   protected readonly tiposTarifa = [
-    { value: 'CERO_DIAS', label: '0 Días' },
-    { value: 'OCHO_DIAS', label: '8 Días' },
-    { value: 'QUINCE_DIAS', label: '15 Días' },
-    { value: 'TREINTA_DIAS', label: '30 Días' }
+    { value: 'PRECIO_0D', label: '0 Días' },
+    { value: 'PRECIO_5D', label: '5 Días' },
+    { value: 'PRECIO_10D', label: '10 Días' },
+    { value: 'PRECIO_ES', label: 'Especial' },
+    { value: 'PRECIO_JM', label: 'Jumbo' },
+    { value: 'PRECIO_CR', label: 'Crédito' }
   ];
 
   ngOnInit(): void {
