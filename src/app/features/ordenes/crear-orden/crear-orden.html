@@ -46,7 +46,7 @@
             <mat-select #productoSelect>
               @for (producto of productos(); track producto.idProducto) {
               <mat-option [value]="producto">
-                {{ producto.nombre }} - {{ producto.precio0D | currency:'COP':'symbol-narrow':'1.0-0' }}
+                {{ producto.nombre }} - {{ producto.precioBase | currency:'COP':'symbol-narrow':'1.0-0' }}
               </mat-option>
               }
             </mat-select>

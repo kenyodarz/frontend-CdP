@@ -1,8 +1,8 @@
 export enum TipoTarifa {
-  PRECIO_0D = 'PRECIO_0D',
-  PRECIO_10D = 'PRECIO_10D',
-  PRECIO_5D = 'PRECIO_5D',
-  PRECIO_ES = 'PRECIO_ES',
-  PRECIO_JM = 'PRECIO_JM',
-  PRECIO_CR = 'PRECIO_CR'
+  CERO_DIAS = '0D',
+  DIEZ_DIAS = '10D',
+  CINCO_DIAS = '5D',
+  ESPECIAL = 'ES',
+  JUAN_MINA = 'JM',
+  CARULLA = 'CR'
 }

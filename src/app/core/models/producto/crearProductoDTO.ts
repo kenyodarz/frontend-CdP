@@ -1,5 +1,3 @@
-import { PrecioDTO } from './precioDTO';
-
 export interface CrearProductoDTO {
   codigo?: string;
   nombre: string;
@@ -12,5 +10,7 @@ export interface CrearProductoDTO {
   requiereLote: boolean;
   diasVidaUtil?: number;
   imagenUrl?: string;
-  precios: PrecioDTO[];
+  precioBase: number;
+  precioJM?: number;
+  precioCR?: number;
 }

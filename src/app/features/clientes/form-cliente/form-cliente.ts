@@ -53,12 +53,12 @@ export class FormCliente implements OnInit {
   ];
 
   protected readonly tiposTarifa = [
-    { value: 'PRECIO_0D', label: '0 Días' },
-    { value: 'PRECIO_5D', label: '5 Días' },
-    { value: 'PRECIO_10D', label: '10 Días' },
-    { value: 'PRECIO_ES', label: 'Especial' },
-    { value: 'PRECIO_JM', label: 'Jumbo' },
-    { value: 'PRECIO_CR', label: 'Crédito' }
+    { value: 'PRECIO_0D', label: 'Normal' },
+    { value: 'PRECIO_5D', label: '5% de Descuento' },
+    { value: 'PRECIO_10D', label: '10% de Descuento' },
+    { value: 'PRECIO_ES', label: '15% de Descuento' },
+    { value: 'PRECIO_JM', label: 'Especial 1' },
+    { value: 'PRECIO_CR', label: 'Especial 2' }
   ];
 
   ngOnInit(): void {
@@ -77,7 +77,7 @@ export class FormCliente implements OnInit {
       barrio: [''],
       comuna: [''],
       tipoNegocio: [''],
-      tipoTarifa: ['PRECIO_0D', Validators.required],
+      tipoTarifa: ['0D', Validators.required],
       horarioEntrega: ['']
     });
   }

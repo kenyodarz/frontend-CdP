@@ -110,12 +110,12 @@ export class DetalleCliente implements OnInit {
 
   protected getTarifaLabel(tipoTarifa: string): string {
     const labels: Record<string, string> = {
-      'PRECIO_0D': '0 Días',
-      'PRECIO_5D': '5 Días',
-      'PRECIO_10D': '10 Días',
-      'PRECIO_ES': 'Especial',
-      'PRECIO_JM': 'Jumbo',
-      'PRECIO_CR': 'Crédito'
+      'PRECIO_0D': 'Normal',
+      'PRECIO_5D': '5% de Descuento',
+      'PRECIO_10D': '10% de Descuento',
+      'PRECIO_ES': '15% de Descuento',
+      'PRECIO_JM': 'Especial 1',
+      'PRECIO_CR': 'Especial 2'
     };
     return labels[tipoTarifa] || tipoTarifa;
   }

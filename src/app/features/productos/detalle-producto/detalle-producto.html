@@ -16,10 +16,7 @@
         <mat-icon>edit</mat-icon>
         Editar
       </button>
-      <button mat-raised-button color="warn" (click)="desactivar()" [disabled]="prod.estado === 'INACTIVO'">
-        <mat-icon>block</mat-icon>
-        Desactivar
-      </button>
+
     </div>
   </div>
 
@@ -105,7 +102,7 @@
       </mat-card-header>
       <mat-card-content>
         <div class="precios-grid">
-          @for (precio of prod.precios; track precio.idPrecio) {
+          @for (precio of preciosArray(); track precio.tipoTarifa) {
           <div class="precio-card">
             <div class="precio-label">{{ getTarifaLabel(precio.tipoTarifa) }}</div>
             <div class="precio-value">{{ precio.precio | currency:'COP':'symbol-narrow':'1.0-0' }}</div>

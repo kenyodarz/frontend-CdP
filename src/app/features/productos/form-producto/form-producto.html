@@ -133,25 +133,49 @@
 
     <mat-card>
       <mat-card-header>
-        <mat-card-title>Precios por Tipo de Tarifa</mat-card-title>
+        <mat-card-title>Precios</mat-card-title>
+        <mat-card-subtitle>Los precios con descuento (0D, 10D, 5D, ES) se calculan automáticamente</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <div formArrayName="precios" class="precios-grid">
-          @for (precioControl of precios.controls; track $index) {
-          <div [formGroupName]="$index" class="precio-item">
-            <mat-form-field appearance="outline">
-              <mat-label>{{ getTarifaLabel(precioControl.get('tipoTarifa')?.value) }}</mat-label>
-              <input matInput type="number" formControlName="precio" min="0" step="100">
-              <span matPrefix>$&nbsp;</span>
-              @if (precioControl.get('precio')?.hasError('required') && precioControl.get('precio')?.touched) {
-              <mat-error>El precio es requerido</mat-error>
-              }
-              @if (precioControl.get('precio')?.hasError('min')) {
-              <mat-error>El precio debe ser mayor o igual a 0</mat-error>
-              }
-            </mat-form-field>
-          </div>
-          }
+        <div class="form-grid">
+          <!-- Precio Base -->
+          <mat-form-field appearance="outline">
+            <mat-label>Precio Base *</mat-label>
+            <input matInput type="number" formControlName="precioBase" min="0" step="100">
+            <span matPrefix>$&nbsp;</span>
+            <mat-icon matPrefix>payments</mat-icon>
+            <mat-hint>Precio completo sin descuento</mat-hint>
+            @if (productoForm.get('precioBase')?.hasError('required') && productoForm.get('precioBase')?.touched) {
+            <mat-error>El precio base es requerido</mat-error>
+            }
+            @if (productoForm.get('precioBase')?.hasError('min')) {
+            <mat-error>El precio debe ser mayor o igual a 0</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Precio Juan Mina (Opcional) -->
+          <mat-form-field appearance="outline">
+            <mat-label>Precio Juan Mina (Opcional)</mat-label>
+            <input matInput type="number" formControlName="precioJM" min="0" step="100">
+            <span matPrefix>$&nbsp;</span>
+            <mat-icon matPrefix>store</mat-icon>
+            <mat-hint>Solo si difiere del precio base</mat-hint>
+            @if (productoForm.get('precioJM')?.hasError('min')) {
+            <mat-error>El precio debe ser mayor o igual a 0</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Precio Carulla (Opcional) -->
+          <mat-form-field appearance="outline">
+            <mat-label>Precio Carulla (Opcional)</mat-label>
+            <input matInput type="number" formControlName="precioCR" min="0" step="100">
+            <span matPrefix>$&nbsp;</span>
+            <mat-icon matPrefix>shopping_cart</mat-icon>
+            <mat-hint>Solo si difiere del precio base</mat-hint>
+            @if (productoForm.get('precioCR')?.hasError('min')) {
+            <mat-error>El precio debe ser mayor o igual a 0</mat-error>
+            }
+          </mat-form-field>
         </div>
       </mat-card-content>
     </mat-card>

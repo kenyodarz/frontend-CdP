@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,6 +39,15 @@ export class DetalleProducto implements OnInit {
   protected readonly error = signal<string | null>(null);
   protected readonly producto = signal<Producto | null>(null);
 
+  protected readonly preciosArray = computed(() => {
+    const prod = this.producto();
+    if (!prod) return [];
+    return Object.entries(prod.precios).map(([key, value]) => ({
+      tipoTarifa: key,
+      precio: value
+    }));
+  });
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
@@ -74,6 +83,10 @@ export class DetalleProducto implements OnInit {
     this.router.navigate(['/productos']);
   }
 
+  // TODO: Implementar desactivación usando PUT con estado INACTIVO
+  // El backend no tiene endpoint /desactivar, se debe usar PUT /productos/{id}
+  // con el campo estado: 'INACTIVO'
+  /*
   protected desactivar(): void {
     const producto = this.producto();
     if (!producto) return;
@@ -102,6 +115,7 @@ export class DetalleProducto implements OnInit {
       }
     });
   }
+  */
 
   protected getStockStatus(): 'bajo' | 'normal' | 'alto' {
     const producto = this.producto();
@@ -121,12 +135,18 @@ export class DetalleProducto implements OnInit {
 
   protected getTarifaLabel(tipoTarifa: string): string {
     const labels: Record<string, string> = {
-      'PRECIO_0D': '0 Días',
-      'PRECIO_5D': '5 Días',
-      'PRECIO_10D': '10 Días',
-      'PRECIO_ES': 'Especial',
-      'PRECIO_JM': 'Jumbo',
-      'PRECIO_CR': 'Crédito'
+      'PRECIO_0D': 'Precio Normal',
+      'PRECIO_5D': '5% de Descuento',
+      'PRECIO_10D': '10% de Descuento',
+      'PRECIO_ES': '15% de Descuento',
+      'PRECIO_JM': 'Especial 1',
+      'PRECIO_CR': 'Especial 2',
+      '0D': 'Normal', // La D quiere decir descuento: 0% de descuento
+      '5D': '5% de Descuento', // La D quiere decir descuento: 5% de Descuento
+      '10D': '10% de Descuento', // La D quiere decir descuento: 10% de Descuento
+      'ES': '15% de Descuento',
+      'JM': 'Especial 1',
+      'CR': 'Especial 2'
     };
     return labels[tipoTarifa] || tipoTarifa;
   }

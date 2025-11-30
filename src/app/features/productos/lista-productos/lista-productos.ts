@@ -161,6 +161,10 @@ export class ListaProductos implements OnInit {
     this.router.navigate(['/productos/nuevo']);
   }
 
+  // TODO: Implementar desactivación usando PUT con estado INACTIVO
+  // El backend no tiene endpoint /desactivar, se debe usar PUT /productos/{id}
+  // con el campo estado: 'INACTIVO'
+  /*
   protected desactivarProducto(producto: ProductoSimple): void {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       data: {
@@ -186,6 +190,7 @@ export class ListaProductos implements OnInit {
       }
     });
   }
+  */
 
   protected getStockStatus(producto: ProductoSimple): 'bajo' | 'normal' {
     if (producto.stockBajo) return 'bajo';

@@ -1,7 +1,6 @@
-import {UnidadMedidaSimple} from './unidadMedidaSimple';
-import {CategoriaSimple} from './categoriaSimple';
-import {PrecioProducto} from './precioProducto';
-import {EstadoProducto} from './estadoProducto';
+import { UnidadMedidaSimple } from './unidadMedidaSimple';
+import { CategoriaSimple } from './categoriaSimple';
+import { EstadoProducto } from './estadoProducto';
 
 export interface Producto {
   idProducto?: number;
@@ -18,5 +17,6 @@ export interface Producto {
   imagenUrl?: string;
   estado: EstadoProducto;
   stockBajo: boolean;
-  precios: PrecioProducto[];
+  precioBase: number;
+  precios: { [key: string]: number };
 }

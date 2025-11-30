@@ -114,9 +114,9 @@ export class CrearOrden implements OnInit {
         {
           idProducto: producto.idProducto!,
           nombre: producto.nombre,
-          precio: producto.precio0D,
+          precio: producto.precioBase,
           cantidad,
-          subtotal: producto.precio0D * cantidad
+          subtotal: producto.precioBase * cantidad
         }
       ]);
     }
@@ -153,7 +153,6 @@ export class CrearOrden implements OnInit {
 
     const ordenDTO: CrearOrdenDTO = {
       idCliente: this.ordenForm.value.idCliente,
-      idEmpleado: 1, // TODO: Obtener del usuario autenticado
       observaciones: this.ordenForm.value.observaciones,
       detalles: this.productosOrden().map(p => ({
         idProducto: p.idProducto,

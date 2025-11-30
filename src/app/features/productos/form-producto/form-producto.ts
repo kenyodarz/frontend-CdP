@@ -63,15 +63,6 @@ export class FormProducto implements OnInit {
     { id: 3, nombre: 'Paquete' }
   ]);
 
-  protected readonly tiposTarifa = [
-    { value: 'PRECIO_0D', label: '0 Días' },
-    { value: 'PRECIO_5D', label: '5 Días' },
-    { value: 'PRECIO_10D', label: '10 Días' },
-    { value: 'PRECIO_ES', label: 'Especial' },
-    { value: 'PRECIO_JM', label: 'Jumbo' },
-    { value: 'PRECIO_CR', label: 'Crédito' }
-  ];
-
   ngOnInit(): void {
     this.initForm();
     this.checkEditMode();
@@ -90,12 +81,9 @@ export class FormProducto implements OnInit {
       requiereLote: [false],
       diasVidaUtil: [null, [Validators.min(1)]],
       imagenUrl: [''],
-      precios: this.fb.array([])
-    });
-
-    // Agregar precios por defecto para cada tipo de tarifa
-    this.tiposTarifa.forEach(tipo => {
-      this.agregarPrecio(tipo.value);
+      precioBase: [0, [Validators.required, Validators.min(0)]],
+      precioJM: [null, [Validators.min(0)]],
+      precioCR: [null, [Validators.min(0)]]
     });
   }
 
@@ -137,29 +125,14 @@ export class FormProducto implements OnInit {
       stockMaximo: producto.stockMaximo,
       requiereLote: producto.requiereLote,
       diasVidaUtil: producto.diasVidaUtil,
-      imagenUrl: producto.imagenUrl
-    });
-
-    // Actualizar precios
-    this.precios.clear();
-    producto.precios.forEach(precio => {
-      this.precios.push(this.fb.group({
-        tipoTarifa: [precio.tipoTarifa],
-        precio: [precio.precio, [Validators.required, Validators.min(0)]]
-      }));
+      imagenUrl: producto.imagenUrl,
+      precioBase: producto.precioBase,
+      precioJM: producto.precios['PRECIO_JM'] || null,
+      precioCR: producto.precios['PRECIO_CR'] || null
     });
   }
 
-  get precios(): FormArray {
-    return this.productoForm.get('precios') as FormArray;
-  }
 
-  private agregarPrecio(tipoTarifa: string): void {
-    this.precios.push(this.fb.group({
-      tipoTarifa: [tipoTarifa],
-      precio: [0, [Validators.required, Validators.min(0)]]
-    }));
-  }
 
   protected onSubmit(): void {
     if (this.productoForm.invalid) {
@@ -229,10 +202,5 @@ export class FormProducto implements OnInit {
     if (this.productoId()) {
       this.cargarProducto(this.productoId()!);
     }
-  }
-
-  protected getTarifaLabel(tipoTarifa: string): string {
-    const tipo = this.tiposTarifa.find(t => t.value === tipoTarifa);
-    return tipo?.label || tipoTarifa;
   }
 }
