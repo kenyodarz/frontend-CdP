@@ -15,6 +15,8 @@ import { FormsModule } from '@angular/forms';
 
 import { ClienteService } from '../../../core/services/cliente.service';
 import { ClienteSimple } from '../../../core/models/cliente/clienteSimple';
+import { Cliente } from '../../../core/models/cliente/cliente';
+import { PageResponse } from '../../../core/models/common/page-response';
 import { Loading } from '../../../shared/components/loading/loading';
 import { ErrorMessage } from '../../../shared/components/error-message/error-message';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
@@ -47,15 +49,15 @@ export class ListaClientes implements OnInit {
   // Estado
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
-  protected readonly clientes = signal<ClienteSimple[]>([]);
+  protected readonly clientesPage = signal<PageResponse<Cliente> | null>(null);
   protected readonly searchTerm = signal('');
 
-  // Paginación
+  // Paginación (servidor)
   protected readonly pageSize = signal(10);
   protected readonly pageIndex = signal(0);
   protected readonly pageSizeOptions = [5, 10, 25, 50];
 
-  // Ordenamiento
+  // Ordenamiento (cliente)
   protected readonly sortColumn = signal<string>('nombre');
   protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
 
@@ -71,27 +73,22 @@ export class ListaClientes implements OnInit {
     'acciones'
   ];
 
-  // Datos filtrados y ordenados
-  protected readonly filteredData = computed(() => {
+  // Datos para la tabla
+  protected readonly clientes = computed(() => {
+    return this.clientesPage()?.content || [];
+  });
+
+  // Datos ordenados
+  protected readonly sortedData = computed(() => {
     let data = this.clientes();
-
-    // Filtrar por búsqueda
-    const search = this.searchTerm().toLowerCase().trim();
-    if (search) {
-      data = data.filter(c =>
-        c.nombre.toLowerCase().includes(search) ||
-        c.codigo?.toLowerCase().includes(search) ||
-        c.telefono?.toLowerCase().includes(search) ||
-        c.barrio?.toLowerCase().includes(search)
-      );
-    }
-
-    // Ordenar
     const column = this.sortColumn();
     const direction = this.sortDirection();
-    data = [...data].sort((a, b) => {
-      let aValue: any = a[column as keyof ClienteSimple];
-      let bValue: any = b[column as keyof ClienteSimple];
+
+    if (!column) return data;
+
+    return [...data].sort((a, b) => {
+      let aValue: any = a[column as keyof Cliente];
+      let bValue: any = b[column as keyof Cliente];
 
       if (aValue === undefined || aValue === null) return 1;
       if (bValue === undefined || bValue === null) return -1;
@@ -99,19 +96,9 @@ export class ListaClientes implements OnInit {
       const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
       return direction === 'asc' ? comparison : -comparison;
     });
-
-    return data;
   });
 
-  // Datos paginados
-  protected readonly paginatedData = computed(() => {
-    const data = this.filteredData();
-    const startIndex = this.pageIndex() * this.pageSize();
-    const endIndex = startIndex + this.pageSize();
-    return data.slice(startIndex, endIndex);
-  });
-
-  protected readonly totalItems = computed(() => this.filteredData().length);
+  protected readonly totalItems = computed(() => this.clientesPage()?.totalElements || 0);
 
   ngOnInit(): void {
     this.cargarClientes();
@@ -121,9 +108,9 @@ export class ListaClientes implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.clienteService.obtenerTodos().subscribe({
-      next: (clientes) => {
-        this.clientes.set(clientes);
+    this.clienteService.obtenerTodos(this.pageIndex(), this.pageSize()).subscribe({
+      next: (page) => {
+        this.clientesPage.set(page);
         this.loading.set(false);
       },
       error: (err) => {
@@ -148,13 +135,14 @@ export class ListaClientes implements OnInit {
   protected onPageChange(event: PageEvent): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
+    this.cargarClientes();
   }
 
-  protected verDetalle(cliente: ClienteSimple): void {
+  protected verDetalle(cliente: Cliente): void {
     this.router.navigate(['/clientes', cliente.idCliente]);
   }
 
-  protected editarCliente(cliente: ClienteSimple): void {
+  protected editarCliente(cliente: Cliente): void {
     this.router.navigate(['/clientes', cliente.idCliente, 'editar']);
   }
 
@@ -162,7 +150,7 @@ export class ListaClientes implements OnInit {
     this.router.navigate(['/clientes/nuevo']);
   }
 
-  protected desactivarCliente(cliente: ClienteSimple): void {
+  protected desactivarCliente(cliente: Cliente): void {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       data: {
         title: 'Desactivar Cliente',

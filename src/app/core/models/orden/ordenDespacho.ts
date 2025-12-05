@@ -1,13 +1,13 @@
-import {DetalleOrden} from './detalleOrden';
-import {EmpleadoOrden} from './empleadoOrden';
-import {ClienteOrden} from './clienteOrden';
-import {EstadoOrden} from './estadoOrden';
+import { DetalleOrden } from './detalleOrden';
+import { EmpleadoOrden } from './empleadoOrden';
+import { ClienteOrden } from './clienteOrden';
+import { EstadoOrden } from './estadoOrden';
 
 export interface OrdenDespacho {
   idOrden?: number;
   numeroOrden: string;
-  cliente: ClienteOrden;
-  empleado: EmpleadoOrden;
+  idCliente: number;
+  idEmpleado: number;
   fechaOrden: string;
   fechaEntregaProgramada?: string;
   subtotal: number;

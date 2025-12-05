@@ -63,8 +63,25 @@ export class CrearLote implements OnInit {
   }
 
   private cargarProductos(): void {
-    this.productoService.obtenerTodos().subscribe({
-      next: (productos) => this.productos.set(productos),
+    // Solicitar una página grande para obtener todos los productos para el selector
+    this.productoService.obtenerTodos(0, 1000).subscribe({
+      next: (page) => {
+        // Mapear Producto[] a ProductoSimple[]
+        const productosSimple: ProductoSimple[] = page.content.map(p => ({
+          idProducto: p.idProducto,
+          codigo: p.codigo,
+          nombre: p.nombre,
+          stockActual: p.stockActual,
+          stockMinimo: p.stockMinimo,
+          precioBase: p.precioBase,
+          categoria: p.categoria.nombre,
+          unidad: p.unidadMedida.abreviatura,
+          stockBajo: p.stockBajo,
+          diasVidaUtil: p.diasVidaUtil,
+          estado: p.estado
+        }));
+        this.productos.set(productosSimple);
+      },
       error: (err) => console.error('Error al cargar productos:', err)
     });
   }

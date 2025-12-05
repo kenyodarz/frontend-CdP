@@ -16,6 +16,8 @@ import { CurrencyPipe } from '@angular/common';
 
 import { ProductoService } from '../../../core/services/producto.service';
 import { ProductoSimple } from '../../../core/models/producto/productoSimple';
+import { PageResponse } from '../../../core/models/common/page-response';
+import { Producto } from '../../../core/models/producto/producto';
 import { Loading } from '../../../shared/components/loading/loading';
 import { ErrorMessage } from '../../../shared/components/error-message/error-message';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
@@ -49,15 +51,15 @@ export class ListaProductos implements OnInit {
   // Estado
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
-  protected readonly productos = signal<ProductoSimple[]>([]);
+  protected readonly productosPage = signal<PageResponse<Producto> | null>(null);
   protected readonly searchTerm = signal('');
 
-  // Paginación
+  // Paginación (servidor)
   protected readonly pageSize = signal(10);
   protected readonly pageIndex = signal(0);
   protected readonly pageSizeOptions = [5, 10, 25, 50];
 
-  // Ordenamiento
+  // Ordenamiento (cliente - opcional, se puede mover al servidor después)
   protected readonly sortColumn = signal<string>('nombre');
   protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
 
@@ -72,25 +74,22 @@ export class ListaProductos implements OnInit {
     'acciones'
   ];
 
-  // Datos filtrados y ordenados
-  protected readonly filteredData = computed(() => {
+  // Datos para la tabla (del servidor)
+  protected readonly productos = computed(() => {
+    return this.productosPage()?.content || [];
+  });
+
+  // Datos ordenados (ordenamiento del lado del cliente)
+  protected readonly sortedData = computed(() => {
     let data = this.productos();
-
-    // Filtrar por búsqueda
-    const search = this.searchTerm().toLowerCase().trim();
-    if (search) {
-      data = data.filter(p =>
-        p.nombre.toLowerCase().includes(search) ||
-        p.codigo?.toLowerCase().includes(search)
-      );
-    }
-
-    // Ordenar
     const column = this.sortColumn();
     const direction = this.sortDirection();
-    data = [...data].sort((a, b) => {
-      let aValue: any = a[column as keyof ProductoSimple];
-      let bValue: any = b[column as keyof ProductoSimple];
+
+    if (!column) return data;
+
+    return [...data].sort((a, b) => {
+      let aValue: any = a[column as keyof Producto];
+      let bValue: any = b[column as keyof Producto];
 
       if (aValue === undefined || aValue === null) return 1;
       if (bValue === undefined || bValue === null) return -1;
@@ -98,19 +97,9 @@ export class ListaProductos implements OnInit {
       const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
       return direction === 'asc' ? comparison : -comparison;
     });
-
-    return data;
   });
 
-  // Datos paginados
-  protected readonly paginatedData = computed(() => {
-    const data = this.filteredData();
-    const startIndex = this.pageIndex() * this.pageSize();
-    const endIndex = startIndex + this.pageSize();
-    return data.slice(startIndex, endIndex);
-  });
-
-  protected readonly totalItems = computed(() => this.filteredData().length);
+  protected readonly totalItems = computed(() => this.productosPage()?.totalElements || 0);
 
   ngOnInit(): void {
     this.cargarProductos();
@@ -120,9 +109,10 @@ export class ListaProductos implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.productoService.obtenerTodos().subscribe({
-      next: (productos) => {
-        this.productos.set(productos);
+    // Usar paginación del servidor
+    this.productoService.obtenerTodos(this.pageIndex(), this.pageSize()).subscribe({
+      next: (page) => {
+        this.productosPage.set(page);
         this.loading.set(false);
       },
       error: (err) => {
@@ -147,13 +137,14 @@ export class ListaProductos implements OnInit {
   protected onPageChange(event: PageEvent): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
+    this.cargarProductos(); // Recargar datos del servidor
   }
 
-  protected verDetalle(producto: ProductoSimple): void {
+  protected verDetalle(producto: Producto): void {
     this.router.navigate(['/productos', producto.idProducto]);
   }
 
-  protected editarProducto(producto: ProductoSimple): void {
+  protected editarProducto(producto: Producto): void {
     this.router.navigate(['/productos', producto.idProducto, 'editar']);
   }
 
@@ -192,7 +183,7 @@ export class ListaProductos implements OnInit {
   }
   */
 
-  protected getStockStatus(producto: ProductoSimple): 'bajo' | 'normal' {
+  protected getStockStatus(producto: Producto): 'bajo' | 'normal' {
     if (producto.stockBajo) return 'bajo';
     return 'normal';
   }

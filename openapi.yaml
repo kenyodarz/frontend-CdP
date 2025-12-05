@@ -1,0 +1,2620 @@
+openapi: 3.0.3
+info:
+  title: El Castillo del Pan - API
+  description: |
+    API REST para el sistema de gestión de El Castillo del Pan.
+    
+    **Modelo de Precios V2 (Simplificado)**:
+    - Cada producto tiene un `precioBase` (precio completo sin descuento)
+    - Los precios con descuento se calculan automáticamente:
+      - 0D: 0% descuento (precio base)
+      - 10D: 10% descuento
+      - 5D: 5% descuento
+      - ES: 15% descuento
+    - Precios especiales opcionales (JM, CR) se almacenan solo si difieren del base
+  version: 2.1.0
+  contact:
+    name: El Castillo del Pan
+    email: contacto@castillodelpan.com
+
+servers:
+  - url: http://localhost:8080/api
+    description: Servidor de desarrollo local
+  - url: https://api.castillodelpan.com
+    description: Servidor de producción
+
+tags:
+  - name: Productos
+    description: Gestión de productos
+  - name: Categorías
+    description: Gestión de categorías de productos
+  - name: Unidades
+    description: Gestión de unidades de medida
+  - name: Clientes
+    description: Gestión de clientes
+  - name: Rutas
+    description: Gestión de rutas de entrega
+  - name: Conductores
+    description: Gestión de conductores
+  - name: Carros
+    description: Gestión de vehículos de entrega
+  - name: Empleados
+    description: Gestión de empleados
+  - name: Órdenes
+    description: Gestión de órdenes de despacho
+  - name: Inventario
+    description: Gestión de inventario, lotes y movimientos
+  - name: Reportes
+    description: Reportes y estadísticas
+  - name: Usuarios
+    description: Autenticación y gestión de usuarios
+
+paths:
+  # ============================================
+  # PRODUCTOS
+  # ============================================
+
+  /productos:
+    get:
+      tags: [ Productos ]
+      summary: Listar productos activos
+      description: Obtiene todos los productos con estado ACTIVO de forma paginada
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Lista de productos paginada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoPageResponse'
+
+    post:
+      tags: [ Productos ]
+      summary: Crear producto
+      description: Crea un nuevo producto con precio base y precios especiales opcionales
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearProductoDTO'
+      responses:
+        '201':
+          description: Producto creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoResponse'
+        '400':
+          description: Datos inválidos
+
+  /productos/{id}:
+    get:
+      tags: [ Productos ]
+      summary: Obtener producto por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoResponse'
+        '404':
+          description: Producto no encontrado
+
+    put:
+      tags: [ Productos ]
+      summary: Actualizar producto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActualizarProductoDTO'
+      responses:
+        '200':
+          description: Producto actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoResponse'
+
+  /productos/buscar:
+    get:
+      tags: [ Productos ]
+      summary: Buscar productos por nombre
+      parameters:
+        - name: nombre
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Productos encontrados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductoSimple'
+
+  /productos/stock-bajo:
+    get:
+      tags: [ Productos ]
+      summary: Productos con stock bajo
+      responses:
+        '200':
+          description: Lista de productos con stock bajo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductoSimple'
+
+  /productos/categoria/{idCategoria}:
+    get:
+      tags: [ Productos ]
+      summary: Obtener productos por categoría
+      parameters:
+        - name: idCategoria
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductoSimple'
+
+  /productos/{id}/ajustar-stock:
+    patch:
+      tags: [ Productos ]
+      summary: Ajustar stock de producto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AjustarStockDTO'
+      responses:
+        '200':
+          description: Stock ajustado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoResponse'
+
+  /productos/{id}/desactivar:
+    patch:
+      tags: [ Productos ]
+      summary: Desactivar un producto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Producto desactivado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoResponse'
+
+  # ============================================
+  # CATEGORÍAS
+  # ============================================
+
+  /categorias:
+    get:
+      tags: [ Categorías ]
+      summary: Listar todas las categorías
+      responses:
+        '200':
+          description: Lista de categorías
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Categoria'
+
+    post:
+      tags: [ Categorías ]
+      summary: Crear categoría
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaDTO'
+      responses:
+        '201':
+          description: Categoría creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+
+  /categorias/{id}:
+    get:
+      tags: [ Categorías ]
+      summary: Obtener categoría por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Categoría encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+
+    put:
+      tags: [ Categorías ]
+      summary: Actualizar categoría
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaDTO'
+      responses:
+        '200':
+          description: Categoría actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+
+    delete:
+      tags: [ Categorías ]
+      summary: Eliminar categoría
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Categoría eliminada
+
+  # ============================================
+  # UNIDADES DE MEDIDA
+  # ============================================
+
+  /unidades:
+    get:
+      tags: [ Unidades ]
+      summary: Listar unidades de medida
+      responses:
+        '200':
+          description: Lista de unidades
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnidadMedida'
+
+    post:
+      tags: [ Unidades ]
+      summary: Crear unidad de medida
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnidadMedidaDTO'
+      responses:
+        '201':
+          description: Unidad creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnidadMedida'
+
+  /unidades/{id}:
+    get:
+      tags: [ Unidades ]
+      summary: Obtener unidad por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Unidad encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnidadMedida'
+
+  # ============================================
+  # CLIENTES
+  # ============================================
+
+  /clientes:
+    get:
+      tags: [ Clientes ]
+      summary: Listar clientes activos
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Lista de clientes paginada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientePageResponse'
+
+    post:
+      tags: [ Clientes ]
+      summary: Crear cliente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearClienteDTO'
+      responses:
+        '201':
+          description: Cliente creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClienteResponse'
+
+  /clientes/{id}:
+    get:
+      tags: [ Clientes ]
+      summary: Obtener cliente por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cliente encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClienteResponse'
+
+    put:
+      tags: [ Clientes ]
+      summary: Actualizar cliente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActualizarClienteDTO'
+      responses:
+        '200':
+          description: Cliente actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClienteResponse'
+
+  /clientes/buscar:
+    get:
+      tags: [ Clientes ]
+      summary: Buscar clientes por nombre
+      parameters:
+        - name: nombre
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Clientes encontrados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClienteResponse'
+
+  /clientes/ruta/{idRuta}:
+    get:
+      tags: [ Clientes ]
+      summary: Listar clientes por ruta
+      parameters:
+        - name: idRuta
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de clientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClienteResponse'
+
+  /clientes/barrio/{barrio}:
+    get:
+      tags: [ Clientes ]
+      summary: Listar clientes por barrio
+      parameters:
+        - name: barrio
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de clientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClienteResponse'
+
+  /clientes/{id}/asignar-ruta:
+    patch:
+      tags: [ Clientes ]
+      summary: Asignar ruta a cliente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idRuta:
+                  type: integer
+      responses:
+        '200':
+          description: Ruta asignada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClienteResponse'
+
+  /clientes/{id}/asignar-conductor:
+    patch:
+      tags: [ Clientes ]
+      summary: Asignar conductor a cliente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AsignarConductorDTO'
+      responses:
+        '200':
+          description: Conductor asignado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClienteResponse'
+
+  /clientes/{id}/desactivar:
+    patch:
+      tags: [ Clientes ]
+      summary: Desactivar cliente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cliente desactivado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClienteResponse'
+
+  # ============================================
+  # RUTAS
+  # ============================================
+
+  /rutas:
+    get:
+      tags: [ Rutas ]
+      summary: Listar todas las rutas
+      responses:
+        '200':
+          description: Lista de rutas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ruta'
+
+    post:
+      tags: [ Rutas ]
+      summary: Crear ruta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RutaDTO'
+      responses:
+        '201':
+          description: Ruta creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ruta'
+
+  /rutas/activas:
+    get:
+      tags: [ Rutas ]
+      summary: Listar rutas activas
+      responses:
+        '200':
+          description: Lista de rutas activas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ruta'
+
+  /rutas/{id}:
+    get:
+      tags: [ Rutas ]
+      summary: Obtener ruta por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ruta encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ruta'
+
+  # ============================================
+  # CONDUCTORES
+  # ============================================
+
+  /conductores:
+    get:
+      tags: [ Conductores ]
+      summary: Listar todos los conductores
+      responses:
+        '200':
+          description: Lista de conductores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conductor'
+
+    post:
+      tags: [ Conductores ]
+      summary: Crear conductor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConductorDTO'
+      responses:
+        '201':
+          description: Conductor creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conductor'
+
+  /conductores/activos:
+    get:
+      tags: [ Conductores ]
+      summary: Listar conductores activos
+      responses:
+        '200':
+          description: Lista de conductores activos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conductor'
+
+  /conductores/{id}:
+    get:
+      tags: [ Conductores ]
+      summary: Obtener conductor por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Conductor encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conductor'
+
+  # ============================================
+  # CARROS
+  # ============================================
+
+  /carros:
+    get:
+      tags: [ Carros ]
+      summary: Listar todos los carros
+      responses:
+        '200':
+          description: Lista de carros
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Carro'
+
+    post:
+      tags: [ Carros ]
+      summary: Crear carro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarroDTO'
+      responses:
+        '201':
+          description: Carro creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Carro'
+
+  /carros/activos:
+    get:
+      tags: [ Carros ]
+      summary: Listar carros activos
+      responses:
+        '200':
+          description: Lista de carros activos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Carro'
+
+  /carros/{id}:
+    get:
+      tags: [ Carros ]
+      summary: Obtener carro por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Carro encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Carro'
+
+  # ============================================
+  # EMPLEADOS
+  # ============================================
+
+  /empleados:
+    get:
+      tags: [ Empleados ]
+      summary: Listar todos los empleados
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: soloActivos
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Lista de empleados paginada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpleadoPageResponse'
+
+    post:
+      tags: [ Empleados ]
+      summary: Crear empleado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpleadoDTO'
+      responses:
+        '201':
+          description: Empleado creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empleado'
+
+  /empleados/activos:
+    get:
+      tags: [ Empleados ]
+      summary: Listar empleados activos
+      responses:
+        '200':
+          description: Lista de empleados activos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Empleado'
+
+  /empleados/{id}:
+    get:
+      tags: [ Empleados ]
+      summary: Obtener empleado por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Empleado encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empleado'
+
+  # ============================================
+  # USUARIOS
+  # ============================================
+
+  /usuarios:
+    get:
+      tags: [ Usuarios ]
+      summary: Listar usuarios
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: soloActivos
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Lista de usuarios paginada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioPageResponse'
+
+    post:
+      tags: [ Usuarios ]
+      summary: Crear usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+      responses:
+        '201':
+          description: Usuario creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioResponse'
+
+  /usuarios/{id}:
+    get:
+      tags: [ Usuarios ]
+      summary: Obtener usuario por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioResponse'
+
+    put:
+      tags: [ Usuarios ]
+      summary: Actualizar usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+      responses:
+        '200':
+          description: Usuario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioResponse'
+
+  /usuarios/{id}/desactivar:
+    patch:
+      tags: [ Usuarios ]
+      summary: Desactivar usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario desactivado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioResponse'
+
+  # ============================================
+  # ÓRDENES
+  # ============================================
+
+  /ordenes:
+    get:
+      tags: [ Órdenes ]
+      summary: Listar órdenes con filtros
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: estado
+          in: query
+          schema:
+            type: string
+            enum: [ PENDIENTE, EN_PREPARACION, LISTA, DESPACHADA, ENTREGADA, CANCELADA ]
+        - name: fecha
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Lista de órdenes paginada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenPageResponse'
+
+    post:
+      tags: [ Órdenes ]
+      summary: Crear orden
+      description: |
+        Crea una nueva orden de despacho. Los precios se calculan automáticamente
+        según la tarifa del cliente:
+        - Cliente con tarifa 0D: usa precio base
+        - Cliente con tarifa 10D: aplica 10% descuento
+        - Cliente con tarifa JM: usa precio especial JM si existe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearOrdenDTO'
+      responses:
+        '201':
+          description: Orden creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenResponse'
+
+  /ordenes/{id}:
+    get:
+      tags: [ Órdenes ]
+      summary: Obtener orden por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Orden encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenResponse'
+
+  /ordenes/fecha/{fecha}:
+    get:
+      tags: [ Órdenes ]
+      summary: Listar órdenes por fecha
+      parameters:
+        - name: fecha
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Lista de órdenes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrdenResponse'
+
+  /ordenes/estado/{estado}:
+    get:
+      tags: [ Órdenes ]
+      summary: Listar órdenes por estado
+      parameters:
+        - name: estado
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [ PENDIENTE, EN_PREPARACION, LISTA, DESPACHADA, ENTREGADA, CANCELADA ]
+      responses:
+        '200':
+          description: Lista de órdenes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrdenResponse'
+
+  /ordenes/pendientes-hoy:
+    get:
+      tags: [ Órdenes ]
+      summary: Órdenes pendientes del día
+      responses:
+        '200':
+          description: Lista de órdenes pendientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrdenResponse'
+
+  /ordenes/cliente/{idCliente}:
+    get:
+      tags: [ Órdenes ]
+      summary: Historial de órdenes de cliente
+      parameters:
+        - name: idCliente
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: limite
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Historial de órdenes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrdenResponse'
+
+  /ordenes/{id}/estado:
+    patch:
+      tags: [ Órdenes ]
+      summary: Cambiar estado de orden
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CambiarEstadoOrdenDTO'
+      responses:
+        '200':
+          description: Estado actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenResponse'
+
+  /ordenes/{id}/cancelar:
+    patch:
+      tags: [ Órdenes ]
+      summary: Cancelar orden
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelarOrdenDTO'
+      responses:
+        '200':
+          description: Orden cancelada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenResponse'
+
+  /ordenes/resumen:
+    get:
+      tags: [ Órdenes ]
+      summary: Resumen de órdenes
+      parameters:
+        - name: fecha
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Resumen de órdenes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalOrdenes:
+                    type: integer
+                  ordenesPendientes:
+                    type: integer
+                  ordenesEnPreparacion:
+                    type: integer
+                  ordenesListas:
+                    type: integer
+                  ordenesDespachadas:
+                    type: integer
+                  totalVentas:
+                    type: number
+                    format: decimal
+
+  /ordenes/numero/{numeroOrden}:
+    get:
+      tags: [ Órdenes ]
+      summary: Buscar orden por número
+      parameters:
+        - name: numeroOrden
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Orden encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenResponse'
+
+  # ============================================
+  # INVENTARIO (LOTES Y MOVIMIENTOS)
+  # ============================================
+
+  /inventario/lotes:
+    post:
+      tags: [ Inventario ]
+      summary: Crear lote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearLoteDTO'
+      responses:
+        '201':
+          description: Lote creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoteResponse'
+
+  /inventario/lotes/producto/{idProducto}:
+    get:
+      tags: [ Inventario ]
+      summary: Lotes por producto
+      parameters:
+        - name: idProducto
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de lotes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoteResponse'
+
+  /inventario/lotes/proximos-vencer:
+    get:
+      tags: [ Inventario ]
+      summary: Lotes próximos a vencer
+      parameters:
+        - name: dias
+          in: query
+          schema:
+            type: integer
+            default: 3
+      responses:
+        '200':
+          description: Lista de lotes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoteResponse'
+
+  /inventario/lotes/vencidos:
+    get:
+      tags: [ Inventario ]
+      summary: Lotes vencidos
+      responses:
+        '200':
+          description: Lista de lotes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoteResponse'
+
+  /inventario/movimientos:
+    get:
+      tags: [ Inventario ]
+      summary: Listar movimientos
+      parameters:
+        - name: fechaInicio
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: fechaFin
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Lista de movimientos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovimientoInventarioResponse'
+
+  /inventario/movimientos/entrada:
+    post:
+      tags: [ Inventario ]
+      summary: Registrar entrada
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrarEntradaDTO'
+      responses:
+        '201':
+          description: Entrada registrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovimientoInventarioResponse'
+
+  /inventario/movimientos/salida:
+    post:
+      tags: [ Inventario ]
+      summary: Registrar salida
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrarSalidaDTO'
+      responses:
+        '201':
+          description: Salida registrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovimientoInventarioResponse'
+
+  /inventario/movimientos/producto/{idProducto}:
+    get:
+      tags: [ Inventario ]
+      summary: Historial de movimientos de producto
+      parameters:
+        - name: idProducto
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Historial de movimientos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovimientoInventarioResponse'
+
+  /inventario/movimientos/fecha/{fecha}:
+    get:
+      tags: [ Inventario ]
+      summary: Movimientos por fecha
+      parameters:
+        - name: fecha
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Lista de movimientos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovimientoInventarioResponse'
+
+  # ============================================
+  # REPORTES
+  # ============================================
+
+  /reportes/ventas:
+    get:
+      tags: [ Reportes ]
+      summary: Reporte de ventas
+      parameters:
+        - name: fechaInicio
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: fechaFin
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Reporte de ventas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReporteVentas'
+
+  /reportes/productos-mas-vendidos:
+    get:
+      tags: [ Reportes ]
+      summary: Top productos más vendidos
+      parameters:
+        - name: fechaInicio
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: fechaFin
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: limite
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductoVendido'
+
+  /reportes/clientes-top:
+    get:
+      tags: [ Reportes ]
+      summary: Top clientes
+      parameters:
+        - name: fechaInicio
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: fechaFin
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: limite
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Lista de clientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClienteTop'
+
+  /reportes/inventario-valorizado:
+    get:
+      tags: [ Reportes ]
+      summary: Inventario valorizado
+      responses:
+        '200':
+          description: Reporte de inventario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReporteInventario'
+
+  /reportes/movimientos-inventario:
+    get:
+      tags: [ Reportes ]
+      summary: Reporte de movimientos
+      parameters:
+        - name: fechaInicio
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: fechaFin
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Reporte de movimientos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReporteMovimientos'
+
+  /reportes/dashboard-proforma:
+    get:
+      tags: [ Reportes ]
+      summary: Dashboard Proforma 2025
+      description: Obtiene datos agregados de ventas, productos más vendidos y análisis por tipo de cliente
+      parameters:
+        - name: fechaInicio
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Fecha de inicio del rango (opcional)
+        - name: fechaFin
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Fecha de fin del rango (opcional)
+      responses:
+        '200':
+          description: Datos del dashboard
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardProformaResponse'
+
+components:
+  schemas:
+    # ============================================
+    # PRODUCTO SCHEMAS
+    # ============================================
+
+    CrearProductoDTO:
+      type: object
+      required:
+        - nombre
+        - idCategoria
+        - idUnidad
+        - precioBase
+      properties:
+        codigo:
+          type: string
+          maxLength: 50
+          example: "PAN001"
+        nombre:
+          type: string
+          maxLength: 200
+          example: "Pan Francés"
+        descripcion:
+          type: string
+          maxLength: 1000
+        idCategoria:
+          type: integer
+          example: 1
+        idUnidad:
+          type: integer
+          example: 2
+        stockActual:
+          type: integer
+          minimum: 0
+          default: 0
+        stockMinimo:
+          type: integer
+          minimum: 0
+          default: 5
+        stockMaximo:
+          type: integer
+          minimum: 0
+        requiereLote:
+          type: boolean
+          default: false
+        diasVidaUtil:
+          type: integer
+          minimum: 1
+        imagenUrl:
+          type: string
+          maxLength: 255
+        precioBase:
+          type: number
+          format: decimal
+          description: Precio base del producto (precio completo sin descuento)
+          example: 10000
+        precioJM:
+          type: number
+          format: decimal
+          description: Precio especial para tarifa JM (opcional)
+          example: 8500
+        precioCR:
+          type: number
+          format: decimal
+          description: Precio especial para tarifa CR (opcional)
+          example: 9000
+
+    ActualizarProductoDTO:
+      type: object
+      required:
+        - nombre
+        - idCategoria
+        - idUnidad
+        - stockMinimo
+        - requiereLote
+        - estado
+        - precioBase
+      properties:
+        codigo:
+          type: string
+          maxLength: 50
+        nombre:
+          type: string
+          maxLength: 200
+        descripcion:
+          type: string
+        idCategoria:
+          type: integer
+        idUnidad:
+          type: integer
+        stockMinimo:
+          type: integer
+        stockMaximo:
+          type: integer
+        requiereLote:
+          type: boolean
+        diasVidaUtil:
+          type: integer
+        imagenUrl:
+          type: string
+        estado:
+          type: string
+          enum: [ ACTIVO, INACTIVO, DESCONTINUADO ]
+        precioBase:
+          type: number
+          format: decimal
+        precioJM:
+          type: number
+          format: decimal
+        precioCR:
+          type: number
+          format: decimal
+
+    ProductoResponse:
+      type: object
+      properties:
+        idProducto:
+          type: integer
+        codigo:
+          type: string
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        categoria:
+          $ref: '#/components/schemas/Categoria'
+        unidadMedida:
+          $ref: '#/components/schemas/UnidadMedida'
+        stockActual:
+          type: integer
+        stockMinimo:
+          type: integer
+        stockMaximo:
+          type: integer
+        requiereLote:
+          type: boolean
+        diasVidaUtil:
+          type: integer
+        imagenUrl:
+          type: string
+        estado:
+          type: string
+          enum: [ ACTIVO, INACTIVO, DESCONTINUADO ]
+        stockBajo:
+          type: boolean
+        precioBase:
+          type: number
+          format: decimal
+          description: Precio base del producto
+        precios:
+          type: object
+          description: Todos los precios (calculados automáticamente + especiales)
+          additionalProperties:
+            type: number
+            format: decimal
+          example:
+            PRECIO_0D: 10000
+            PRECIO_10D: 9000
+            PRECIO_5D: 9500
+            PRECIO_ES: 8500
+            PRECIO_JM: 8500
+            PRECIO_CR: 10000
+
+    ProductoSimple:
+      type: object
+      properties:
+        idProducto:
+          type: integer
+        codigo:
+          type: string
+        nombre:
+          type: string
+        stockActual:
+          type: integer
+        precioBase:
+          type: number
+          format: decimal
+        categoria:
+          type: string
+        unidad:
+          type: string
+
+    AjustarStockDTO:
+      type: object
+      required:
+        - nuevaCantidad
+        - motivo
+      properties:
+        nuevaCantidad:
+          type: integer
+        motivo:
+          type: string
+
+    # ============================================
+    # CATEGORÍA SCHEMAS
+    # ============================================
+
+    CategoriaDTO:
+      type: object
+      required:
+        - nombre
+      properties:
+        nombre:
+          type: string
+          maxLength: 100
+        descripcion:
+          type: string
+        estado:
+          type: string
+          enum: [ ACTIVO, INACTIVO ]
+          default: ACTIVO
+
+    Categoria:
+      type: object
+      properties:
+        idCategoria:
+          type: integer
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        estado:
+          type: string
+          enum: [ ACTIVO, INACTIVO ]
+
+    # ============================================
+    # UNIDAD MEDIDA SCHEMAS
+    # ============================================
+
+    UnidadMedidaDTO:
+      type: object
+      required:
+        - codigo
+        - nombre
+        - abreviatura
+      properties:
+        codigo:
+          type: string
+          maxLength: 10
+        nombre:
+          type: string
+          maxLength: 50
+        abreviatura:
+          type: string
+          maxLength: 10
+
+    UnidadMedida:
+      type: object
+      properties:
+        idUnidad:
+          type: integer
+        codigo:
+          type: string
+        nombre:
+          type: string
+        abreviatura:
+          type: string
+        estado:
+          type: string
+          enum: [ ACTIVO, INACTIVO ]
+
+    # ============================================
+    # CLIENTE SCHEMAS
+    # ============================================
+
+    CrearClienteDTO:
+      type: object
+      required:
+        - nombre
+        - tipoTarifa
+      properties:
+        nombre:
+          type: string
+          maxLength: 200
+        codigo:
+          type: string
+          maxLength: 50
+        tipoDocumento:
+          type: string
+          enum: [ NIT, CC, CE, PASAPORTE ]
+        numeroDocumento:
+          type: string
+        direccion:
+          type: string
+        telefono:
+          type: string
+        barrio:
+          type: string
+        comuna:
+          type: string
+        tipoNegocio:
+          type: string
+        tipoTarifa:
+          type: string
+          enum: [ '0D', '10D', '5D', ES, JM, CR ]
+          description: Tipo de tarifa que determina el precio aplicado
+        idRuta:
+          type: integer
+        idConductor:
+          type: integer
+        horarioEntrega:
+          type: string
+
+    ActualizarClienteDTO:
+      type: object
+      properties:
+        nombre:
+          type: string
+        codigo:
+          type: string
+        tipoDocumento:
+          type: string
+        numeroDocumento:
+          type: string
+        direccion:
+          type: string
+        telefono:
+          type: string
+        barrio:
+          type: string
+        comuna:
+          type: string
+        tipoNegocio:
+          type: string
+        tipoTarifa:
+          type: string
+        idRuta:
+          type: integer
+        idConductor:
+          type: integer
+        horarioEntrega:
+          type: string
+        estado:
+          type: string
+          enum: [ ACTIVO, INACTIVO ]
+
+    AsignarConductorDTO:
+      type: object
+      required:
+        - idConductor
+      properties:
+        idConductor:
+          type: integer
+
+    ClienteResponse:
+      type: object
+      properties:
+        idCliente:
+          type: integer
+        nombre:
+          type: string
+        codigo:
+          type: string
+        tipoDocumento:
+          type: string
+        numeroDocumento:
+          type: string
+        direccion:
+          type: string
+        telefono:
+          type: string
+        barrio:
+          type: string
+        tipoTarifa:
+          type: string
+          enum: [ '0D', '10D', '5D', ES, JM, CR ]
+        ruta:
+          type: string
+        conductor:
+          type: string
+        estado:
+          type: string
+
+    # ============================================
+    # RUTA SCHEMAS
+    # ============================================
+
+    RutaDTO:
+      type: object
+      required:
+        - nombre
+      properties:
+        nombre:
+          type: string
+          maxLength: 100
+        descripcion:
+          type: string
+
+    Ruta:
+      type: object
+      properties:
+        idRuta:
+          type: integer
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        estado:
+          type: string
+          enum: [ ACTIVO, INACTIVO ]
+
+    # ============================================
+    # CONDUCTOR SCHEMAS
+    # ============================================
+
+    ConductorDTO:
+      type: object
+      required:
+        - numeroDocumento
+        - nombres
+        - apellidos
+      properties:
+        numeroDocumento:
+          type: string
+          maxLength: 20
+        nombres:
+          type: string
+          maxLength: 100
+        apellidos:
+          type: string
+          maxLength: 100
+        telefono:
+          type: string
+          maxLength: 20
+        licencia:
+          type: string
+          maxLength: 50
+
+    Conductor:
+      type: object
+      properties:
+        idConductor:
+          type: integer
+        numeroDocumento:
+          type: string
+        nombres:
+          type: string
+        apellidos:
+          type: string
+        telefono:
+          type: string
+        licencia:
+          type: string
+        estado:
+          type: string
+          enum: [ ACTIVO, INACTIVO ]
+
+    # ============================================
+    # CARRO SCHEMAS
+    # ============================================
+
+    CarroDTO:
+      type: object
+      required:
+        - placa
+      properties:
+        placa:
+          type: string
+          maxLength: 10
+        modelo:
+          type: string
+          maxLength: 50
+        capacidadKg:
+          type: number
+
+    Carro:
+      type: object
+      properties:
+        idCarro:
+          type: integer
+        placa:
+          type: string
+        modelo:
+          type: string
+        capacidadKg:
+          type: number
+        estado:
+          type: string
+          enum: [ ACTIVO, INACTIVO ]
+
+    # ============================================
+    # EMPLEADO SCHEMAS
+    # ============================================
+
+    EmpleadoDTO:
+      type: object
+      required:
+        - numeroDocumento
+        - nombres
+        - apellidos
+      properties:
+        numeroDocumento:
+          type: string
+          maxLength: 20
+        nombres:
+          type: string
+          maxLength: 100
+        apellidos:
+          type: string
+          maxLength: 100
+        telefono:
+          type: string
+        email:
+          type: string
+          format: email
+        cargo:
+          type: string
+        fechaIngreso:
+          type: string
+          format: date
+
+    Empleado:
+      type: object
+      properties:
+        idEmpleado:
+          type: integer
+        numeroDocumento:
+          type: string
+        nombres:
+          type: string
+        apellidos:
+          type: string
+        telefono:
+          type: string
+        email:
+          type: string
+        cargo:
+          type: string
+        fechaIngreso:
+          type: string
+          format: date
+        estado:
+          type: string
+          enum: [ ACTIVO, INACTIVO ]
+
+    # ============================================
+    # ORDEN SCHEMAS
+    # ============================================
+
+    CrearOrdenDTO:
+      type: object
+      required:
+        - idCliente
+        - detalles
+      properties:
+        idCliente:
+          type: integer
+        fechaEntregaProgramada:
+          type: string
+          format: date
+        observaciones:
+          type: string
+        detalles:
+          type: array
+          items:
+            $ref: '#/components/schemas/DetalleOrdenDTO'
+
+    DetalleOrdenDTO:
+      type: object
+      required:
+        - idProducto
+        - cantidad
+      properties:
+        idProducto:
+          type: integer
+        cantidad:
+          type: integer
+          minimum: 1
+
+    CambiarEstadoOrdenDTO:
+      type: object
+      required:
+        - nuevoEstado
+      properties:
+        nuevoEstado:
+          type: string
+          enum: [ PENDIENTE, EN_PREPARACION, LISTA, DESPACHADA, ENTREGADA, CANCELADA ]
+        observaciones:
+          type: string
+
+    CancelarOrdenDTO:
+      type: object
+      required:
+        - motivo
+      properties:
+        motivo:
+          type: string
+
+    OrdenResponse:
+      type: object
+      properties:
+        idOrden:
+          type: integer
+        numeroOrden:
+          type: string
+        cliente:
+          type: string
+        fechaOrden:
+          type: string
+          format: date
+        fechaEntregaProgramada:
+          type: string
+          format: date
+        subtotal:
+          type: number
+          format: decimal
+        descuento:
+          type: number
+          format: decimal
+        total:
+          type: number
+          format: decimal
+        estado:
+          type: string
+          enum: [ PENDIENTE, EN_PREPARACION, LISTA, DESPACHADA, ENTREGADA, CANCELADA ]
+        detalles:
+          type: array
+          items:
+            $ref: '#/components/schemas/DetalleOrdenResponse'
+
+    DetalleOrdenResponse:
+      type: object
+      properties:
+        idDetalle:
+          type: integer
+        producto:
+          type: string
+        cantidad:
+          type: integer
+        precioUnitario:
+          type: number
+          format: decimal
+          description: Precio aplicado según la tarifa del cliente
+        subtotal:
+          type: number
+          format: decimal
+
+    # ============================================
+    # INVENTARIO SCHEMAS
+    # ============================================
+
+    CrearLoteDTO:
+      type: object
+      required:
+        - idProducto
+        - codigoLote
+        - fechaElaboracion
+        - fechaVencimiento
+        - cantidad
+      properties:
+        idProducto:
+          type: integer
+        codigoLote:
+          type: string
+        fechaElaboracion:
+          type: string
+          format: date
+        fechaVencimiento:
+          type: string
+          format: date
+        cantidad:
+          type: integer
+
+    LoteResponse:
+      type: object
+      properties:
+        idLote:
+          type: integer
+        codigoLote:
+          type: string
+        producto:
+          type: string
+        fechaElaboracion:
+          type: string
+          format: date
+        fechaVencimiento:
+          type: string
+          format: date
+        cantidadInicial:
+          type: integer
+        cantidadActual:
+          type: integer
+        estado:
+          type: string
+          enum: [ ACTIVO, AGOTADO, VENCIDO ]
+
+    RegistrarEntradaDTO:
+      type: object
+      required:
+        - idProducto
+        - cantidad
+        - motivo
+      properties:
+        idProducto:
+          type: integer
+        cantidad:
+          type: integer
+        motivo:
+          type: string
+        codigoLote:
+          type: string
+        referencia:
+          type: string
+        observaciones:
+          type: string
+
+    RegistrarSalidaDTO:
+      type: object
+      required:
+        - idProducto
+        - cantidad
+        - motivo
+      properties:
+        idProducto:
+          type: integer
+        cantidad:
+          type: integer
+        motivo:
+          type: string
+        codigoLote:
+          type: string
+        referencia:
+          type: string
+        observaciones:
+          type: string
+
+    MovimientoInventarioResponse:
+      type: object
+      properties:
+        idMovimiento:
+          type: integer
+        producto:
+          type: string
+        tipo:
+          type: string
+          enum: [ ENTRADA, SALIDA, AJUSTE, VENTA, DEVOLUCION ]
+        cantidad:
+          type: integer
+        motivo:
+          type: string
+        fecha:
+          type: string
+          format: date-time
+        lote:
+          type: string
+        usuario:
+          type: string
+
+    # ============================================
+    # REPORTE SCHEMAS
+    # ============================================
+
+    ReporteVentas:
+      type: object
+      properties:
+        fechaInicio:
+          type: string
+          format: date
+        fechaFin:
+          type: string
+          format: date
+        totalVentas:
+          type: number
+        cantidadOrdenes:
+          type: integer
+        promedioVenta:
+          type: number
+
+    ProductoVendido:
+      type: object
+      properties:
+        producto:
+          type: string
+        cantidad:
+          type: integer
+        totalVendido:
+          type: number
+
+    ClienteTop:
+      type: object
+      properties:
+        cliente:
+          type: string
+        cantidadOrdenes:
+          type: integer
+        totalComprado:
+          type: number
+
+    ReporteInventario:
+      type: object
+      properties:
+        fechaGeneracion:
+          type: string
+          format: date-time
+        totalProductos:
+          type: integer
+        valorTotalInventario:
+          type: number
+        productosBajoStock:
+          type: integer
+
+    ReporteMovimientos:
+      type: object
+      properties:
+        fechaInicio:
+          type: string
+          format: date
+        fechaFin:
+          type: string
+          format: date
+        totalEntradas:
+          type: integer
+        totalSalidas:
+          type: integer
+
+    DashboardData:
+      type: object
+      properties:
+        ventasHoy:
+          type: number
+        ordenesPendientes:
+          type: integer
+        productosBajoStock:
+          type: integer
+        clientesNuevosMes:
+          type: integer
+
+    # ============================================
+    # PAGINACIÓN SCHEMAS
+    # ============================================
+
+    PageResponse:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        last:
+          type: boolean
+
+    ProductoPageResponse:
+      allOf:
+        - $ref: '#/components/schemas/PageResponse'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductoResponse'
+
+    ClientePageResponse:
+      allOf:
+        - $ref: '#/components/schemas/PageResponse'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/ClienteResponse'
+
+    OrdenPageResponse:
+      allOf:
+        - $ref: '#/components/schemas/PageResponse'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrdenResponse'
+
+    EmpleadoPageResponse:
+      allOf:
+        - $ref: '#/components/schemas/PageResponse'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/EmpleadoResponse'
+
+    UsuarioPageResponse:
+      allOf:
+        - $ref: '#/components/schemas/PageResponse'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/UsuarioResponse'
+
+    # ============================================
+    # USUARIO SCHEMAS
+    # ============================================
+
+    UsuarioRequest:
+      type: object
+      required:
+        - idEmpleado
+        - username
+        - password
+        - rol
+      properties:
+        idEmpleado:
+          type: integer
+        username:
+          type: string
+        password:
+          type: string
+        rol:
+          type: string
+          enum: [ ADMIN, VENDEDOR, ALMACENISTA, CONDUCTOR ]
+
+    UsuarioResponse:
+      type: object
+      properties:
+        idUsuario:
+          type: integer
+        idEmpleado:
+          type: integer
+        username:
+          type: string
+        rol:
+          type: string
+        ultimoAcceso:
+          type: string
+          format: date-time
+        estado:
+          type: string
+          enum: [ ACTIVO, INACTIVO ]
+
+    # ============================================
+    # DASHBOARD SCHEMAS
+    # ============================================
+
+    DashboardProformaResponse:
+      type: object
+      properties:
+        resumen:
+          $ref: '#/components/schemas/ResumenDTO'
+        ventasMensuales:
+          type: array
+          items:
+            $ref: '#/components/schemas/VentaMensualDTO'
+        ventasPorTipoCliente:
+          type: array
+          items:
+            $ref: '#/components/schemas/VentaPorTipoClienteDTO'
+        topProductos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductoMasVendidoDTO'
+
+    ResumenDTO:
+      type: object
+      properties:
+        ingresos:
+          type: number
+          description: Ingresos totales
+        ventas:
+          type: integer
+          description: Cantidad de ventas realizadas
+        ticketPromedio:
+          type: number
+          description: Ticket promedio de venta
+        productosUnicos:
+          type: integer
+          description: Cantidad de productos únicos vendidos
+
+    VentaMensualDTO:
+      type: object
+      properties:
+        mes:
+          type: string
+          description: Mes en formato YYYY-MM
+        ventas:
+          type: integer
+          description: Cantidad de ventas en el mes
+        ingresos:
+          type: number
+          description: Ingresos totales del mes
+
+    VentaPorTipoClienteDTO:
+      type: object
+      properties:
+        tipo:
+          type: string
+          description: Tipo de cliente (0D, 5D, 10D, ES, JM, CR)
+        ventas:
+          type: integer
+          description: Cantidad de ventas a este tipo de cliente
+        ingresos:
+          type: number
+          description: Ingresos totales de este tipo de cliente
+
+    ProductoMasVendidoDTO:
+      type: object
+      properties:
+        producto:
+          type: string
+          description: Nombre del producto
+        unidades:
+          type: integer
+          description: Cantidad de unidades vendidas
+        ingresos:
+          type: number
+          description: Ingresos totales del producto
+
+    # ============================================
+    # ERROR SCHEMA
+    # ============================================
+
+    Error:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: [ ]

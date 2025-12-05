@@ -21,7 +21,7 @@
     </mat-form-field>
 
     <!-- Tabla -->
-    <table mat-table [dataSource]="paginatedData()" matSort (matSortChange)="onSort($event)" class="ordenes-table">
+    <table mat-table [dataSource]="sortedData()" matSort (matSortChange)="onSort($event)" class="ordenes-table">
 
       <!-- Columna Número de Orden -->
       <ng-container matColumnDef="numeroOrden">
@@ -99,7 +99,7 @@
     </mat-paginator>
 
     <!-- Mensaje cuando no hay datos -->
-    @if (filteredData().length === 0) {
+    @if (ordenes().length === 0) {
     <div class="no-data">
       <mat-icon>receipt_long</mat-icon>
       <p>No se encontraron órdenes</p>

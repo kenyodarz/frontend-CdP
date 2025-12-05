@@ -15,6 +15,8 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 
 import { OrdenService } from '../../../core/services/orden.service';
 import { OrdenDespachoSimple } from '../../../core/models/orden/ordenDespachoSimple';
+import { OrdenDespacho } from '../../../core/models/orden/ordenDespacho';
+import { PageResponse } from '../../../core/models/common/page-response';
 import { Loading } from '../../../shared/components/loading/loading';
 import { ErrorMessage } from '../../../shared/components/error-message/error-message';
 
@@ -47,15 +49,15 @@ export class ListaOrdenes implements OnInit {
   // Estado
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
-  protected readonly ordenes = signal<OrdenDespachoSimple[]>([]);
+  protected readonly ordenesPage = signal<PageResponse<OrdenDespachoSimple> | null>(null);
   protected readonly searchTerm = signal('');
 
-  // Paginación
+  // Paginación (servidor)
   protected readonly pageSize = signal(10);
   protected readonly pageIndex = signal(0);
   protected readonly pageSizeOptions = [5, 10, 25, 50];
 
-  // Ordenamiento
+  // Ordenamiento (cliente)
   protected readonly sortColumn = signal<string>('fechaOrden');
   protected readonly sortDirection = signal<'asc' | 'desc'>('desc');
 
@@ -70,23 +72,20 @@ export class ListaOrdenes implements OnInit {
     'acciones'
   ];
 
-  // Datos filtrados y ordenados
-  protected readonly filteredData = computed(() => {
+  // Datos para la tabla
+  protected readonly ordenes = computed(() => {
+    return this.ordenesPage()?.content || [];
+  });
+
+  // Datos ordenados
+  protected readonly sortedData = computed(() => {
     let data = this.ordenes();
-
-    // Filtrar por búsqueda
-    const search = this.searchTerm().toLowerCase().trim();
-    if (search) {
-      data = data.filter(o =>
-        o.numeroOrden?.toString().includes(search) ||
-        o.clienteNombre.toLowerCase().includes(search)
-      );
-    }
-
-    // Ordenar
     const column = this.sortColumn();
     const direction = this.sortDirection();
-    data = [...data].sort((a, b) => {
+
+    if (!column) return data;
+
+    return [...data].sort((a, b) => {
       let aValue: any = a[column as keyof OrdenDespachoSimple];
       let bValue: any = b[column as keyof OrdenDespachoSimple];
 
@@ -96,19 +95,9 @@ export class ListaOrdenes implements OnInit {
       const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
       return direction === 'asc' ? comparison : -comparison;
     });
-
-    return data;
   });
 
-  // Datos paginados
-  protected readonly paginatedData = computed(() => {
-    const data = this.filteredData();
-    const startIndex = this.pageIndex() * this.pageSize();
-    const endIndex = startIndex + this.pageSize();
-    return data.slice(startIndex, endIndex);
-  });
-
-  protected readonly totalItems = computed(() => this.filteredData().length);
+  protected readonly totalItems = computed(() => this.ordenesPage()?.totalElements || 0);
 
   ngOnInit(): void {
     this.cargarOrdenes();
@@ -118,9 +107,9 @@ export class ListaOrdenes implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.ordenService.obtenerTodas().subscribe({
-      next: (ordenes) => {
-        this.ordenes.set(ordenes);
+    this.ordenService.obtenerTodas(this.pageIndex(), this.pageSize()).subscribe({
+      next: (page) => {
+        this.ordenesPage.set(page);
         this.loading.set(false);
       },
       error: (err) => {
@@ -145,6 +134,7 @@ export class ListaOrdenes implements OnInit {
   protected onPageChange(event: PageEvent): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
+    this.cargarOrdenes();
   }
 
   protected verDetalle(orden: OrdenDespachoSimple): void {

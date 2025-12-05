@@ -21,7 +21,7 @@
     </mat-form-field>
 
     <!-- Tabla -->
-    <table mat-table [dataSource]="paginatedData()" matSort (matSortChange)="onSort($event)" class="clientes-table">
+    <table mat-table [dataSource]="sortedData()" matSort (matSortChange)="onSort($event)" class="clientes-table">
 
       <!-- Columna Código -->
       <ng-container matColumnDef="codigo">
@@ -123,7 +123,7 @@
     </mat-paginator>
 
     <!-- Mensaje cuando no hay datos -->
-    @if (filteredData().length === 0) {
+    @if (clientes().length === 0) {
     <div class="no-data">
       <mat-icon>people</mat-icon>
       <p>No se encontraron clientes</p>

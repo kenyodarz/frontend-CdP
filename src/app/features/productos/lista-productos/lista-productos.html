@@ -13,15 +13,8 @@
   <app-error-message [title]="'Error al cargar productos'" [message]="error()!" (retry)="onRetry()" />
   } @else {
   <div class="table-container">
-    <!-- Barra de búsqueda -->
-    <mat-form-field class="search-field" appearance="outline">
-      <mat-label>Buscar productos</mat-label>
-      <input matInput placeholder="Nombre o código" (input)="onSearch($event)" [value]="searchTerm()">
-      <mat-icon matPrefix>search</mat-icon>
-    </mat-form-field>
-
     <!-- Tabla -->
-    <table mat-table [dataSource]="paginatedData()" matSort (matSortChange)="onSort($event)" class="productos-table">
+    <table mat-table [dataSource]="sortedData()" matSort (matSortChange)="onSort($event)" class="productos-table">
 
       <!-- Columna Código -->
       <ng-container matColumnDef="codigo">
@@ -102,13 +95,10 @@
     </mat-paginator>
 
     <!-- Mensaje cuando no hay datos -->
-    @if (filteredData().length === 0) {
+    @if (productos().length === 0) {
     <div class="no-data">
       <mat-icon>inventory_2</mat-icon>
       <p>No se encontraron productos</p>
-      @if (searchTerm()) {
-      <p class="hint">Intenta con otros términos de búsqueda</p>
-      }
     </div>
     }
   </div>
