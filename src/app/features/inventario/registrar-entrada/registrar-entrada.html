@@ -82,7 +82,6 @@
         }
       </div>
 
-      @if (mostrarLotes()) {
       <div class="field">
         <p-floatlabel>
           <p-autocomplete inputId="codigoLote" formControlName="codigoLote" [suggestions]="lotesFiltrados()"
@@ -91,7 +90,7 @@
             <ng-template let-lote pTemplate="item">
               <div class="lote-item">
                 <strong>{{ lote.codigoLote }}</strong>
-                <span class="lote-disponible">Disponible: {{ lote.cantidadActual }}</span>
+                <span class="lote-fecha">Vence: {{ lote.fechaVencimiento || 'N/A' }}</span>
               </div>
             </ng-template>
           </p-autocomplete>
@@ -108,7 +107,6 @@
             size="small" (onClick)="toggleFormLote()" type="button" />
         </div>
       </div>
-      }
     </div>
 
     @if (mostrarFormLote()) {

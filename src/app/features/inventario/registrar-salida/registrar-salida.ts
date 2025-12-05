@@ -123,9 +123,9 @@ export class RegistrarSalida implements OnInit {
   }
 
   private cargarLotesProducto(idProducto: number): void {
-    this.inventarioService.obtenerLotesPorProducto(idProducto).subscribe({
+    this.inventarioService.obtenerTodosLotes().subscribe({
       next: (lotes: Lote[]) => {
-        // Filtrar solo lotes activos
+        // Filtrar solo lotes activos (ya no filtramos por producto)
         const lotesDisponibles = lotes.filter(l => l.estado === 'ACTIVO');
         this.lotes.set(lotesDisponibles);
       },

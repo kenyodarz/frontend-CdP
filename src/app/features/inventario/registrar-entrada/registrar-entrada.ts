@@ -124,6 +124,11 @@ export class RegistrarEntrada implements OnInit {
   ngOnInit(): void {
     this.cargarProductos();
     this.cargarLotes();
+
+    // Los lotes siempre están visibles ya que son independientes de productos
+    this.mostrarLotes.set(true);
+    this.entradaForm.get('codigoLote')?.setValidators(Validators.required);
+    this.entradaForm.get('codigoLote')?.updateValueAndValidity();
   }
 
   protected cargarProductos(): void {
@@ -161,11 +166,7 @@ export class RegistrarEntrada implements OnInit {
   protected onProductoSeleccionado(event: any): void {
     const producto = event.value as Producto;
     this.productoSeleccionado.set(producto);
-
-    // Todos los productos requieren lote, siempre mostrar sección de lotes
-    this.mostrarLotes.set(true);
-    this.entradaForm.get('codigoLote')?.setValidators(Validators.required);
-    this.entradaForm.get('codigoLote')?.updateValueAndValidity();
+    // Los lotes ya están visibles desde ngOnInit
   }
 
   private cargarLotes(): void {

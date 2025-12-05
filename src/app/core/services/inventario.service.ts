@@ -22,10 +22,6 @@ export class InventarioService {
     return this.http.post<Lote>(this.apiUrlLotes, lote);
   }
 
-  obtenerLotesPorProducto(idProducto: number): Observable<Lote[]> {
-    return this.http.get<Lote[]>(`${this.apiUrlLotes}/producto/${idProducto}`);
-  }
-
   obtenerTodosLotes(): Observable<Lote[]> {
     return this.http.get<Lote[]>(this.apiUrlLotes);
   }
@@ -33,10 +29,6 @@ export class InventarioService {
   obtenerProximosAVencer(dias: number = 3): Observable<Lote[]> {
     const params = new HttpParams().set('dias', dias.toString());
     return this.http.get<Lote[]>(`${this.apiUrlLotes}/proximos-vencer`, { params });
-  }
-
-  obtenerVencidos(): Observable<Lote[]> {
-    return this.http.get<Lote[]>(`${this.apiUrlLotes}/vencidos`);
   }
 
   // ========== MOVIMIENTOS ==========
