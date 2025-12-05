@@ -30,7 +30,7 @@
     </p-card>
   </form>
 
-  <p-card header="Productos" styleClass="mt-4">
+  <p-card header="Productos" styleClass="mt-6">
     <!-- Selector de productos -->
     <div class="producto-selector">
       <div class="field producto-field">
@@ -58,7 +58,7 @@
 
     <!-- Tabla de productos agregados -->
     @if (productosOrden().length > 0) {
-    <p-table [value]="productosOrden()" styleClass="p-datatable-sm mt-3">
+    <p-table [value]="productosOrden()" styleClass="p-datatable-sm mt-4">
       <ng-template pTemplate="header">
         <tr>
           <th>Producto</th>
@@ -99,7 +99,7 @@
     }
   </p-card>
 
-  <div class="form-actions mt-4">
+  <div class="form-actions mt-6">
     <p-button label="Cancelar" icon="pi pi-times" [text]="true" (onClick)="cancelar()" />
     <p-button label="Crear Orden" icon="pi pi-save" (onClick)="onSubmit()" [loading]="loading()" />
   </div>

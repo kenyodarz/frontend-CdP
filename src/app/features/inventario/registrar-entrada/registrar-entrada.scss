@@ -12,61 +12,6 @@
       font-size: 1.75rem;
     }
 
-    .subtitle {
-      color: var(--text-color-secondary);
-      margin: 0;
-    }
-  }
-
-  .add-product-section {
-    margin-bottom: 2rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--surface-border);
-
-    h3 {
-      margin: 0 0 1.5rem 0;
-      color: var(--text-color);
-      font-size: 1.25rem;
-    }
-  }
-
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .form-grid-lote {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-
-    .p-error,
-    .p-info {
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    .p-info {
-      color: var(--primary-color);
-    }
-  }
-
-  .lote-actions {
-    margin-top: 0.5rem;
-  }
-
-  .nuevo-lote-section {
     background: var(--surface-50);
     border: 1px solid var(--primary-200);
     border-radius: var(--border-radius);

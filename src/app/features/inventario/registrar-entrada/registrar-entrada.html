@@ -9,12 +9,50 @@
 
   <div class="header">
     <h2>Registrar Entrada de Inventario</h2>
-    <p class="subtitle">Agrega productos a la lista y regístralos todos de una vez</p>
+    <p class="subtitle">Crea un documento de recepción con múltiples productos</p>
   </div>
 
   <p-card>
+    <!-- Datos del Documento -->
+    <div class="document-section">
+      <h3><i class="pi pi-file"></i> Datos del Documento</h3>
+      <form [formGroup]="documentoForm">
+        <div class="form-grid">
+          <div class="field">
+            <p-floatlabel>
+              <input pInputText type="date" id="fechaElaboracion" formControlName="fechaElaboracion" class="w-full" />
+              <label for="fechaElaboracion">Fecha de Elaboración *</label>
+            </p-floatlabel>
+            @if (documentoForm.get('fechaElaboracion')?.invalid && documentoForm.get('fechaElaboracion')?.touched) {
+            <small class="p-error">La fecha de elaboración es requerida</small>
+            }
+          </div>
+
+          <div class="field">
+            <p-floatlabel>
+              <input pInputText id="motivoDoc" formControlName="motivo" class="w-full"
+                placeholder="Ej: Producción diaria" />
+              <label for="motivoDoc">Motivo *</label>
+            </p-floatlabel>
+            @if (documentoForm.get('motivo')?.invalid && documentoForm.get('motivo')?.touched) {
+            <small class="p-error">El motivo es requerido</small>
+            }
+          </div>
+
+          <div class="field field-full">
+            <p-floatlabel>
+              <textarea pInputText id="observaciones" formControlName="observaciones" class="w-full" rows="2"
+                placeholder="Observaciones generales del documento (opcional)"></textarea>
+              <label for="observaciones">Observaciones</label>
+            </p-floatlabel>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Agregar Productos -->
     <div class="add-product-section">
-      <h3>Agregar Producto</h3>
+      <h3><i class="pi pi-plus-circle"></i> Agregar Productos</h3>
 
       <form [formGroup]="entradaForm">
         <div class="form-grid">
@@ -49,17 +87,6 @@
             </p-floatlabel>
             @if (entradaForm.get('cantidad')?.invalid && entradaForm.get('cantidad')?.touched) {
             <small class="p-error">La cantidad debe ser mayor a 0</small>
-            }
-          </div>
-
-          <div class="field">
-            <p-floatlabel>
-              <input pInputText id="motivo" formControlName="motivo" class="w-full"
-                placeholder="Ej: Compra, Producción, Ajuste" />
-              <label for="motivo">Motivo *</label>
-            </p-floatlabel>
-            @if (entradaForm.get('motivo')?.invalid && entradaForm.get('motivo')?.touched) {
-            <small class="p-error">El motivo es requerido</small>
             }
           </div>
 
@@ -103,25 +130,26 @@
                   <label for="codigoLoteNuevo">Código de Lote *</label>
                 </p-floatlabel>
                 @if (loteForm.get('codigoLote')?.invalid && loteForm.get('codigoLote')?.touched) {
-                <small class="p-error">El código es requerido</small>
+                <small class="p-error">El código de lote es requerido</small>
                 }
               </div>
 
               <div class="field">
                 <p-floatlabel>
-                  <input pInputText type="date" id="fechaElaboracion" formControlName="fechaElaboracion"
+                  <input pInputText type="date" id="fechaElaboracionLote" formControlName="fechaElaboracion"
                     class="w-full" />
-                  <label for="fechaElaboracion">Fecha de Elaboración *</label>
+                  <label for="fechaElaboracionLote">Fecha de Elaboración *</label>
                 </p-floatlabel>
                 @if (loteForm.get('fechaElaboracion')?.invalid && loteForm.get('fechaElaboracion')?.touched) {
-                <small class="p-error">La fecha es requerida</small>
+                <small class="p-error">La fecha de elaboración es requerida</small>
                 }
               </div>
 
               <div class="field">
                 <p-floatlabel>
-                  <p-inputnumber inputId="cantidadLote" formControlName="cantidad" [min]="1" styleClass="w-full" />
-                  <label for="cantidadLote">Cantidad *</label>
+                  <p-inputnumber inputId="cantidadLote" formControlName="cantidad" [min]="1" [showButtons]="true"
+                    styleClass="w-full" />
+                  <label for="cantidadLote">Cantidad Inicial *</label>
                 </p-floatlabel>
                 @if (loteForm.get('cantidad')?.invalid && loteForm.get('cantidad')?.touched) {
                 <small class="p-error">La cantidad es requerida</small>
@@ -137,10 +165,6 @@
               </div>
             </div>
           </form>
-          <small class="p-info">
-            <i class="pi pi-info-circle"></i>
-            El lote se creará automáticamente al agregar el producto
-          </small>
         </div>
         }
 
@@ -153,7 +177,7 @@
 
     @if (productosEntrada().length > 0) {
     <div class="productos-lista-section">
-      <h3>Productos a Registrar ({{ productosEntrada().length }})</h3>
+      <h3>Productos en el Documento ({{ productosEntrada().length }})</h3>
 
       <p-table [value]="productosEntrada()" styleClass="p-datatable-sm">
         <ng-template pTemplate="header">
@@ -161,7 +185,6 @@
             <th>Producto</th>
             <th>Cantidad</th>
             <th>Lote</th>
-            <th>Motivo</th>
             <th style="width: 80px">Acciones</th>
           </tr>
         </ng-template>
@@ -188,7 +211,6 @@
               <span class="text-muted">N/A</span>
               }
             </td>
-            <td>{{ entrada.motivo }}</td>
             <td>
               <p-button icon="pi pi-trash" severity="danger" [outlined]="true" size="small"
                 (onClick)="eliminarProducto(i)" />
@@ -200,8 +222,8 @@
       <div class="form-actions">
         <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [outlined]="true" (onClick)="onCancel()"
           type="button" />
-        <p-button [label]="'Registrar Todas (' + productosEntrada().length + ')'" icon="pi pi-check" severity="success"
-          [disabled]="loading()" (onClick)="registrarTodas()" type="button" />
+        <p-button [label]="'Registrar Documento (' + productosEntrada().length + ' productos)'" icon="pi pi-check"
+          severity="success" [disabled]="loading()" (onClick)="registrarDocumento()" type="button" />
       </div>
     </div>
     }
@@ -209,7 +231,7 @@
     @if (productosEntrada().length === 0) {
     <div class="empty-state">
       <i class="pi pi-inbox"></i>
-      <p>No hay productos en la lista</p>
+      <p>No hay productos en el documento</p>
       <small>Agrega productos usando el formulario de arriba</small>
     </div>
     }

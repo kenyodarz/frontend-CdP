@@ -8,7 +8,7 @@ import { MenuItem } from 'primeng/api';
   imports: [RouterOutlet, RouterLink, RouterLinkActive, TabsModule],
   template: `
     <div class="reportes-container">
-      <h1 class="text-3xl font-bold mb-4">Reportes</h1>
+      <h1 class="text-3xl font-bold mb-6">Reportes</h1>
       
       <p-tabs value="0">
         <p-tablist>
@@ -18,7 +18,7 @@ import { MenuItem } from 'primeng/api';
         </p-tablist>
       </p-tabs>
 
-      <div class="mt-4">
+      <div class="mt-6">
         <router-outlet />
       </div>
     </div>
