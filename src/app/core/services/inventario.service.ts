@@ -1,13 +1,13 @@
-import {inject, Injectable} from "@angular/core";
-import {HttpClient, HttpParams} from "@angular/common/http";
-import {environment} from "../../../environments/environment";
-import {Observable} from "rxjs";
-import {CrearLoteDTO} from '../models/inventario/crearLoteDTO';
-import {Lote} from '../models/inventario/lote';
-import {RegistrarEntradaDTO} from '../models/inventario/registrarEntradaDTO';
-import {MovimientoInventario} from '../models/inventario/movimientoInventario';
-import {RegistrarSalidaDTO} from '../models/inventario/registrarSalidaDTO';
-import {TipoMovimiento} from '../models/inventario/tipoMovimiento';
+import { inject, Injectable } from "@angular/core";
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { environment } from "../../../environments/environment";
+import { Observable } from "rxjs";
+import { CrearLoteDTO } from '../models/inventario/crearLoteDTO';
+import { Lote } from '../models/inventario/lote';
+import { RegistrarEntradaDTO } from '../models/inventario/registrarEntradaDTO';
+import { MovimientoInventario } from '../models/inventario/movimientoInventario';
+import { RegistrarSalidaDTO } from '../models/inventario/registrarSalidaDTO';
+import { TipoMovimiento } from '../models/inventario/tipoMovimiento';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +28,7 @@ export class InventarioService {
 
   obtenerProximosAVencer(dias: number = 3): Observable<Lote[]> {
     const params = new HttpParams().set('dias', dias.toString());
-    return this.http.get<Lote[]>(`${this.apiUrlLotes}/proximos-vencer`, {params});
+    return this.http.get<Lote[]>(`${this.apiUrlLotes}/proximos-vencer`, { params });
   }
 
   obtenerVencidos(): Observable<Lote[]> {
@@ -52,10 +52,15 @@ export class InventarioService {
     return this.http.get<MovimientoInventario[]>(`${this.apiUrlMovimientos}/fecha/${fecha}`);
   }
 
-  obtenerMovimientos(tipo?: TipoMovimiento, fecha?: string): Observable<MovimientoInventario[]> {
-    let params = new HttpParams();
-    if (tipo) params = params.set('tipo', tipo);
-    if (fecha) params = params.set('fecha', fecha);
-    return this.http.get<MovimientoInventario[]>(this.apiUrlMovimientos, {params});
+  obtenerMovimientos(fechaInicio?: string, fechaFin?: string): Observable<MovimientoInventario[]> {
+    // Default to last 30 days if not specified
+    const fin = fechaFin || new Date().toISOString().split('T')[0];
+    const inicio = fechaInicio || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    const params = new HttpParams()
+      .set('fechaInicio', inicio)
+      .set('fechaFin', fin);
+
+    return this.http.get<MovimientoInventario[]>(this.apiUrlMovimientos, { params });
   }
 }
