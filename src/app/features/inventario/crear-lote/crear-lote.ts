@@ -51,11 +51,10 @@ export class CrearLote implements OnInit {
 
   private initForm(): void {
     this.loteForm = this.fb.group({
-      idProducto: [null, Validators.required],
       codigoLote: ['', Validators.required],
-      cantidad: [0, [Validators.required, Validators.min(1)]],
       fechaElaboracion: [new Date(), Validators.required],
-      fechaVencimiento: [null]
+      fechaVencimiento: [null],
+      observaciones: ['']
     });
   }
 
@@ -84,28 +83,7 @@ export class CrearLote implements OnInit {
   }
 
   private setupFormListeners(): void {
-    // Calcular fecha de vencimiento automáticamente
-    this.loteForm.get('idProducto')?.valueChanges.subscribe(idProducto => {
-      if (idProducto) {
-        const producto = this.productos().find(p => p.idProducto === idProducto);
-        if (producto && producto.diasVidaUtil && producto.diasVidaUtil > 0) {
-          const fechaElaboracion = this.loteForm.get('fechaElaboracion')?.value;
-          if (fechaElaboracion) {
-            this.calcularFechaVencimiento(fechaElaboracion, producto.diasVidaUtil);
-          }
-        }
-      }
-    });
-
-    this.loteForm.get('fechaElaboracion')?.valueChanges.subscribe(fechaElaboracion => {
-      const idProducto = this.loteForm.get('idProducto')?.value;
-      if (idProducto && fechaElaboracion) {
-        const producto = this.productos().find(p => p.idProducto === idProducto);
-        if (producto && producto.diasVidaUtil && producto.diasVidaUtil > 0) {
-          this.calcularFechaVencimiento(fechaElaboracion, producto.diasVidaUtil);
-        }
-      }
-    });
+    // Ya no se calcula automáticamente - el usuario debe ingresar las fechas manualmente
   }
 
   private calcularFechaVencimiento(fechaElaboracion: Date, diasVidaUtil: number): void {
@@ -122,11 +100,10 @@ export class CrearLote implements OnInit {
 
     const formValue = this.loteForm.value;
     const loteDTO: CrearLoteDTO = {
-      idProducto: formValue.idProducto,
       codigoLote: formValue.codigoLote,
-      cantidad: formValue.cantidad,
       fechaElaboracion: this.formatDate(formValue.fechaElaboracion),
-      fechaVencimiento: formValue.fechaVencimiento ? this.formatDate(formValue.fechaVencimiento) : undefined
+      fechaVencimiento: formValue.fechaVencimiento ? this.formatDate(formValue.fechaVencimiento) : undefined,
+      observaciones: formValue.observaciones
     };
 
     this.loading.set(true);

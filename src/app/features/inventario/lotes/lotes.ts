@@ -69,9 +69,9 @@ export class Lotes implements OnInit {
   }
 
   protected getEstadoLote(lote: Lote): 'vencido' | 'proximo-vencer' | 'activo' | 'agotado' {
-    if (lote.cantidadActual === 0) return 'agotado';
-    if (lote.estaVencido) return 'vencido';
-    if (lote.estaProximoAVencer) return 'proximo-vencer';
+    // Ahora solo verificamos el estado del lote
+    if (lote.estado === 'VENCIDO') return 'vencido';
+    if (lote.estado === 'ANULADO') return 'agotado';
     return 'activo';
   }
 

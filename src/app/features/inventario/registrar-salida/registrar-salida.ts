@@ -125,10 +125,8 @@ export class RegistrarSalida implements OnInit {
   private cargarLotesProducto(idProducto: number): void {
     this.inventarioService.obtenerLotesPorProducto(idProducto).subscribe({
       next: (lotes: Lote[]) => {
-        // Filtrar solo lotes activos con cantidad disponible
-        const lotesDisponibles = lotes.filter(l =>
-          l.estado === 'ACTIVO' && l.cantidadActual > 0
-        );
+        // Filtrar solo lotes activos
+        const lotesDisponibles = lotes.filter(l => l.estado === 'ACTIVO');
         this.lotes.set(lotesDisponibles);
       },
       error: (err: any) => {
@@ -215,7 +213,7 @@ export class RegistrarSalida implements OnInit {
   }
 
   protected getLoteDisplay(lote: Lote): string {
-    return `${lote.codigoLote} (Disponible: ${lote.cantidadActual})`;
+    return lote.codigoLote;
   }
 
   protected getStockClass(): string {

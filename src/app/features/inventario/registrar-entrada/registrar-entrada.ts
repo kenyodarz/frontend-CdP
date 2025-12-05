@@ -97,7 +97,6 @@ export class RegistrarEntrada implements OnInit {
       codigoLote: ['', Validators.required],
       fechaElaboracion: [new Date().toISOString().split('T')[0], Validators.required],
       fechaVencimiento: [null],
-      cantidad: [null, [Validators.required, Validators.min(1)]]
     });
 
     // Calcular fecha de vencimiento automáticamente cuando cambia fecha de elaboración
@@ -176,8 +175,7 @@ export class RegistrarEntrada implements OnInit {
     this.inventarioService.obtenerTodosLotes().subscribe({
       next: (lotes: Lote[]) => {
         // Filtrar solo lotes activos con cantidad disponible
-        const lotesDisponibles = lotes.filter(l =>
-          l.estado === 'ACTIVO' && l.cantidadActual > 0
+        const lotesDisponibles = lotes.filter(l => l.estado === 'ACTIVO'
         );
         this.lotes.set(lotesDisponibles);
       },
@@ -205,12 +203,6 @@ export class RegistrarEntrada implements OnInit {
         const fechaElaboracion = this.loteForm.value.fechaElaboracion;
         const codigoSugerido = this.generarCodigoLote(producto, fechaElaboracion);
         this.loteForm.patchValue({ codigoLote: codigoSugerido });
-      }
-
-      // Pre-llenar cantidad del lote con la cantidad del formulario
-      const cantidadEntrada = this.entradaForm.value.cantidad;
-      if (cantidadEntrada) {
-        this.loteForm.patchValue({ cantidad: cantidadEntrada });
       }
 
       // Fecha de elaboración del documento
@@ -276,8 +268,8 @@ export class RegistrarEntrada implements OnInit {
   private extraerConsonantes(texto: string, cantidad: number): string {
     const consonantes = texto
       .toUpperCase()
-      .replace(/[AEIOUÁÉÍÓÚ\s]/g, '') // Eliminar vocales y espacios
-      .replace(/[^A-Z]/g, '');         // Solo letras
+      .replaceAll(/[AEIOUÁÉÍÓÚ\s]/g, '') // Eliminar vocales y espacios
+      .replaceAll(/[^A-Z]/g, '');         // Solo letras
 
     return consonantes.substring(0, cantidad).padEnd(cantidad, 'X');
   }
@@ -374,10 +366,8 @@ export class RegistrarEntrada implements OnInit {
       // Crear lote primero (llamada HTTP)
       this.loading.set(true);
       const nuevoLote: CrearLoteDTO = {
-        idProducto: producto.idProducto!,
         codigoLote: this.loteForm.value.codigoLote,
         fechaElaboracion: this.loteForm.value.fechaElaboracion,
-        cantidad: this.loteForm.value.cantidad,
         fechaVencimiento: this.loteForm.value.fechaVencimiento
       };
 
@@ -533,13 +523,5 @@ export class RegistrarEntrada implements OnInit {
 
   protected onCancel(): void {
     this.ref.close(null);
-  }
-
-  protected getProductoDisplay(producto: Producto): string {
-    return producto ? `${producto.codigo} - ${producto.nombre}` : '';
-  }
-
-  protected getLoteDisplay(lote: Lote): string {
-    return `${lote.codigoLote} (Disponible: ${lote.cantidadActual})`;
   }
 }
