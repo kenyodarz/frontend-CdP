@@ -1,17 +1,14 @@
 <div class="crear-lote-container">
   @if (loading()) {
-  <app-loading message="Creando lote..." />
+  <app-loading message="Cargando productos..." />
   } @else {
-  <div class="header">
-    <h2>Nuevo Lote de Inventario</h2>
-    <p-button icon="pi pi-times" [text]="true" [rounded]="true" (click)="cancelar()" />
+  <div class="form-header">
+    <h2>Crear Nuevo Lote</h2>
+    <p-button icon="pi pi-times" [rounded]="true" [text]="true" (onClick)="cancelar()" pTooltip="Cerrar" />
   </div>
 
   <form [formGroup]="loteForm" (ngSubmit)="onSubmit()">
-    <p-card>
-      <ng-template pTemplate="header">
-        <span class="card-title">Información del Lote</span>
-      </ng-template>
+    <p-card header="Información del Lote">
       <div class="form-grid">
         <!-- Producto -->
         <div class="field full-width">

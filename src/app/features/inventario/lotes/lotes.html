@@ -1,98 +1,91 @@
 <div class="lotes-container">
-  <div class="header">
-    <h2>Lotes de Inventario</h2>
-    <p-button label="Nuevo Lote" icon="pi pi-plus" (click)="nuevoLote()" />
-  </div>
-
   @if (loading()) {
   <app-loading message="Cargando lotes..." />
   } @else if (error()) {
-  <app-error-message [title]="'Error al cargar lotes'" [message]="error()!" (retry)="onRetry()" />
+  <app-error-message [title]="'Error'" [message]="error()!" (retry)="onRetry()" />
   } @else {
-  <div class="table-container">
-    <p-table [value]="lotes()" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 25, 50]"
-      [globalFilterFields]="['codigoLote', 'productoNombre']" [tableStyle]="{'min-width': '60rem'}"
-      sortField="fechaElaboracion" [sortOrder]="-1" #dt>
+  <p-table [value]="lotes()" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 25, 50]"
+    [globalFilterFields]="['codigoLote', 'productoNombre']" [tableStyle]="{'min-width': '60rem'}"
+    sortField="fechaElaboracion" [sortOrder]="-1" #dt>
 
-      <ng-template pTemplate="caption">
-        <div class="table-header">
-          <p-iconfield iconPosition="left">
-            <p-inputicon styleClass="pi pi-search" />
-            <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-              placeholder="Buscar lotes..." />
-          </p-iconfield>
-        </div>
-      </ng-template>
+    <ng-template pTemplate="caption">
+      <div class="table-header">
+        <p-iconfield iconPosition="left">
+          <p-inputicon styleClass="pi pi-search" />
+          <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Buscar lotes..." />
+        </p-iconfield>
+      </div>
+    </ng-template>
 
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="codigoLote">
-            Código Lote <p-sortIcon field="codigoLote" />
-          </th>
-          <th pSortableColumn="productoNombre">
-            Producto <p-sortIcon field="productoNombre" />
-          </th>
-          <th pSortableColumn="cantidadInicial">
-            Cant. Inicial <p-sortIcon field="cantidadInicial" />
-          </th>
-          <th pSortableColumn="cantidadActual">
-            Cant. Actual <p-sortIcon field="cantidadActual" />
-          </th>
-          <th pSortableColumn="fechaElaboracion">
-            F. Elaboración <p-sortIcon field="fechaElaboracion" />
-          </th>
-          <th pSortableColumn="fechaVencimiento">
-            F. Vencimiento <p-sortIcon field="fechaVencimiento" />
-          </th>
-          <th pSortableColumn="estado">
-            Estado <p-sortIcon field="estado" />
-          </th>
-          <th>Acciones</th>
-        </tr>
-      </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="codigoLote">
+          Código Lote <p-sortIcon field="codigoLote" />
+        </th>
+        <th pSortableColumn="productoNombre">
+          Producto <p-sortIcon field="productoNombre" />
+        </th>
+        <th pSortableColumn="cantidadInicial">
+          Cant. Inicial <p-sortIcon field="cantidadInicial" />
+        </th>
+        <th pSortableColumn="cantidadActual">
+          Cant. Actual <p-sortIcon field="cantidadActual" />
+        </th>
+        <th pSortableColumn="fechaElaboracion">
+          F. Elaboración <p-sortIcon field="fechaElaboracion" />
+        </th>
+        <th pSortableColumn="fechaVencimiento">
+          F. Vencimiento <p-sortIcon field="fechaVencimiento" />
+        </th>
+        <th pSortableColumn="estado">
+          Estado <p-sortIcon field="estado" />
+        </th>
+        <th>Acciones</th>
+      </tr>
+    </ng-template>
 
-      <ng-template pTemplate="body" let-lote>
-        <tr>
-          <td><strong>{{ lote.codigoLote }}</strong></td>
-          <td>{{ lote.productoNombre }}</td>
-          <td>{{ lote.cantidadInicial }}</td>
-          <td>
-            <p-tag [value]="lote.cantidadActual.toString()"
-              [severity]="lote.cantidadActual === 0 ? 'danger' : 'secondary'" />
-          </td>
-          <td>{{ lote.fechaElaboracion | date:'short' }}</td>
-          <td>
-            @if (lote.fechaVencimiento) {
-            <div class="fecha-vencimiento">
-              {{ lote.fechaVencimiento | date:'short' }}
-              @if (lote.diasParaVencer !== undefined) {
-              <span class="dias-restantes" [class.warning]="lote.estaProximoAVencer">
-                ({{ lote.diasParaVencer }} días)
-              </span>
-              }
-            </div>
-            } @else {
-            <span class="sin-vencimiento">Sin vencimiento</span>
+    <ng-template pTemplate="body" let-lote>
+      <tr>
+        <td><strong>{{ lote.codigoLote }}</strong></td>
+        <td>{{ lote.productoNombre }}</td>
+        <td>{{ lote.cantidadInicial }}</td>
+        <td>
+          <p-tag [value]="lote.cantidadActual.toString()"
+            [severity]="lote.cantidadActual === 0 ? 'danger' : 'secondary'" />
+        </td>
+        <td>{{ lote.fechaElaboracion | date:'short' }}</td>
+        <td>
+          @if (lote.fechaVencimiento) {
+          <div class="fecha-vencimiento">
+            {{ lote.fechaVencimiento | date:'short' }}
+            @if (lote.diasParaVencer !== undefined) {
+            <span class="dias-restantes" [class.warning]="lote.estaProximoAVencer">
+              ({{ lote.diasParaVencer }} días)
+            </span>
             }
-          </td>
-          <td>
-            <p-tag [value]="getEstadoLabel(getEstadoLote(lote))" [severity]="getEstadoSeverity(getEstadoLote(lote))" />
-          </td>
-          <td>
-            <p-button icon="pi pi-eye" [text]="true" [rounded]="true" pTooltip="Ver detalle" tooltipPosition="top" />
-          </td>
-        </tr>
-      </ng-template>
+          </div>
+          } @else {
+          <span class="sin-vencimiento">Sin vencimiento</span>
+          }
+        </td>
+        <td>
+          <p-tag [value]="getEstadoLabel(getEstadoLote(lote))" [severity]="getEstadoSeverity(getEstadoLote(lote))" />
+        </td>
+        <td>
+          <p-button icon="pi pi-eye" [text]="true" [rounded]="true" pTooltip="Ver detalle" tooltipPosition="top" />
+        </td>
+      </tr>
+    </ng-template>
 
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="8" class="no-data">
-            <i class="pi pi-inbox"></i>
-            <p>No se encontraron lotes</p>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8" class="no-data">
+          <i class="pi pi-inbox"></i>
+          <p>No se encontraron lotes</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
   }
 </div>

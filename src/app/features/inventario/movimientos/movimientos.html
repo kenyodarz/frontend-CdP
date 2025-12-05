@@ -1,98 +1,92 @@
 <div class="movimientos-container">
-  <div class="header">
-    <h2>Movimientos de Inventario</h2>
-  </div>
-
   @if (loading()) {
   <app-loading message="Cargando movimientos..." />
   } @else if (error()) {
-  <app-error-message [title]="'Error al cargar movimientos'" [message]="error()!" (retry)="onRetry()" />
+  <app-error-message [title]="'Error'" [message]="error()!" (retry)="onRetry()" />
   } @else {
-  <div class="table-container">
-    <p-table [value]="movimientos()" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 25, 50]"
-      [globalFilterFields]="['productoNombre', 'loteCodigoLote', 'motivo']" [tableStyle]="{'min-width': '70rem'}"
-      sortField="fechaMovimiento" [sortOrder]="-1" #dt>
+  <p-table [value]="movimientos()" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 25, 50]"
+    [globalFilterFields]="['productoNombre', 'loteCodigoLote', 'motivo']" [tableStyle]="{'min-width': '70rem'}"
+    sortField="fechaMovimiento" [sortOrder]="-1" #dt>
 
-      <ng-template pTemplate="caption">
-        <div class="table-header">
-          <p-iconfield iconPosition="left">
-            <p-inputicon styleClass="pi pi-search" />
-            <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-              placeholder="Buscar movimientos..." />
-          </p-iconfield>
+    <ng-template pTemplate="caption">
+      <div class="table-header">
+        <p-iconfield iconPosition="left">
+          <p-inputicon styleClass="pi pi-search" />
+          <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Buscar movimientos..." />
+        </p-iconfield>
 
-          <div class="filter-tipo">
-            <p-select [(ngModel)]="tipoFiltro" [options]="tiposMovimiento" optionLabel="label" optionValue="value"
-              placeholder="Tipo de Movimiento" [showClear]="true"
-              (onChange)="dt.filter($event.value, 'tipoMovimiento', 'equals')" [style]="{'width':'200px'}" />
-          </div>
+        <div class="filter-tipo">
+          <p-select [(ngModel)]="tipoFiltro" [options]="tiposMovimiento" optionLabel="label" optionValue="value"
+            placeholder="Tipo de Movimiento" [showClear]="true"
+            (onChange)="dt.filter($event.value, 'tipoMovimiento', 'equals')" [style]="{'width':'200px'}" />
         </div>
-      </ng-template>
+      </div>
+    </ng-template>
 
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="fechaMovimiento">
-            Fecha <p-sortIcon field="fechaMovimiento" />
-          </th>
-          <th pSortableColumn="tipoMovimiento">
-            Tipo <p-sortIcon field="tipoMovimiento" />
-          </th>
-          <th pSortableColumn="productoNombre">
-            Producto <p-sortIcon field="productoNombre" />
-          </th>
-          <th>Lote</th>
-          <th pSortableColumn="cantidad">
-            Cantidad <p-sortIcon field="cantidad" />
-          </th>
-          <th>Stock Anterior</th>
-          <th>Stock Nuevo</th>
-          <th>Motivo</th>
-        </tr>
-      </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="fechaMovimiento">
+          Fecha <p-sortIcon field="fechaMovimiento" />
+        </th>
+        <th pSortableColumn="tipoMovimiento">
+          Tipo <p-sortIcon field="tipoMovimiento" />
+        </th>
+        <th pSortableColumn="productoNombre">
+          Producto <p-sortIcon field="productoNombre" />
+        </th>
+        <th>Lote</th>
+        <th pSortableColumn="cantidad">
+          Cantidad <p-sortIcon field="cantidad" />
+        </th>
+        <th>Stock Anterior</th>
+        <th>Stock Nuevo</th>
+        <th>Motivo</th>
+      </tr>
+    </ng-template>
 
-      <ng-template pTemplate="body" let-mov>
-        <tr>
-          <td>{{ mov.fechaMovimiento | date:'short' }}</td>
-          <td>
-            <p-tag [value]="getTipoLabel(mov.tipoMovimiento)" [severity]="getTipoSeverity(mov.tipoMovimiento)">
-              <i [class]="'pi ' + getTipoIcon(mov.tipoMovimiento)"></i>
-              {{ getTipoLabel(mov.tipoMovimiento) }}
-            </p-tag>
-          </td>
-          <td>{{ mov.productoNombre }}</td>
-          <td>
-            @if (mov.loteCodigoLote) {
-            <span class="lote-codigo">{{ mov.loteCodigoLote }}</span>
-            } @else {
-            <span class="sin-lote">-</span>
-            }
-          </td>
-          <td>
-            <span [class.cantidad-positiva]="mov.tipoMovimiento === 'ENTRADA'"
-              [class.cantidad-negativa]="mov.tipoMovimiento === 'SALIDA'">
-              {{ mov.tipoMovimiento === 'SALIDA' ? '-' : '+' }}{{ mov.cantidad }}
-            </span>
-          </td>
-          <td>{{ mov.stockAnterior }}</td>
-          <td><strong>{{ mov.stockNuevo }}</strong></td>
-          <td>
-            <span class="motivo">{{ mov.motivo }}</span>
-            @if (mov.referencia) {
-            <span class="referencia">({{ mov.referencia }})</span>
-            }
-          </td>
-        </tr>
-      </ng-template>
+    <ng-template pTemplate="body" let-mov>
+      <tr>
+        <td>{{ mov.fechaMovimiento | date:'short' }}</td>
+        <td>
+          <p-tag [value]="getTipoLabel(mov.tipoMovimiento)" [severity]="getTipoSeverity(mov.tipoMovimiento)">
+            <i [class]="'pi ' + getTipoIcon(mov.tipoMovimiento)"></i>
+            {{ getTipoLabel(mov.tipoMovimiento) }}
+          </p-tag>
+        </td>
+        <td>{{ mov.productoNombre }}</td>
+        <td>
+          @if (mov.loteCodigoLote) {
+          <span class="lote-codigo">{{ mov.loteCodigoLote }}</span>
+          } @else {
+          <span class="sin-lote">-</span>
+          }
+        </td>
+        <td>
+          <span [class.cantidad-positiva]="mov.tipoMovimiento === 'ENTRADA'"
+            [class.cantidad-negativa]="mov.tipoMovimiento === 'SALIDA'">
+            {{ mov.tipoMovimiento === 'SALIDA' ? '-' : '+' }}{{ mov.cantidad }}
+          </span>
+        </td>
+        <td>{{ mov.stockAnterior }}</td>
+        <td><strong>{{ mov.stockNuevo }}</strong></td>
+        <td>
+          <span class="motivo">{{ mov.motivo }}</span>
+          @if (mov.referencia) {
+          <span class="referencia">({{ mov.referencia }})</span>
+          }
+        </td>
+      </tr>
+    </ng-template>
 
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="8" class="no-data">
-            <i class="pi pi-inbox"></i>
-            <p>No se encontraron movimientos</p>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8" class="no-data">
+          <i class="pi pi-inbox"></i>
+          <p>No se encontraron movimientos</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
   }
 </div>
