@@ -14,7 +14,7 @@
     margin: 0;
     font-size: 28px;
     font-weight: 500;
-    color: #333;
+    color: var(--text-color);
   }
 }
 
@@ -24,43 +24,116 @@ form {
   gap: 24px;
 }
 
-mat-card {
-  mat-card-header {
-    margin-bottom: 16px;
+// PrimeNG Card Customization
+:host ::ng-deep .p-card {
+  height: 100%;
+  background: var(--surface-card, #ffffff);
+  border: 1px solid var(--surface-border, #dfe7ef);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
-    mat-card-title {
-      font-size: 18px;
-      font-weight: 500;
-      color: #333;
-    }
+  .p-card-body {
+    padding: 1.5rem;
+  }
+
+  .p-card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-color, #333);
+  }
+
+  .p-card-content {
+    padding: 0;
   }
 }
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px 24px; // Increased vertical gap to prevent overlap
   align-items: start;
 
   .full-width {
     grid-column: 1 / -1;
   }
 
+  .field {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    position: relative;
+
+    // Ensure PrimeNG components inside take full width
+    p-floatLabel,
+    p-inputNumber,
+    p-inputText,
+    p-dropdown,
+    textarea {
+      width: 100%;
+      display: block;
+    }
+
+    // Fix for p-inputNumber specifically
+    p-inputNumber {
+      .p-inputnumber {
+        width: 100%;
+      }
+
+      .p-inputtext {
+        width: 100%;
+      }
+    }
+
+    label {
+      font-weight: 500;
+      color: var(--text-color);
+      margin-bottom: 0.25rem;
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--text-color-secondary);
+      margin-top: 4px;
+    }
+
+    .p-error {
+      margin-top: 4px;
+    }
+  }
+
   .checkbox-field {
     display: flex;
     align-items: center;
     padding: 8px 0;
+    height: 100%;
+
+    label {
+      margin-left: 8px;
+      margin-bottom: 0;
+    }
   }
 }
 
 .precios-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 32px 24px;
 
   .precio-item {
-    mat-form-field {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 8px;
+
+    p-inputNumber {
       width: 100%;
+    }
+
+    label {
+      font-weight: 500;
+      color: var(--text-color);
     }
   }
 }
@@ -70,11 +143,32 @@ mat-card {
   justify-content: flex-end;
   gap: 12px;
   padding: 16px 0;
+}
 
-  button {
-    mat-icon {
-      margin-right: 8px;
+// PrimeNG Input Customization
+:host ::ng-deep {
+  .p-inputtext {
+    width: 100%;
+  }
+
+  .p-inputnumber {
+    width: 100%;
+    display: block;
+
+    .p-inputtext {
+      width: 100%;
     }
+  }
+
+  .p-dropdown {
+    width: 100%;
+  }
+
+  .p-float-label {
+    display: block;
+    position: relative;
+    width: 100%;
+    margin-top: 4px;
   }
 }
 
@@ -90,5 +184,14 @@ mat-card {
 
   .precios-grid {
     grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    p-button {
+      width: 100%;
+    }
   }
 }

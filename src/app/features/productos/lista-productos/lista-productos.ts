@@ -113,7 +113,7 @@ export class ListaProductos implements OnInit {
   }
 
   protected getStockSeverity(producto: Producto): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
-    if (producto.stockBajo) return 'warn';
+    if (producto.stockActual <= producto.stockMinimo) return 'warn';
     if (producto.stockActual === 0) return 'danger';
     return 'success';
   }

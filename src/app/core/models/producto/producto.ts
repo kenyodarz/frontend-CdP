@@ -7,9 +7,9 @@ export interface Producto {
   codigo?: string;
   nombre: string;
   descripcion?: string;
-  categoria: CategoriaSimple;
+  idCategoria: number;
   nombreCategoria?: string;      // Loaded from backend JOIN
-  unidadMedida: UnidadMedidaSimple;
+  idUnidad: number;
   nombreUnidad?: string;          // Loaded from backend JOIN
   abreviaturaUnidad?: string;     // Loaded from backend JOIN
   stockActual: number;

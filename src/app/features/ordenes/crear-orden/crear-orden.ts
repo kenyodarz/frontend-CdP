@@ -125,9 +125,9 @@ export class CrearOrden implements OnInit {
           stockActual: p.stockActual,
           stockMinimo: p.stockMinimo,
           precioBase: p.precioBase,
-          categoria: p.categoria.nombre,
-          unidad: p.unidadMedida.abreviatura,
-          stockBajo: p.stockBajo,
+          categoria: p.nombreCategoria || '',
+          unidad: p.abreviaturaUnidad || '',
+          stockBajo: p.stockActual <= p.stockMinimo,
           diasVidaUtil: p.diasVidaUtil,
           estado: p.estado
         }));

@@ -91,7 +91,7 @@ export class DetalleProducto implements OnInit {
     const producto = this.producto();
     if (!producto) return 'info';
 
-    if (producto.stockBajo) return 'warn';
+    if (producto.stockActual <= producto.stockMinimo) return 'warn';
     if (producto.stockMaximo && producto.stockActual >= producto.stockMaximo * 0.8) return 'success'; // Alto stock is good? Or bad? Assuming good or normal.
     // If stock is 0, danger
     if (producto.stockActual === 0) return 'danger';
