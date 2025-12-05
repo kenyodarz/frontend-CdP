@@ -2,6 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 import { EstadoOrden } from '../models/orden/estadoOrden';
 import { OrdenDespachoSimple } from '../models/orden/ordenDespachoSimple';
 import { OrdenDespacho } from '../models/orden/ordenDespacho';
@@ -38,7 +39,20 @@ export class OrdenService {
       .set('size', size.toString());
     if (fecha) params = params.set('fecha', fecha);
     if (estado) params = params.set('estado', estado);
-    return this.http.get<PageResponse<OrdenDespachoSimple>>(this.apiUrl, { params });
+
+    return this.http.get<any>(this.apiUrl, { params }).pipe(
+      map(response => {
+        const content = response.content.map((item: any) => ({
+          ...item,
+          cantidadProductos: item.detalles ? item.detalles.length : 0,
+          clienteNombre: item.clienteNombre || `Cliente #${item.idCliente}`
+        }));
+        return {
+          ...response,
+          content
+        };
+      })
+    );
   }
 
   obtenerPorId(id: number): Observable<OrdenDespacho> {

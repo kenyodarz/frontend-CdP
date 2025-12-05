@@ -22,7 +22,7 @@
       @if (ord.estado === 'LISTA' && ord.puedeSerDespachada) {
       <p-button label="Despachar" icon="pi pi-truck" (onClick)="cambiarEstado('DESPACHADA')" />
       }
-      @if (ord.estado !== 'CANCELADA' && ord.estado !== 'DESPACHADA') {
+      @if (ord.estado !== 'CANCELADA' && ord.estado !== 'DESPACHADA' && ord.estado !== 'ENTREGADA') {
       <p-button label="Cancelar" icon="pi pi-times" severity="danger" (onClick)="cancelarOrden()" />
       }
     </div>
