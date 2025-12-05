@@ -87,6 +87,14 @@ export const routes: Routes = [
       {
         path: 'crear-lote',
         loadComponent: () => import('./features/inventario/crear-lote/crear-lote').then(m => m.CrearLote)
+      },
+      {
+        path: 'registrar-entrada',
+        loadComponent: () => import('./features/inventario/registrar-entrada/registrar-entrada').then(m => m.RegistrarEntrada)
+      },
+      {
+        path: 'registrar-salida',
+        loadComponent: () => import('./features/inventario/registrar-salida/registrar-salida').then(m => m.RegistrarSalida)
       }
     ]
   },

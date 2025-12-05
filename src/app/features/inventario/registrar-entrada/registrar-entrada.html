@@ -1,0 +1,120 @@
+<div class="registrar-entrada-container">
+  @if (loading()) {
+  <app-loading message="Procesando..." />
+  } @else if (error()) {
+  <app-error-message [title]="'Error'" [message]="error()!" (retry)="cargarProductos()" />
+  } @else {
+
+  <p-toast />
+
+  <div class="header">
+    <h2>Registrar Entrada de Inventario</h2>
+    <p class="subtitle">Registra nuevas entradas de productos al inventario</p>
+  </div>
+
+  <p-card>
+    <form [formGroup]="entradaForm" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+
+        <!-- Producto -->
+        <div class="field full-width">
+          <p-floatlabel>
+            <p-autocomplete inputId="producto" formControlName="producto" [suggestions]="productosFiltrados()"
+              (completeMethod)="filtrarProductos($event)" (onSelect)="onProductoSeleccionado($event)"
+              optionLabel="nombre" [dropdown]="true" [forceSelection]="true" placeholder="Buscar producto..."
+              styleClass="w-full">
+              <ng-template let-producto pTemplate="item">
+                <div class="producto-item">
+                  <div class="producto-codigo">{{ producto.codigo }}</div>
+                  <div class="producto-nombre">{{ producto.nombre }}</div>
+                  <div class="producto-stock">Stock: {{ producto.stockActual }}</div>
+                </div>
+              </ng-template>
+            </p-autocomplete>
+            <label for="producto">Producto *</label>
+          </p-floatlabel>
+          @if (entradaForm.get('producto')?.invalid && entradaForm.get('producto')?.touched) {
+          <small class="p-error">El producto es requerido</small>
+          }
+        </div>
+
+        <!-- Info del producto seleccionado -->
+        @if (productoSeleccionado()) {
+        <div class="info-producto full-width">
+          <i class="pi pi-info-circle"></i>
+          <div class="info-content">
+            <strong>{{ productoSeleccionado()!.nombre }}</strong>
+            <span>Stock actual: {{ productoSeleccionado()!.stockActual }} {{ productoSeleccionado()!.nombreUnidad
+              }}</span>
+            @if (productoSeleccionado()!.requiereLote) {
+            <span class="badge-lote">
+              <i class="pi pi-tag"></i> Requiere Lote
+            </span>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- Cantidad -->
+        <div class="field">
+          <p-floatlabel>
+            <p-inputnumber inputId="cantidad" formControlName="cantidad" [min]="1" [showButtons]="true"
+              buttonLayout="horizontal" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus"
+              styleClass="w-full" />
+            <label for="cantidad">Cantidad *</label>
+          </p-floatlabel>
+          @if (entradaForm.get('cantidad')?.invalid && entradaForm.get('cantidad')?.touched) {
+          <small class="p-error">La cantidad debe ser mayor a 0</small>
+          }
+        </div>
+
+        <!-- Lote (si el producto lo requiere) -->
+        @if (mostrarLotes()) {
+        <div class="field">
+          <p-floatlabel>
+            <p-select inputId="codigoLote" formControlName="codigoLote" [options]="lotes()" optionLabel="codigoLote"
+              optionValue="codigoLote" placeholder="Seleccionar lote" styleClass="w-full">
+              <ng-template let-lote pTemplate="item">
+                <div class="lote-item">
+                  <strong>{{ lote.codigoLote }}</strong>
+                  <span class="lote-disponible">Disponible: {{ lote.cantidadActual }}</span>
+                </div>
+              </ng-template>
+            </p-select>
+            <label for="codigoLote">Lote *</label>
+          </p-floatlabel>
+          @if (entradaForm.get('codigoLote')?.invalid && entradaForm.get('codigoLote')?.touched) {
+          <small class="p-error">El lote es requerido para este producto</small>
+          }
+          @if (lotes().length === 0) {
+          <small class="p-info">
+            <i class="pi pi-info-circle"></i>
+            No hay lotes disponibles. Crea uno primero.
+          </small>
+          }
+        </div>
+        }
+
+        <!-- Motivo -->
+        <div class="field full-width">
+          <p-floatlabel>
+            <input pInputText id="motivo" formControlName="motivo" class="w-full" />
+            <label for="motivo">Motivo / Observaciones *</label>
+          </p-floatlabel>
+          @if (entradaForm.get('motivo')?.invalid && entradaForm.get('motivo')?.touched) {
+          <small class="p-error">El motivo es requerido</small>
+          }
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="form-actions">
+        <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [outlined]="true" (onClick)="onCancel()"
+          type="button" />
+        <p-button label="Registrar Entrada" icon="pi pi-check" severity="success"
+          [disabled]="entradaForm.invalid || loading()" type="submit" />
+      </div>
+    </form>
+  </p-card>
+  }
+</div>
