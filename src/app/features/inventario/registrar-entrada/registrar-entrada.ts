@@ -517,9 +517,10 @@ export class RegistrarEntrada implements OnInit {
     this.entradaForm.reset();
     this.loteForm.reset();
     this.productoSeleccionado.set(null);
-    this.mostrarLotes.set(false);
     this.mostrarFormLote.set(false);
-    this.lotes.set([]);
+
+    // Recargar lotes para incluir cualquier lote nuevo creado
+    this.cargarLotes();
   }
 
   protected onCancel(): void {
