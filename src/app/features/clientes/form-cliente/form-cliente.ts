@@ -1,13 +1,13 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { SelectModule } from 'primeng/select';
+import { ToastModule } from 'primeng/toast';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { MessageService } from 'primeng/api';
 
 import { ClienteService } from '../../../core/services/cliente.service';
 import { Cliente } from '../../../core/models/cliente/cliente';
@@ -19,16 +19,16 @@ import { ErrorMessage } from '../../../shared/components/error-message/error-mes
   selector: 'app-form-cliente',
   imports: [
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatSelectModule,
-    MatSnackBarModule,
+    InputTextModule,
+    ButtonModule,
+    CardModule,
+    SelectModule,
+    ToastModule,
+    FloatLabelModule,
     Loading,
     ErrorMessage
   ],
+  providers: [MessageService],
   templateUrl: './form-cliente.html',
   styleUrl: './form-cliente.scss',
 })
@@ -37,7 +37,7 @@ export class FormCliente implements OnInit {
   private readonly clienteService = inject(ClienteService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly messageService = inject(MessageService);
 
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -77,7 +77,7 @@ export class FormCliente implements OnInit {
       barrio: [''],
       comuna: [''],
       tipoNegocio: [''],
-      tipoTarifa: ['0D', Validators.required],
+      tipoTarifa: ['PRECIO_0D', Validators.required],
       horarioEntrega: ['']
     });
   }
@@ -127,9 +127,7 @@ export class FormCliente implements OnInit {
   protected onSubmit(): void {
     if (this.clienteForm.invalid) {
       this.clienteForm.markAllAsTouched();
-      this.snackBar.open('Por favor, completa todos los campos requeridos', 'Cerrar', {
-        duration: 3000
-      });
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Por favor, completa todos los campos requeridos' });
       return;
     }
 
@@ -148,17 +146,15 @@ export class FormCliente implements OnInit {
     this.clienteService.crear(cliente).subscribe({
       next: (clienteCreado) => {
         this.loading.set(false);
-        this.snackBar.open('Cliente creado exitosamente', 'Cerrar', {
-          duration: 3000
-        });
-        this.router.navigate(['/clientes', clienteCreado.idCliente]);
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Cliente creado exitosamente' });
+        setTimeout(() => {
+          this.router.navigate(['/clientes', clienteCreado.idCliente]);
+        }, 1000);
       },
       error: (err) => {
         console.error('Error al crear cliente:', err);
         this.loading.set(false);
-        this.snackBar.open('Error al crear el cliente', 'Cerrar', {
-          duration: 3000
-        });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al crear el cliente' });
       }
     });
   }
@@ -169,17 +165,15 @@ export class FormCliente implements OnInit {
     this.clienteService.actualizar(id, cliente).subscribe({
       next: (clienteActualizado) => {
         this.loading.set(false);
-        this.snackBar.open('Cliente actualizado exitosamente', 'Cerrar', {
-          duration: 3000
-        });
-        this.router.navigate(['/clientes', clienteActualizado.idCliente]);
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Cliente actualizado exitosamente' });
+        setTimeout(() => {
+          this.router.navigate(['/clientes', clienteActualizado.idCliente]);
+        }, 1000);
       },
       error: (err) => {
         console.error('Error al actualizar cliente:', err);
         this.loading.set(false);
-        this.snackBar.open('Error al actualizar el cliente', 'Cerrar', {
-          duration: 3000
-        });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al actualizar el cliente' });
       }
     });
   }

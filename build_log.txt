@@ -1,10 +1,6 @@
-
-> frontend@0.0.0 build
-> ng build
-
 [33m❯[39m Building...
 [32m✔[39m Building...
-Application bundle generation failed. [3.484 seconds] - 2025-12-05T00:53:00.168Z
+Application bundle generation failed. [6.159 seconds] - 2025-12-05T02:03:05.375Z
 
 ▲ [WARNING] NG8113: DecimalPipe is not used within the template of Dashboard [plugin angular-compiler]
 
@@ -13,109 +9,29 @@ Application bundle generation failed. [3.484 seconds] - 2025-12-05T00:53:00.168Z
          ╵     ~~~~~~~~~~~
 
 
-▲ [WARNING] NG8113: CurrencyPipe is not used within the template of DetalleOrden [plugin angular-compiler]
+X [ERROR] TS2322: Type 'number' is not assignable to type 'string'. [plugin angular-compiler]
 
-    src/app/features/ordenes/detalle-orden/detalle-orden.ts:43:4:
-      43 │     CurrencyPipe,
-         ╵     ~~~~~~~~~~~~
+    src/app/features/productos/detalle-producto/detalle-producto.html:53:18:
+      53 │           <p-tag [value]="prod.stockActual" [severity]="getStockSe...
+         ╵                   ~~~~~
 
+  Error occurs in the template of component DetalleProducto.
 
-▲ [WARNING] NG8113: DatePipe is not used within the template of DetalleOrden [plugin angular-compiler]
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.ts:44:4:
-      44 │     DatePipe,
-         ╵     ~~~~~~~~
-
-
-▲ [WARNING] NG8113: Loading is not used within the template of DetalleOrden [plugin angular-compiler]
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.ts:45:4:
-      45 │     Loading,
-         ╵     ~~~~~~~
+    src/app/features/productos/detalle-producto/detalle-producto.ts:25:15:
+      25 │   templateUrl: './detalle-producto.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-▲ [WARNING] NG8113: ErrorMessage is not used within the template of DetalleOrden [plugin angular-compiler]
+X [ERROR] TS2322: Type '"warning"' is not assignable to type 'ButtonSeverity'. [plugin angular-compiler]
 
-    src/app/features/ordenes/detalle-orden/detalle-orden.ts:46:4:
-      46 │     ErrorMessage
-         ╵     ~~~~~~~~~~~~
+    src/app/features/productos/lista-productos/lista-productos.html:50:75:
+      50 │ ...n="pi pi-pencil" [rounded]="true" [text]="true" severity="warning"
+         ╵                                                    ~~~~~~~~
 
+  Error occurs in the template of component ListaProductos.
 
-X [ERROR] NG5002: Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead. [plugin angular-compiler]
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.html:57:12:
-      57 │             }
-         ╵             ^
-
-  Error occurs in the template of component DetalleOrden.
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.ts:48:15:
-      48 │   templateUrl: './detalle-orden.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG5002: Unexpected closing tag "mat-card-content". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.html:65:6:
-      65 │       </mat-card-content>
-         ╵       ~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component DetalleOrden.
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.ts:48:15:
-      48 │   templateUrl: './detalle-orden.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG5002: Unexpected closing tag "mat-card". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.html:66:4:
-      66 │     </mat-card>
-         ╵     ~~~~~~~~~~~
-
-  Error occurs in the template of component DetalleOrden.
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.ts:48:15:
-      48 │   templateUrl: './detalle-orden.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG5002: Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.html:121:2:
-      121 │   </div>
-          ╵   ~~~~~~
-
-  Error occurs in the template of component DetalleOrden.
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.ts:48:15:
-      48 │   templateUrl: './detalle-orden.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG5002: Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead. [plugin angular-compiler]
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.html:122:2:
-      122 │   }
-          ╵   ^
-
-  Error occurs in the template of component DetalleOrden.
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.ts:48:15:
-      48 │   templateUrl: './detalle-orden.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG5002: Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.html:123:0:
-      123 │ </div>
-          ╵ ~~~~~~
-
-  Error occurs in the template of component DetalleOrden.
-
-    src/app/features/ordenes/detalle-orden/detalle-orden.ts:48:15:
-      48 │   templateUrl: './detalle-orden.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~
+    src/app/features/productos/lista-productos/lista-productos.ts:39:15:
+      39 │   templateUrl: './lista-productos.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~
 
 

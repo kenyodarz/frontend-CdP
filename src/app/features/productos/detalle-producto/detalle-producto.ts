@@ -1,27 +1,23 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatDialog } from '@angular/material/dialog';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { TagModule } from 'primeng/tag';
+import { DividerModule } from 'primeng/divider';
 import { CurrencyPipe } from '@angular/common';
 
 import { ProductoService } from '../../../core/services/producto.service';
 import { Producto } from '../../../core/models/producto/producto';
 import { Loading } from '../../../shared/components/loading/loading';
 import { ErrorMessage } from '../../../shared/components/error-message/error-message';
-import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-detalle-producto',
   imports: [
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatDividerModule,
+    CardModule,
+    ButtonModule,
+    TagModule,
+    DividerModule,
     CurrencyPipe,
     Loading,
     ErrorMessage
@@ -33,7 +29,6 @@ export class DetalleProducto implements OnInit {
   private readonly productoService = inject(ProductoService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly dialog = inject(MatDialog);
 
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
@@ -88,42 +83,28 @@ export class DetalleProducto implements OnInit {
   // con el campo estado: 'INACTIVO'
   /*
   protected desactivar(): void {
-    const producto = this.producto();
-    if (!producto) return;
-
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: 'Desactivar Producto',
-        message: `¿Estás seguro de que deseas desactivar el producto "${producto.nombre}"?`,
-        confirmText: 'Desactivar',
-        cancelText: 'Cancelar',
-        confirmColor: 'warn',
-        icon: 'warning'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result && producto.idProducto) {
-        this.productoService.desactivar(producto.idProducto).subscribe({
-          next: () => {
-            this.volver();
-          },
-          error: (err) => {
-            console.error('Error al desactivar producto:', err);
-          }
-        });
-      }
-    });
+    // ... implementation with ConfirmationService ...
   }
   */
 
-  protected getStockStatus(): 'bajo' | 'normal' | 'alto' {
+  protected getStockSeverity(): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
     const producto = this.producto();
-    if (!producto) return 'normal';
+    if (!producto) return 'info';
 
-    if (producto.stockBajo) return 'bajo';
-    if (producto.stockMaximo && producto.stockActual >= producto.stockMaximo * 0.8) return 'alto';
-    return 'normal';
+    if (producto.stockBajo) return 'warn';
+    if (producto.stockMaximo && producto.stockActual >= producto.stockMaximo * 0.8) return 'success'; // Alto stock is good? Or bad? Assuming good or normal.
+    // If stock is 0, danger
+    if (producto.stockActual === 0) return 'danger';
+
+    return 'info'; // Normal
+  }
+
+  protected getEstadoSeverity(estado: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
+    switch (estado) {
+      case 'ACTIVO': return 'success';
+      case 'INACTIVO': return 'danger';
+      default: return 'info';
+    }
   }
 
   protected onRetry(): void {

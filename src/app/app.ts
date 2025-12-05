@@ -3,9 +3,12 @@ import { RouterOutlet } from '@angular/router';
 import { Navbar } from './layout/navbar/navbar';
 import { Sidebar } from './layout/sidebar/sidebar';
 
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
+
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, Sidebar],
+  imports: [RouterOutlet, Navbar, Sidebar, ConfirmDialogModule, ToastModule],
   template: `
     <div class="app-container">
       <app-navbar />
@@ -15,6 +18,8 @@ import { Sidebar } from './layout/sidebar/sidebar';
           <router-outlet />
         </main>
       </div>
+      <p-confirmDialog />
+      <p-toast />
     </div>
   `,
   styles: [`

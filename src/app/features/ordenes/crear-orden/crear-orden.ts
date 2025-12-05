@@ -1,16 +1,19 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatSelectModule } from '@angular/material/select';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
-import { CurrencyPipe } from '@angular/common';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { TextareaModule } from 'primeng/textarea';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { MessageService } from 'primeng/api';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 
 import { OrdenService } from '../../../core/services/orden.service';
 import { ClienteService } from '../../../core/services/cliente.service';
@@ -31,19 +34,24 @@ interface ProductoOrden {
 @Component({
   selector: 'app-crear-orden',
   imports: [
+    CommonModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatSelectModule,
-    MatAutocompleteModule,
-    MatSnackBarModule,
-    MatTableModule,
+    FormsModule,
+    CardModule,
+    ButtonModule,
+    InputTextModule,
+    SelectModule,
+    TableModule,
+    ToastModule,
+    InputNumberModule,
+    TextareaModule,
+    IconFieldModule,
+    InputIconModule,
+    FloatLabelModule,
     CurrencyPipe,
     Loading
   ],
+  providers: [MessageService],
   templateUrl: './crear-orden.html',
   styleUrl: './crear-orden.scss',
 })
@@ -53,7 +61,7 @@ export class CrearOrden implements OnInit {
   private readonly clienteService = inject(ClienteService);
   private readonly productoService = inject(ProductoService);
   private readonly router = inject(Router);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly messageService = inject(MessageService);
 
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -61,8 +69,11 @@ export class CrearOrden implements OnInit {
   protected readonly productos = signal<ProductoSimple[]>([]);
   protected readonly productosOrden = signal<ProductoOrden[]>([]);
 
+  // Variables para el selector de productos
+  protected selectedProducto: ProductoSimple | null = null;
+  protected cantidadProducto: number = 1;
+
   protected ordenForm!: FormGroup;
-  protected readonly displayedColumns = ['nombre', 'precio', 'cantidad', 'subtotal', 'acciones'];
 
   protected readonly totalOrden = computed(() => {
     return this.productosOrden().reduce((sum, p) => sum + p.subtotal, 0);
@@ -126,8 +137,11 @@ export class CrearOrden implements OnInit {
     });
   }
 
-  protected agregarProducto(producto: ProductoSimple, cantidad: number): void {
-    if (cantidad <= 0) return;
+  protected agregarProducto(): void {
+    if (!this.selectedProducto || this.cantidadProducto <= 0) return;
+
+    const producto = this.selectedProducto;
+    const cantidad = this.cantidadProducto;
 
     const productosActuales = this.productosOrden();
     const existente = productosActuales.find(p => p.idProducto === producto.idProducto);
@@ -151,6 +165,10 @@ export class CrearOrden implements OnInit {
         }
       ]);
     }
+
+    // Resetear selección
+    this.selectedProducto = null;
+    this.cantidadProducto = 1;
   }
 
   protected eliminarProducto(idProducto: number): void {
@@ -173,12 +191,12 @@ export class CrearOrden implements OnInit {
 
   protected onSubmit(): void {
     if (this.ordenForm.invalid) {
-      this.snackBar.open('Por favor, selecciona un cliente', 'Cerrar', { duration: 3000 });
+      this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'Por favor, selecciona un cliente' });
       return;
     }
 
     if (this.productosOrden().length === 0) {
-      this.snackBar.open('Debes agregar al menos un producto', 'Cerrar', { duration: 3000 });
+      this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'Debes agregar al menos un producto' });
       return;
     }
 
@@ -196,13 +214,15 @@ export class CrearOrden implements OnInit {
     this.ordenService.crear(ordenDTO).subscribe({
       next: (orden) => {
         this.loading.set(false);
-        this.snackBar.open('Orden creada exitosamente', 'Cerrar', { duration: 3000 });
-        this.router.navigate(['/ordenes', orden.idOrden]);
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Orden creada exitosamente' });
+        setTimeout(() => {
+          this.router.navigate(['/ordenes', orden.idOrden]);
+        }, 1000);
       },
       error: (err) => {
         console.error('Error al crear orden:', err);
         this.loading.set(false);
-        this.snackBar.open('Error al crear la orden', 'Cerrar', { duration: 3000 });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al crear la orden' });
       }
     });
   }

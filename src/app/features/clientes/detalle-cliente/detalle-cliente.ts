@@ -1,26 +1,25 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatDialog } from '@angular/material/dialog';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { TagModule } from 'primeng/tag';
+import { DividerModule } from 'primeng/divider';
+import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmationService } from 'primeng/api';
 
 import { ClienteService } from '../../../core/services/cliente.service';
 import { Cliente } from '../../../core/models/cliente/cliente';
 import { Loading } from '../../../shared/components/loading/loading';
 import { ErrorMessage } from '../../../shared/components/error-message/error-message';
-import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-detalle-cliente',
   imports: [
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatDividerModule,
+    CardModule,
+    ButtonModule,
+    TagModule,
+    DividerModule,
+    TooltipModule,
     Loading,
     ErrorMessage
   ],
@@ -31,7 +30,7 @@ export class DetalleCliente implements OnInit {
   private readonly clienteService = inject(ClienteService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly dialog = inject(MatDialog);
+  private readonly confirmationService = inject(ConfirmationService);
 
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
@@ -76,27 +75,24 @@ export class DetalleCliente implements OnInit {
     const cliente = this.cliente();
     if (!cliente) return;
 
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: 'Desactivar Cliente',
-        message: `¿Estás seguro de que deseas desactivar el cliente "${cliente.nombre}"?`,
-        confirmText: 'Desactivar',
-        cancelText: 'Cancelar',
-        confirmColor: 'warn',
-        icon: 'warning'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result && cliente.idCliente) {
-        this.clienteService.desactivar(cliente.idCliente).subscribe({
-          next: () => {
-            this.volver();
-          },
-          error: (err) => {
-            console.error('Error al desactivar cliente:', err);
-          }
-        });
+    this.confirmationService.confirm({
+      header: 'Desactivar Cliente',
+      message: `¿Estás seguro de que deseas desactivar el cliente "${cliente.nombre}"?`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Desactivar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        if (cliente.idCliente) {
+          this.clienteService.desactivar(cliente.idCliente).subscribe({
+            next: () => {
+              this.volver();
+            },
+            error: (err) => {
+              console.error('Error al desactivar cliente:', err);
+            }
+          });
+        }
       }
     });
   }
@@ -111,12 +107,30 @@ export class DetalleCliente implements OnInit {
   protected getTarifaLabel(tipoTarifa: string): string {
     const labels: Record<string, string> = {
       'PRECIO_0D': 'Normal',
-      'PRECIO_5D': '5% de Descuento',
-      'PRECIO_10D': '10% de Descuento',
-      'PRECIO_ES': '15% de Descuento',
+      'PRECIO_5D': '5% Desc.',
+      'PRECIO_10D': '10% Desc.',
+      'PRECIO_ES': '15% Desc.',
       'PRECIO_JM': 'Especial 1',
       'PRECIO_CR': 'Especial 2'
     };
     return labels[tipoTarifa] || tipoTarifa;
+  }
+
+  protected getTarifaSeverity(tipoTarifa: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
+    switch (tipoTarifa) {
+      case 'PRECIO_0D': return 'info';
+      case 'PRECIO_5D': return 'success';
+      case 'PRECIO_10D': return 'success';
+      case 'PRECIO_ES': return 'warn';
+      default: return 'secondary';
+    }
+  }
+
+  protected getEstadoSeverity(estado: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
+    switch (estado) {
+      case 'ACTIVO': return 'success';
+      case 'INACTIVO': return 'danger';
+      default: return 'info';
+    }
   }
 }

@@ -1,10 +1,7 @@
 <div class="lista-ordenes-container">
   <div class="header">
     <h2>Órdenes de Despacho</h2>
-    <button mat-raised-button color="primary" (click)="nuevaOrden()">
-      <mat-icon>add</mat-icon>
-      Nueva Orden
-    </button>
+    <p-button label="Nueva Orden" icon="pi pi-plus" (onClick)="nuevaOrden()" />
   </div>
 
   @if (loading()) {
@@ -13,101 +10,64 @@
   <app-error-message [title]="'Error al cargar órdenes'" [message]="error()!" (retry)="onRetry()" />
   } @else {
   <div class="table-container">
-    <!-- Barra de búsqueda -->
-    <mat-form-field class="search-field" appearance="outline">
-      <mat-label>Buscar órdenes</mat-label>
-      <input matInput placeholder="Número de orden o cliente" (input)="onSearch($event)" [value]="searchTerm()">
-      <mat-icon matPrefix>search</mat-icon>
-    </mat-form-field>
+    <div class="filter-container">
+      <p-iconField iconPosition="left">
+        <p-inputIcon styleClass="pi pi-search" />
+        <input type="text" pInputText placeholder="Número de orden o cliente" (input)="onSearch($event)"
+          [value]="searchTerm()" />
+      </p-iconField>
+    </div>
 
     <!-- Tabla -->
-    <table mat-table [dataSource]="sortedData()" matSort (matSortChange)="onSort($event)" class="ordenes-table">
-
-      <!-- Columna Número de Orden -->
-      <ng-container matColumnDef="numeroOrden">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header># Orden</th>
-        <td mat-cell *matCellDef="let orden">
-          <strong>{{ orden.numeroOrden }}</strong>
-        </td>
-      </ng-container>
-
-      <!-- Columna Fecha -->
-      <ng-container matColumnDef="fechaOrden">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
-        <td mat-cell *matCellDef="let orden">
-          {{ orden.fechaOrden | date:'short' }}
-        </td>
-      </ng-container>
-
-      <!-- Columna Cliente -->
-      <ng-container matColumnDef="clienteNombre">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</th>
-        <td mat-cell *matCellDef="let orden">
-          {{ orden.clienteNombre }}
-        </td>
-      </ng-container>
-
-      <!-- Columna Cantidad de Productos -->
-      <ng-container matColumnDef="cantidadProductos">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Productos</th>
-        <td mat-cell *matCellDef="let orden">
-          <mat-chip class="cantidad-chip">{{ orden.cantidadProductos }}</mat-chip>
-        </td>
-      </ng-container>
-
-      <!-- Columna Total -->
-      <ng-container matColumnDef="total">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
-        <td mat-cell *matCellDef="let orden">
-          <strong>{{ orden.total | currency:'COP':'symbol-narrow':'1.0-0' }}</strong>
-        </td>
-      </ng-container>
-
-      <!-- Columna Estado -->
-      <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-        <td mat-cell *matCellDef="let orden">
-          <mat-chip [class]="getEstadoClass(orden.estado)">
-            {{ getEstadoLabel(orden.estado) }}
-          </mat-chip>
-        </td>
-      </ng-container>
-
-      <!-- Columna Acciones -->
-      <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef>Acciones</th>
-        <td mat-cell *matCellDef="let orden">
-          <button mat-icon-button [matMenuTriggerFor]="menu" [matTooltip]="'Opciones'">
-            <mat-icon>more_vert</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="verDetalle(orden)">
-              <mat-icon>visibility</mat-icon>
-              <span>Ver Detalle</span>
-            </button>
-          </mat-menu>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row" (click)="verDetalle(row)"></tr>
-    </table>
+    <p-table [value]="ordenes()" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="numeroOrden"># Orden <p-sortIcon field="numeroOrden" /></th>
+          <th pSortableColumn="fechaOrden">Fecha <p-sortIcon field="fechaOrden" /></th>
+          <th pSortableColumn="clienteNombre">Cliente <p-sortIcon field="clienteNombre" /></th>
+          <th pSortableColumn="cantidadProductos">Productos <p-sortIcon field="cantidadProductos" /></th>
+          <th pSortableColumn="total">Total <p-sortIcon field="total" /></th>
+          <th pSortableColumn="estado">Estado <p-sortIcon field="estado" /></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-orden>
+        <tr (click)="verDetalle(orden)" class="table-row">
+          <td><strong>{{ orden.numeroOrden }}</strong></td>
+          <td>{{ orden.fechaOrden | date:'short' }}</td>
+          <td>{{ orden.clienteNombre }}</td>
+          <td>
+            <p-tag [value]="orden.cantidadProductos.toString()" severity="info" />
+          </td>
+          <td><strong>{{ orden.total | currency:'COP':'symbol-narrow':'1.0-0' }}</strong></td>
+          <td>
+            <p-tag [value]="getEstadoLabel(orden.estado)" [severity]="getEstadoSeverity(orden.estado)" />
+          </td>
+          <td>
+            <div class="action-buttons">
+              <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="info"
+                (onClick)="verDetalle(orden); $event.stopPropagation()" pTooltip="Ver Detalle" tooltipPosition="top" />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">
+            <div class="no-data">
+              <i class="pi pi-receipt no-data-icon"></i>
+              <p>No se encontraron órdenes</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
 
     <!-- Paginador -->
-    <mat-paginator [length]="totalItems()" [pageSize]="pageSize()" [pageIndex]="pageIndex()"
-      [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)" showFirstLastButtons>
-    </mat-paginator>
-
-    <!-- Mensaje cuando no hay datos -->
-    @if (ordenes().length === 0) {
-    <div class="no-data">
-      <mat-icon>receipt_long</mat-icon>
-      <p>No se encontraron órdenes</p>
-      @if (searchTerm()) {
-      <p class="hint">Intenta con otros términos de búsqueda</p>
-      }
-    </div>
-    }
+    <p-paginator (onPageChange)="onPageChange($event)" [first]="pageIndex() * pageSize()" [rows]="pageSize()"
+      [totalRecords]="totalItems()" [rowsPerPageOptions]="pageSizeOptions" [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} órdenes">
+    </p-paginator>
   </div>
   }
 </div>

@@ -19,17 +19,13 @@
       margin: 0;
       font-size: 28px;
       font-weight: 500;
-      color: #333;
+      color: var(--text-color);
     }
   }
 
   .actions {
     display: flex;
     gap: 12px;
-
-    button mat-icon {
-      margin-right: 8px;
-    }
   }
 }
 
@@ -40,18 +36,6 @@
 
   .full-width {
     grid-column: 1 / -1;
-  }
-}
-
-mat-card {
-  mat-card-header {
-    margin-bottom: 16px;
-
-    mat-card-title {
-      font-size: 18px;
-      font-weight: 500;
-      color: #333;
-    }
   }
 }
 
@@ -71,41 +55,15 @@ mat-card {
 
     .label {
       font-size: 12px;
-      color: #666;
+      color: var(--text-color-secondary);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
     .value {
       font-size: 16px;
-      color: #333;
+      color: var(--text-color);
     }
-  }
-}
-
-mat-chip {
-  font-size: 12px;
-  min-height: 24px;
-  padding: 4px 12px;
-
-  &.tarifa-chip {
-    background-color: #e3f2fd;
-    color: #1976d2;
-  }
-
-  &.ruta-chip {
-    background-color: #f3e5f5;
-    color: #7b1fa2;
-  }
-
-  &.estado-activo {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-  }
-
-  &.estado-inactivo {
-    background-color: #fafafa;
-    color: #757575;
   }
 }
 
@@ -118,10 +76,7 @@ mat-chip {
 
     .actions {
       width: 100%;
-
-      button {
-        flex: 1;
-      }
+      gap: 8px;
     }
   }
 

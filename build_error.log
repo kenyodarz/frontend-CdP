@@ -1,0 +1,42 @@
+
+> frontend@0.0.0 build
+> ng build
+
+[33m❯[39m Building...
+[32m✔[39m Building...
+Application bundle generation failed. [3.802 seconds] - 2025-12-05T02:31:07.928Z
+
+▲ [WARNING] NG8113: DecimalPipe is not used within the template of Dashboard [plugin angular-compiler]
+
+    src/app/features/dashboard/dashboard.ts:20:4:
+      20 │     DecimalPipe
+         ╵     ~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: CurrencyPipe is not used within the template of CrearOrden [plugin angular-compiler]
+
+    src/app/features/ordenes/crear-orden/crear-orden.ts:51:4:
+      51 │     CurrencyPipe,
+         ╵     ~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: Loading is not used within the template of CrearOrden [plugin angular-compiler]
+
+    src/app/features/ordenes/crear-orden/crear-orden.ts:52:4:
+      52 │     Loading
+         ╵     ~~~~~~~
+
+
+X [ERROR] NG5002: Unclosed block "else" [plugin angular-compiler]
+
+    src/app/features/ordenes/crear-orden/crear-orden.html:5:4:
+      5 │   } @else {
+        ╵     ~~~~~~~
+
+  Error occurs in the template of component CrearOrden.
+
+    src/app/features/ordenes/crear-orden/crear-orden.ts:55:15:
+      55 │   templateUrl: './crear-orden.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~
+
+

@@ -1,39 +1,35 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatSortModule, Sort } from '@angular/material/sort';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDialog } from '@angular/material/dialog';
+import { TableModule } from 'primeng/table';
+import { PaginatorModule, PaginatorState } from 'primeng/paginator';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
+import { MenuModule } from 'primeng/menu';
+import { ConfirmationService } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
 
 import { ClienteService } from '../../../core/services/cliente.service';
-import { ClienteSimple } from '../../../core/models/cliente/clienteSimple';
 import { Cliente } from '../../../core/models/cliente/cliente';
 import { PageResponse } from '../../../core/models/common/page-response';
 import { Loading } from '../../../shared/components/loading/loading';
 import { ErrorMessage } from '../../../shared/components/error-message/error-message';
-import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-lista-clientes',
   imports: [
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatTooltipModule,
-    MatMenuModule,
+    TableModule,
+    PaginatorModule,
+    ButtonModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+    TagModule,
+    TooltipModule,
+    MenuModule,
     FormsModule,
     Loading,
     ErrorMessage
@@ -44,7 +40,7 @@ import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm
 export class ListaClientes implements OnInit {
   private readonly clienteService = inject(ClienteService);
   private readonly router = inject(Router);
-  private readonly dialog = inject(MatDialog);
+  private readonly confirmationService = inject(ConfirmationService);
 
   // Estado
   protected readonly loading = signal(true);
@@ -57,45 +53,9 @@ export class ListaClientes implements OnInit {
   protected readonly pageIndex = signal(0);
   protected readonly pageSizeOptions = [5, 10, 25, 50];
 
-  // Ordenamiento (cliente)
-  protected readonly sortColumn = signal<string>('nombre');
-  protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
-
-  // Columnas de la tabla
-  protected readonly displayedColumns: string[] = [
-    'codigo',
-    'nombre',
-    'telefono',
-    'barrio',
-    'ruta',
-    'tipoTarifa',
-    'estado',
-    'acciones'
-  ];
-
   // Datos para la tabla
   protected readonly clientes = computed(() => {
     return this.clientesPage()?.content || [];
-  });
-
-  // Datos ordenados
-  protected readonly sortedData = computed(() => {
-    let data = this.clientes();
-    const column = this.sortColumn();
-    const direction = this.sortDirection();
-
-    if (!column) return data;
-
-    return [...data].sort((a, b) => {
-      let aValue: any = a[column as keyof Cliente];
-      let bValue: any = b[column as keyof Cliente];
-
-      if (aValue === undefined || aValue === null) return 1;
-      if (bValue === undefined || bValue === null) return -1;
-
-      const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-      return direction === 'asc' ? comparison : -comparison;
-    });
   });
 
   protected readonly totalItems = computed(() => this.clientesPage()?.totalElements || 0);
@@ -127,14 +87,9 @@ export class ListaClientes implements OnInit {
     this.pageIndex.set(0);
   }
 
-  protected onSort(sort: Sort): void {
-    this.sortColumn.set(sort.active);
-    this.sortDirection.set(sort.direction as 'asc' | 'desc' || 'asc');
-  }
-
-  protected onPageChange(event: PageEvent): void {
-    this.pageIndex.set(event.pageIndex);
-    this.pageSize.set(event.pageSize);
+  protected onPageChange(event: PaginatorState): void {
+    this.pageIndex.set(event.page || 0);
+    this.pageSize.set(event.rows || 10);
     this.cargarClientes();
   }
 
@@ -151,27 +106,24 @@ export class ListaClientes implements OnInit {
   }
 
   protected desactivarCliente(cliente: Cliente): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: 'Desactivar Cliente',
-        message: `¿Estás seguro de que deseas desactivar el cliente "${cliente.nombre}"?`,
-        confirmText: 'Desactivar',
-        cancelText: 'Cancelar',
-        confirmColor: 'warn',
-        icon: 'warning'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result && cliente.idCliente) {
-        this.clienteService.desactivar(cliente.idCliente).subscribe({
-          next: () => {
-            this.cargarClientes();
-          },
-          error: (err) => {
-            console.error('Error al desactivar cliente:', err);
-          }
-        });
+    this.confirmationService.confirm({
+      header: 'Desactivar Cliente',
+      message: `¿Estás seguro de que deseas desactivar el cliente "${cliente.nombre}"?`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Desactivar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        if (cliente.idCliente) {
+          this.clienteService.desactivar(cliente.idCliente).subscribe({
+            next: () => {
+              this.cargarClientes();
+            },
+            error: (err) => {
+              console.error('Error al desactivar cliente:', err);
+            }
+          });
+        }
       }
     });
   }
@@ -179,13 +131,32 @@ export class ListaClientes implements OnInit {
   protected getTarifaLabel(tipoTarifa: string): string {
     const labels: Record<string, string> = {
       'PRECIO_0D': 'Normal',
-      'PRECIO_5D': '5% de Descuento',
-      'PRECIO_10D': '10% de Descuento',
-      'PRECIO_ES': '15% de Descuento',
+      'PRECIO_5D': '5% Desc.',
+      'PRECIO_10D': '10% Desc.',
+      'PRECIO_ES': '15% Desc.',
       'PRECIO_JM': 'Especial 1',
       'PRECIO_CR': 'Especial 2'
     };
     return labels[tipoTarifa] || tipoTarifa;
+  }
+
+  protected getTarifaSeverity(tipoTarifa: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
+    // Example mapping, adjust as needed
+    switch (tipoTarifa) {
+      case 'PRECIO_0D': return 'info';
+      case 'PRECIO_5D': return 'success';
+      case 'PRECIO_10D': return 'success';
+      case 'PRECIO_ES': return 'warn';
+      default: return 'secondary';
+    }
+  }
+
+  protected getEstadoSeverity(estado: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
+    switch (estado) {
+      case 'ACTIVO': return 'success';
+      case 'INACTIVO': return 'danger';
+      default: return 'info';
+    }
   }
 
   protected onRetry(): void {

@@ -1,11 +1,11 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatTableModule } from '@angular/material/table';
-import { MatDialog } from '@angular/material/dialog';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { TagModule } from 'primeng/tag';
+import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmationService } from 'primeng/api';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 
 import { OrdenService } from '../../../core/services/orden.service';
@@ -15,7 +15,6 @@ import { ProductoService } from '../../../core/services/producto.service';
 import { OrdenDespacho } from '../../../core/models/orden/ordenDespacho';
 import { Loading } from '../../../shared/components/loading/loading';
 import { ErrorMessage } from '../../../shared/components/error-message/error-message';
-import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 import { forkJoin, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 
@@ -35,11 +34,11 @@ interface OrdenViewModel extends Omit<OrdenDespacho, 'detalles'> {
 @Component({
   selector: 'app-detalle-orden',
   imports: [
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatTableModule,
+    CardModule,
+    ButtonModule,
+    TagModule,
+    TableModule,
+    TooltipModule,
     CurrencyPipe,
     DatePipe,
     Loading,
@@ -55,12 +54,11 @@ export class DetalleOrden implements OnInit {
   private readonly productoService = inject(ProductoService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly dialog = inject(MatDialog);
+  private readonly confirmationService = inject(ConfirmationService);
 
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
   protected readonly orden = signal<OrdenViewModel | null>(null);
-  protected readonly displayedColumns = ['producto', 'cantidad', 'precioUnitario', 'subtotal'];
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -155,40 +153,37 @@ export class DetalleOrden implements OnInit {
     const orden = this.orden();
     if (!orden || !orden.idOrden) return;
 
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: 'Cancelar Orden',
-        message: `¿Estás seguro de que deseas cancelar la orden ${orden.numeroOrden}?`,
-        confirmText: 'Cancelar Orden',
-        cancelText: 'No',
-        confirmColor: 'warn',
-        icon: 'warning'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result && orden.idOrden) {
-        this.ordenService.cancelar(orden.idOrden, 'Cancelada por el usuario').subscribe({
-          next: () => {
-            this.cargarOrden(orden.idOrden!);
-          },
-          error: (err) => {
-            console.error('Error al cancelar orden:', err);
-          }
-        });
+    this.confirmationService.confirm({
+      header: 'Cancelar Orden',
+      message: `¿Estás seguro de que deseas cancelar la orden ${orden.numeroOrden}?`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Cancelar Orden',
+      rejectLabel: 'No',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        if (orden.idOrden) {
+          this.ordenService.cancelar(orden.idOrden, 'Cancelada por el usuario').subscribe({
+            next: () => {
+              this.cargarOrden(orden.idOrden!);
+            },
+            error: (err) => {
+              console.error('Error al cancelar orden:', err);
+            }
+          });
+        }
       }
     });
   }
 
-  protected getEstadoClass(estado: string): string {
-    const classes: Record<string, string> = {
-      'PENDIENTE': 'estado-pendiente',
-      'EN_PREPARACION': 'estado-preparacion',
-      'LISTA': 'estado-lista',
-      'DESPACHADA': 'estado-despachada',
-      'CANCELADA': 'estado-cancelada'
-    };
-    return classes[estado] || '';
+  protected getEstadoSeverity(estado: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
+    switch (estado) {
+      case 'PENDIENTE': return 'warn';
+      case 'EN_PREPARACION': return 'info';
+      case 'LISTA': return 'success';
+      case 'DESPACHADA': return 'success';
+      case 'CANCELADA': return 'danger';
+      default: return 'secondary';
+    }
   }
 
   protected onRetry(): void {

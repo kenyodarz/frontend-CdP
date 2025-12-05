@@ -1,15 +1,16 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { CheckboxModule } from 'primeng/checkbox';
+import { SelectModule } from 'primeng/select';
+import { DividerModule } from 'primeng/divider';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { TextareaModule } from 'primeng/textarea';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 import { ProductoService } from '../../../core/services/producto.service';
 import { Producto } from '../../../core/models/producto/producto';
@@ -21,18 +22,19 @@ import { ErrorMessage } from '../../../shared/components/error-message/error-mes
   selector: 'app-form-producto',
   imports: [
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatSelectModule,
-    MatDividerModule,
-    MatSnackBarModule,
+    InputTextModule,
+    ButtonModule,
+    CardModule,
+    CheckboxModule,
+    SelectModule,
+    DividerModule,
+    FloatLabelModule,
+    TextareaModule,
+    ToastModule,
     Loading,
     ErrorMessage
   ],
+  providers: [MessageService],
   templateUrl: './form-producto.html',
   styleUrl: './form-producto.scss',
 })
@@ -41,7 +43,7 @@ export class FormProducto implements OnInit {
   private readonly productoService = inject(ProductoService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly messageService = inject(MessageService);
 
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -132,14 +134,10 @@ export class FormProducto implements OnInit {
     });
   }
 
-
-
   protected onSubmit(): void {
     if (this.productoForm.invalid) {
       this.productoForm.markAllAsTouched();
-      this.snackBar.open('Por favor, completa todos los campos requeridos', 'Cerrar', {
-        duration: 3000
-      });
+      this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'Por favor, completa todos los campos requeridos' });
       return;
     }
 
@@ -158,17 +156,15 @@ export class FormProducto implements OnInit {
     this.productoService.crear(producto).subscribe({
       next: (productoCreado) => {
         this.loading.set(false);
-        this.snackBar.open('Producto creado exitosamente', 'Cerrar', {
-          duration: 3000
-        });
-        this.router.navigate(['/productos', productoCreado.idProducto]);
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Producto creado exitosamente' });
+        setTimeout(() => {
+          this.router.navigate(['/productos', productoCreado.idProducto]);
+        }, 1000);
       },
       error: (err) => {
         console.error('Error al crear producto:', err);
         this.loading.set(false);
-        this.snackBar.open('Error al crear el producto', 'Cerrar', {
-          duration: 3000
-        });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al crear el producto' });
       }
     });
   }
@@ -179,17 +175,15 @@ export class FormProducto implements OnInit {
     this.productoService.actualizar(id, producto).subscribe({
       next: (productoActualizado) => {
         this.loading.set(false);
-        this.snackBar.open('Producto actualizado exitosamente', 'Cerrar', {
-          duration: 3000
-        });
-        this.router.navigate(['/productos', productoActualizado.idProducto]);
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Producto actualizado exitosamente' });
+        setTimeout(() => {
+          this.router.navigate(['/productos', productoActualizado.idProducto]);
+        }, 1000);
       },
       error: (err) => {
         console.error('Error al actualizar producto:', err);
         this.loading.set(false);
-        this.snackBar.open('Error al actualizar el producto', 'Cerrar', {
-          duration: 3000
-        });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al actualizar el producto' });
       }
     });
   }

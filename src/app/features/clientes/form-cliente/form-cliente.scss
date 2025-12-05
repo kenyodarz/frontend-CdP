@@ -14,7 +14,7 @@
     margin: 0;
     font-size: 28px;
     font-weight: 500;
-    color: #333;
+    color: var(--text-color);
   }
 }
 
@@ -24,26 +24,30 @@ form {
   gap: 24px;
 }
 
-mat-card {
-  mat-card-header {
-    margin-bottom: 16px;
-
-    mat-card-title {
-      font-size: 18px;
-      font-weight: 500;
-      color: #333;
-    }
-  }
-}
-
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
+  gap: 1.5rem;
   align-items: start;
 
   .full-width {
     grid-column: 1 / -1;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .hint {
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+  }
+
+  .p-error {
+    color: var(--red-500);
+    font-size: 0.875rem;
   }
 }
 
@@ -52,12 +56,6 @@ mat-card {
   justify-content: flex-end;
   gap: 12px;
   padding: 16px 0;
-
-  button {
-    mat-icon {
-      margin-right: 8px;
-    }
-  }
 }
 
 // Responsive

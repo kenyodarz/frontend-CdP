@@ -1,21 +1,19 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatSortModule, Sort } from '@angular/material/sort';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
+import { TableModule } from 'primeng/table';
+import { PaginatorModule, PaginatorState } from 'primeng/paginator';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
+import { MenuModule } from 'primeng/menu';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 
 import { OrdenService } from '../../../core/services/orden.service';
 import { OrdenDespachoSimple } from '../../../core/models/orden/ordenDespachoSimple';
-import { OrdenDespacho } from '../../../core/models/orden/ordenDespacho';
 import { PageResponse } from '../../../core/models/common/page-response';
 import { Loading } from '../../../shared/components/loading/loading';
 import { ErrorMessage } from '../../../shared/components/error-message/error-message';
@@ -23,16 +21,15 @@ import { ErrorMessage } from '../../../shared/components/error-message/error-mes
 @Component({
   selector: 'app-lista-ordenes',
   imports: [
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatTooltipModule,
-    MatMenuModule,
+    TableModule,
+    PaginatorModule,
+    ButtonModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+    TagModule,
+    TooltipModule,
+    MenuModule,
     FormsModule,
     CurrencyPipe,
     DatePipe,
@@ -57,44 +54,9 @@ export class ListaOrdenes implements OnInit {
   protected readonly pageIndex = signal(0);
   protected readonly pageSizeOptions = [5, 10, 25, 50];
 
-  // Ordenamiento (cliente)
-  protected readonly sortColumn = signal<string>('fechaOrden');
-  protected readonly sortDirection = signal<'asc' | 'desc'>('desc');
-
-  // Columnas de la tabla
-  protected readonly displayedColumns: string[] = [
-    'numeroOrden',
-    'fechaOrden',
-    'clienteNombre',
-    'cantidadProductos',
-    'total',
-    'estado',
-    'acciones'
-  ];
-
   // Datos para la tabla
   protected readonly ordenes = computed(() => {
     return this.ordenesPage()?.content || [];
-  });
-
-  // Datos ordenados
-  protected readonly sortedData = computed(() => {
-    let data = this.ordenes();
-    const column = this.sortColumn();
-    const direction = this.sortDirection();
-
-    if (!column) return data;
-
-    return [...data].sort((a, b) => {
-      let aValue: any = a[column as keyof OrdenDespachoSimple];
-      let bValue: any = b[column as keyof OrdenDespachoSimple];
-
-      if (aValue === undefined || aValue === null) return 1;
-      if (bValue === undefined || bValue === null) return -1;
-
-      const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-      return direction === 'asc' ? comparison : -comparison;
-    });
   });
 
   protected readonly totalItems = computed(() => this.ordenesPage()?.totalElements || 0);
@@ -126,14 +88,9 @@ export class ListaOrdenes implements OnInit {
     this.pageIndex.set(0);
   }
 
-  protected onSort(sort: Sort): void {
-    this.sortColumn.set(sort.active);
-    this.sortDirection.set(sort.direction as 'asc' | 'desc' || 'asc');
-  }
-
-  protected onPageChange(event: PageEvent): void {
-    this.pageIndex.set(event.pageIndex);
-    this.pageSize.set(event.pageSize);
+  protected onPageChange(event: PaginatorState): void {
+    this.pageIndex.set(event.page || 0);
+    this.pageSize.set(event.rows || 10);
     this.cargarOrdenes();
   }
 
@@ -149,15 +106,15 @@ export class ListaOrdenes implements OnInit {
     this.cargarOrdenes();
   }
 
-  protected getEstadoClass(estado: string): string {
-    const classes: Record<string, string> = {
-      'PENDIENTE': 'estado-pendiente',
-      'EN_PREPARACION': 'estado-preparacion',
-      'LISTA': 'estado-lista',
-      'DESPACHADA': 'estado-despachada',
-      'CANCELADA': 'estado-cancelada'
-    };
-    return classes[estado] || '';
+  protected getEstadoSeverity(estado: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
+    switch (estado) {
+      case 'PENDIENTE': return 'warn';
+      case 'EN_PREPARACION': return 'info';
+      case 'LISTA': return 'success';
+      case 'DESPACHADA': return 'success';
+      case 'CANCELADA': return 'danger';
+      default: return 'secondary';
+    }
   }
 
   protected getEstadoLabel(estado: string): string {

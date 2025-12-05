@@ -6,189 +6,165 @@
   } @else {
   <div class="form-header">
     <h2>{{ isEditMode() ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
-    <button mat-icon-button (click)="cancelar()" matTooltip="Cerrar">
-      <mat-icon>close</mat-icon>
-    </button>
+    <p-button icon="pi pi-times" [rounded]="true" [text]="true" (onClick)="cancelar()" pTooltip="Cerrar" />
   </div>
 
   <form [formGroup]="productoForm" (ngSubmit)="onSubmit()">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Información General</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="form-grid">
-          <!-- Código -->
-          <mat-form-field appearance="outline">
-            <mat-label>Código</mat-label>
-            <input matInput formControlName="codigo" placeholder="Ej: PAN001">
-            <mat-icon matPrefix>tag</mat-icon>
-          </mat-form-field>
-
-          <!-- Nombre -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Nombre *</mat-label>
-            <input matInput formControlName="nombre" placeholder="Nombre del producto">
-            <mat-icon matPrefix>inventory_2</mat-icon>
-            @if (productoForm.get('nombre')?.hasError('required') && productoForm.get('nombre')?.touched) {
-            <mat-error>El nombre es requerido</mat-error>
-            }
-            @if (productoForm.get('nombre')?.hasError('minlength')) {
-            <mat-error>Mínimo 3 caracteres</mat-error>
-            }
-          </mat-form-field>
-
-          <!-- Descripción -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Descripción</mat-label>
-            <textarea matInput formControlName="descripcion" rows="3" placeholder="Descripción del producto"></textarea>
-          </mat-form-field>
-
-          <!-- Categoría -->
-          <mat-form-field appearance="outline">
-            <mat-label>Categoría *</mat-label>
-            <mat-select formControlName="idCategoria">
-              @for (categoria of categorias(); track categoria.id) {
-              <mat-option [value]="categoria.id">{{ categoria.nombre }}</mat-option>
-              }
-            </mat-select>
-            <mat-icon matPrefix>category</mat-icon>
-            @if (productoForm.get('idCategoria')?.hasError('required') && productoForm.get('idCategoria')?.touched) {
-            <mat-error>La categoría es requerida</mat-error>
-            }
-          </mat-form-field>
-
-          <!-- Unidad de Medida -->
-          <mat-form-field appearance="outline">
-            <mat-label>Unidad de Medida *</mat-label>
-            <mat-select formControlName="idUnidad">
-              @for (unidad of unidadesMedida(); track unidad.id) {
-              <mat-option [value]="unidad.id">{{ unidad.nombre }}</mat-option>
-              }
-            </mat-select>
-            <mat-icon matPrefix>straighten</mat-icon>
-            @if (productoForm.get('idUnidad')?.hasError('required') && productoForm.get('idUnidad')?.touched) {
-            <mat-error>La unidad es requerida</mat-error>
-            }
-          </mat-form-field>
-
-          <!-- URL de Imagen -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>URL de Imagen</mat-label>
-            <input matInput formControlName="imagenUrl" placeholder="https://...">
-            <mat-icon matPrefix>image</mat-icon>
-          </mat-form-field>
+    <p-card header="Información General">
+      <div class="form-grid">
+        <!-- Código -->
+        <div class="field">
+          <p-floatLabel>
+            <input pInputText id="codigo" formControlName="codigo" />
+            <label for="codigo">Código</label>
+          </p-floatLabel>
         </div>
-      </mat-card-content>
-    </mat-card>
 
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Inventario</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="form-grid">
-          <!-- Stock Actual -->
-          <mat-form-field appearance="outline">
-            <mat-label>Stock Actual</mat-label>
-            <input matInput type="number" formControlName="stockActual" min="0">
-            <mat-icon matPrefix>inventory</mat-icon>
-          </mat-form-field>
-
-          <!-- Stock Mínimo -->
-          <mat-form-field appearance="outline">
-            <mat-label>Stock Mínimo *</mat-label>
-            <input matInput type="number" formControlName="stockMinimo" min="0">
-            <mat-icon matPrefix>warning</mat-icon>
-            @if (productoForm.get('stockMinimo')?.hasError('required') && productoForm.get('stockMinimo')?.touched) {
-            <mat-error>El stock mínimo es requerido</mat-error>
-            }
-          </mat-form-field>
-
-          <!-- Stock Máximo -->
-          <mat-form-field appearance="outline">
-            <mat-label>Stock Máximo</mat-label>
-            <input matInput type="number" formControlName="stockMaximo" min="0">
-            <mat-icon matPrefix>trending_up</mat-icon>
-          </mat-form-field>
-
-          <!-- Requiere Lote -->
-          <div class="checkbox-field">
-            <mat-checkbox formControlName="requiereLote">
-              Requiere Lote
-            </mat-checkbox>
-          </div>
-
-          <!-- Días de Vida Útil -->
-          @if (productoForm.get('requiereLote')?.value) {
-          <mat-form-field appearance="outline">
-            <mat-label>Días de Vida Útil</mat-label>
-            <input matInput type="number" formControlName="diasVidaUtil" min="1">
-            <mat-icon matPrefix>calendar_today</mat-icon>
-          </mat-form-field>
+        <!-- Nombre -->
+        <div class="field full-width">
+          <p-floatLabel>
+            <input pInputText id="nombre" formControlName="nombre" class="full-width-input" />
+            <label for="nombre">Nombre *</label>
+          </p-floatLabel>
+          @if (productoForm.get('nombre')?.hasError('required') && productoForm.get('nombre')?.touched) {
+          <small class="p-error">El nombre es requerido</small>
+          }
+          @if (productoForm.get('nombre')?.hasError('minlength')) {
+          <small class="p-error">Mínimo 3 caracteres</small>
           }
         </div>
-      </mat-card-content>
-    </mat-card>
 
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Precios</mat-card-title>
-        <mat-card-subtitle>Los precios con descuento (0D, 10D, 5D, ES) se calculan automáticamente</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="form-grid">
-          <!-- Precio Base -->
-          <mat-form-field appearance="outline">
-            <mat-label>Precio Base *</mat-label>
-            <input matInput type="number" formControlName="precioBase" min="0" step="100">
-            <span matPrefix>$&nbsp;</span>
-            <mat-icon matPrefix>payments</mat-icon>
-            <mat-hint>Precio completo sin descuento</mat-hint>
-            @if (productoForm.get('precioBase')?.hasError('required') && productoForm.get('precioBase')?.touched) {
-            <mat-error>El precio base es requerido</mat-error>
-            }
-            @if (productoForm.get('precioBase')?.hasError('min')) {
-            <mat-error>El precio debe ser mayor o igual a 0</mat-error>
-            }
-          </mat-form-field>
-
-          <!-- Precio Juan Mina (Opcional) -->
-          <mat-form-field appearance="outline">
-            <mat-label>Precio Juan Mina (Opcional)</mat-label>
-            <input matInput type="number" formControlName="precioJM" min="0" step="100">
-            <span matPrefix>$&nbsp;</span>
-            <mat-icon matPrefix>store</mat-icon>
-            <mat-hint>Solo si difiere del precio base</mat-hint>
-            @if (productoForm.get('precioJM')?.hasError('min')) {
-            <mat-error>El precio debe ser mayor o igual a 0</mat-error>
-            }
-          </mat-form-field>
-
-          <!-- Precio Carulla (Opcional) -->
-          <mat-form-field appearance="outline">
-            <mat-label>Precio Carulla (Opcional)</mat-label>
-            <input matInput type="number" formControlName="precioCR" min="0" step="100">
-            <span matPrefix>$&nbsp;</span>
-            <mat-icon matPrefix>shopping_cart</mat-icon>
-            <mat-hint>Solo si difiere del precio base</mat-hint>
-            @if (productoForm.get('precioCR')?.hasError('min')) {
-            <mat-error>El precio debe ser mayor o igual a 0</mat-error>
-            }
-          </mat-form-field>
+        <!-- Descripción -->
+        <div class="field full-width">
+          <p-floatLabel>
+            <textarea pInputTextarea id="descripcion" formControlName="descripcion" rows="3"
+              class="full-width-input"></textarea>
+            <label for="descripcion">Descripción</label>
+          </p-floatLabel>
         </div>
-      </mat-card-content>
-    </mat-card>
+
+        <!-- Categoría -->
+        <div class="field">
+          <p-floatLabel>
+            <p-select [options]="categorias()" optionLabel="nombre" optionValue="id" formControlName="idCategoria"
+              inputId="idCategoria" styleClass="full-width-input" />
+            <label for="idCategoria">Categoría *</label>
+          </p-floatLabel>
+          @if (productoForm.get('idCategoria')?.hasError('required') && productoForm.get('idCategoria')?.touched) {
+          <small class="p-error">La categoría es requerida</small>
+          }
+        </div>
+
+        <!-- Unidad de Medida -->
+        <div class="field">
+          <p-floatLabel>
+            <p-select [options]="unidadesMedida()" optionLabel="nombre" optionValue="id" formControlName="idUnidad"
+              inputId="idUnidad" styleClass="full-width-input" />
+            <label for="idUnidad">Unidad de Medida *</label>
+          </p-floatLabel>
+          @if (productoForm.get('idUnidad')?.hasError('required') && productoForm.get('idUnidad')?.touched) {
+          <small class="p-error">La unidad es requerida</small>
+          }
+        </div>
+
+        <!-- URL de Imagen -->
+        <div class="field full-width">
+          <p-floatLabel>
+            <input pInputText id="imagenUrl" formControlName="imagenUrl" class="full-width-input" />
+            <label for="imagenUrl">URL de Imagen</label>
+          </p-floatLabel>
+        </div>
+      </div>
+    </p-card>
+
+    <p-card header="Inventario">
+      <div class="form-grid">
+        <!-- Stock Actual -->
+        <div class="field">
+          <p-floatLabel>
+            <input pInputText type="number" id="stockActual" formControlName="stockActual" min="0" />
+            <label for="stockActual">Stock Actual</label>
+          </p-floatLabel>
+        </div>
+
+        <!-- Stock Mínimo -->
+        <div class="field">
+          <p-floatLabel>
+            <input pInputText type="number" id="stockMinimo" formControlName="stockMinimo" min="0" />
+            <label for="stockMinimo">Stock Mínimo *</label>
+          </p-floatLabel>
+          @if (productoForm.get('stockMinimo')?.hasError('required') && productoForm.get('stockMinimo')?.touched) {
+          <small class="p-error">El stock mínimo es requerido</small>
+          }
+        </div>
+
+        <!-- Stock Máximo -->
+        <div class="field">
+          <p-floatLabel>
+            <input pInputText type="number" id="stockMaximo" formControlName="stockMaximo" min="0" />
+            <label for="stockMaximo">Stock Máximo</label>
+          </p-floatLabel>
+        </div>
+
+        <!-- Requiere Lote -->
+        <div class="field-checkbox">
+          <p-checkbox formControlName="requiereLote" [binary]="true" inputId="requiereLote" />
+          <label for="requiereLote">Requiere Lote</label>
+        </div>
+
+        <!-- Días de Vida Útil -->
+        @if (productoForm.get('requiereLote')?.value) {
+        <div class="field">
+          <p-floatLabel>
+            <input pInputText type="number" id="diasVidaUtil" formControlName="diasVidaUtil" min="1" />
+            <label for="diasVidaUtil">Días de Vida Útil</label>
+          </p-floatLabel>
+        </div>
+        }
+      </div>
+    </p-card>
+
+    <p-card header="Precios">
+      <p class="subtitle">Los precios con descuento (0D, 10D, 5D, ES) se calculan automáticamente</p>
+      <div class="form-grid">
+        <!-- Precio Base -->
+        <div class="field">
+          <p-floatLabel>
+            <input pInputText type="number" id="precioBase" formControlName="precioBase" min="0" step="100" />
+            <label for="precioBase">Precio Base *</label>
+          </p-floatLabel>
+          <small class="hint">Precio completo sin descuento</small>
+          @if (productoForm.get('precioBase')?.hasError('required') && productoForm.get('precioBase')?.touched) {
+          <small class="p-error">El precio base es requerido</small>
+          }
+        </div>
+
+        <!-- Precio Juan Mina (Opcional) -->
+        <div class="field">
+          <p-floatLabel>
+            <input pInputText type="number" id="precioJM" formControlName="precioJM" min="0" step="100" />
+            <label for="precioJM">Precio Juan Mina (Opcional)</label>
+          </p-floatLabel>
+          <small class="hint">Solo si difiere del precio base</small>
+        </div>
+
+        <!-- Precio Carulla (Opcional) -->
+        <div class="field">
+          <p-floatLabel>
+            <input pInputText type="number" id="precioCR" formControlName="precioCR" min="0" step="100" />
+            <label for="precioCR">Precio Carulla (Opcional)</label>
+          </p-floatLabel>
+          <small class="hint">Solo si difiere del precio base</small>
+        </div>
+      </div>
+    </p-card>
 
     <div class="form-actions">
-      <button mat-button type="button" (click)="cancelar()">
-        Cancelar
-      </button>
-      <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
-        <mat-icon>save</mat-icon>
-        {{ isEditMode() ? 'Actualizar' : 'Crear' }} Producto
-      </button>
+      <p-button label="Cancelar" icon="pi pi-times" [text]="true" (onClick)="cancelar()" />
+      <p-button label="{{ isEditMode() ? 'Actualizar' : 'Crear' }} Producto" icon="pi pi-save" type="submit"
+        [loading]="loading()" />
     </div>
   </form>
   }
+  <p-toast />
 </div>

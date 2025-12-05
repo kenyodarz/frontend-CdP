@@ -6,121 +6,94 @@
   } @else if (cliente(); as cli) {
   <div class="header">
     <div class="title-section">
-      <button mat-icon-button (click)="volver()" matTooltip="Volver">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+      <p-button icon="pi pi-arrow-left" [rounded]="true" [text]="true" (onClick)="volver()" pTooltip="Volver" />
       <h2>{{ cli.nombre }}</h2>
     </div>
     <div class="actions">
-      <button mat-raised-button color="primary" (click)="editar()">
-        <mat-icon>edit</mat-icon>
-        Editar
-      </button>
-      <button mat-raised-button color="warn" (click)="desactivar()" [disabled]="cli.estado === 'INACTIVO'">
-        <mat-icon>block</mat-icon>
-        Desactivar
-      </button>
+      <p-button label="Editar" icon="pi pi-pencil" severity="warn" (onClick)="editar()" />
+      <p-button label="Desactivar" icon="pi pi-ban" severity="danger" (onClick)="desactivar()"
+        [disabled]="cli.estado === 'INACTIVO'" />
     </div>
   </div>
 
   <div class="content-grid">
     <!-- Información General -->
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Información General</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="label">Código:</span>
-            <span class="value">{{ cli.codigo || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Nombre:</span>
-            <span class="value"><strong>{{ cli.nombre }}</strong></span>
-          </div>
-          <div class="info-item">
-            <span class="label">Tipo Documento:</span>
-            <span class="value">{{ cli.tipoDocumento || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Número Documento:</span>
-            <span class="value">{{ cli.numeroDocumento || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Teléfono:</span>
-            <span class="value">{{ cli.telefono || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Tipo de Negocio:</span>
-            <span class="value">{{ cli.tipoNegocio || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Estado:</span>
-            <mat-chip [class.estado-activo]="cli.estado === 'ACTIVO'"
-              [class.estado-inactivo]="cli.estado === 'INACTIVO'">
-              {{ cli.estado }}
-            </mat-chip>
-          </div>
+    <p-card header="Información General">
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">Código:</span>
+          <span class="value">{{ cli.codigo || '-' }}</span>
         </div>
-      </mat-card-content>
-    </mat-card>
+        <div class="info-item">
+          <span class="label">Nombre:</span>
+          <span class="value"><strong>{{ cli.nombre }}</strong></span>
+        </div>
+        <div class="info-item">
+          <span class="label">Tipo Documento:</span>
+          <span class="value">{{ cli.tipoDocumento || '-' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Número Documento:</span>
+          <span class="value">{{ cli.numeroDocumento || '-' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Teléfono:</span>
+          <span class="value">{{ cli.telefono || '-' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Tipo de Negocio:</span>
+          <span class="value">{{ cli.tipoNegocio || '-' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Estado:</span>
+          <p-tag [value]="cli.estado" [severity]="getEstadoSeverity(cli.estado)" />
+        </div>
+      </div>
+    </p-card>
 
     <!-- Ubicación -->
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Ubicación</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="info-grid">
-          <div class="info-item full-width">
-            <span class="label">Dirección:</span>
-            <span class="value">{{ cli.direccion || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Barrio:</span>
-            <span class="value">{{ cli.barrio || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Comuna:</span>
-            <span class="value">{{ cli.comuna || '-' }}</span>
-          </div>
+    <p-card header="Ubicación">
+      <div class="info-grid">
+        <div class="info-item full-width">
+          <span class="label">Dirección:</span>
+          <span class="value">{{ cli.direccion || '-' }}</span>
         </div>
-      </mat-card-content>
-    </mat-card>
+        <div class="info-item">
+          <span class="label">Barrio:</span>
+          <span class="value">{{ cli.barrio || '-' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Comuna:</span>
+          <span class="value">{{ cli.comuna || '-' }}</span>
+        </div>
+      </div>
+    </p-card>
 
     <!-- Configuración Comercial -->
-    <mat-card class="full-width">
-      <mat-card-header>
-        <mat-card-title>Configuración Comercial</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="label">Tipo de Tarifa:</span>
-            <mat-chip class="tarifa-chip">
-              {{ getTarifaLabel(cli.tipoTarifa) }}
-            </mat-chip>
-          </div>
-          <div class="info-item">
-            <span class="label">Horario de Entrega:</span>
-            <span class="value">{{ cli.horarioEntrega || '-' }}</span>
-          </div>
-          @if (cli.ruta) {
-          <div class="info-item">
-            <span class="label">Ruta Asignada:</span>
-            <mat-chip class="ruta-chip">{{ cli.ruta.nombre }}</mat-chip>
-          </div>
-          }
-          @if (cli.conductor) {
-          <div class="info-item">
-            <span class="label">Conductor Asignado:</span>
-            <span class="value">{{ cli.conductor.nombre }}</span>
-          </div>
-          }
+    <p-card header="Configuración Comercial" styleClass="full-width">
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">Tipo de Tarifa:</span>
+          <p-tag [value]="getTarifaLabel(cli.tipoTarifa)" [severity]="getTarifaSeverity(cli.tipoTarifa)" />
         </div>
-      </mat-card-content>
-    </mat-card>
+        <div class="info-item">
+          <span class="label">Horario de Entrega:</span>
+          <span class="value">{{ cli.horarioEntrega || '-' }}</span>
+        </div>
+        @if (cli.ruta) {
+        <div class="info-item">
+          <span class="label">Ruta Asignada:</span>
+          <p-tag [value]="cli.ruta.nombre" severity="info" />
+        </div>
+        }
+        @if (cli.conductor) {
+        <div class="info-item">
+          <span class="label">Conductor Asignado:</span>
+          <span class="value">{{ cli.conductor.nombre }}</span>
+        </div>
+        }
+      </div>
+    </p-card>
   </div>
   }
 </div>

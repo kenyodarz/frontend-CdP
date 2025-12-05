@@ -1,12 +1,12 @@
 import { Component, Input } from '@angular/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-loading',
-  imports: [MatProgressSpinnerModule],
+  imports: [ProgressSpinnerModule],
   template: `
     <div class="loading-container">
-      <mat-spinner [diameter]="diameter" [color]="color" />
+      <p-progressSpinner ariaLabel="loading" [style]="{width: diameter + 'px', height: diameter + 'px'}" strokeWidth="4" />
       @if (message) {
         <p class="loading-message">{{ message }}</p>
       }
@@ -24,7 +24,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
     .loading-message {
       margin-top: 16px;
-      color: #666;
+      color: var(--p-text-color-secondary);
       font-size: 14px;
       text-align: center;
     }
@@ -33,5 +33,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 export class Loading {
   @Input() message?: string;
   @Input() diameter: number = 50;
-  @Input() color: 'primary' | 'accent' | 'warn' = 'primary';
+  // Color prop is not directly mapped in PrimeNG spinner same way, usually handled by CSS or stroke color
+  @Input() color: string = 'primary';
 }

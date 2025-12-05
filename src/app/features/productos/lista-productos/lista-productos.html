@@ -1,10 +1,7 @@
 <div class="lista-productos-container">
   <div class="header">
     <h2>Productos</h2>
-    <button mat-raised-button color="primary" (click)="nuevoProducto()">
-      <mat-icon>add</mat-icon>
-      Nuevo Producto
-    </button>
+    <p-button label="Nuevo Producto" icon="pi pi-plus" (onClick)="nuevoProducto()" />
   </div>
 
   @if (loading()) {
@@ -13,94 +10,67 @@
   <app-error-message [title]="'Error al cargar productos'" [message]="error()!" (retry)="onRetry()" />
   } @else {
   <div class="table-container">
+    <div class="filter-container">
+      <p-iconField iconPosition="left">
+        <p-inputIcon styleClass="pi pi-search" />
+        <input type="text" pInputText placeholder="Buscar..." (input)="onSearch($event)" />
+      </p-iconField>
+    </div>
+
     <!-- Tabla -->
-    <table mat-table [dataSource]="sortedData()" matSort (matSortChange)="onSort($event)" class="productos-table">
-
-      <!-- Columna Código -->
-      <ng-container matColumnDef="codigo">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Código</th>
-        <td mat-cell *matCellDef="let producto">{{ producto.codigo || '-' }}</td>
-      </ng-container>
-
-      <!-- Columna Nombre -->
-      <ng-container matColumnDef="nombre">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
-        <td mat-cell *matCellDef="let producto">
-          <strong>{{ producto.nombre }}</strong>
-        </td>
-      </ng-container>
-
-      <!-- Columna Stock Actual -->
-      <ng-container matColumnDef="stockActual">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Stock Actual</th>
-        <td mat-cell *matCellDef="let producto">
-          <mat-chip [class.stock-bajo]="getStockStatus(producto) === 'bajo'">
-            {{ producto.stockActual }}
-          </mat-chip>
-        </td>
-      </ng-container>
-
-      <!-- Columna Stock Mínimo -->
-      <ng-container matColumnDef="stockMinimo">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Stock Mínimo</th>
-        <td mat-cell *matCellDef="let producto">{{ producto.stockMinimo }}</td>
-      </ng-container>
-
-      <!-- Columna Precio Venta -->
-      <ng-container matColumnDef="precioVenta">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio</th>
-        <td mat-cell *matCellDef="let producto">
-          {{ producto.precioBase | currency:'COP':'symbol-narrow':'1.0-0' }}
-        </td>
-      </ng-container>
-
-      <!-- Columna Estado -->
-      <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-        <td mat-cell *matCellDef="let producto">
-          <mat-chip [class.estado-activo]="producto.estado === 'ACTIVO'"
-            [class.estado-inactivo]="producto.estado === 'INACTIVO'">
-            {{ producto.estado }}
-          </mat-chip>
-        </td>
-      </ng-container>
-
-      <!-- Columna Acciones -->
-      <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef>Acciones</th>
-        <td mat-cell *matCellDef="let producto">
-          <button mat-icon-button [matMenuTriggerFor]="menu" [matTooltip]="'Opciones'">
-            <mat-icon>more_vert</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="verDetalle(producto)">
-              <mat-icon>visibility</mat-icon>
-              <span>Ver Detalle</span>
-            </button>
-            <button mat-menu-item (click)="editarProducto(producto)">
-              <mat-icon>edit</mat-icon>
-              <span>Editar</span>
-            </button>
-          </mat-menu>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row" (click)="verDetalle(row)"></tr>
-    </table>
+    <p-table [value]="productos()" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="codigo">Código <p-sortIcon field="codigo" /></th>
+          <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre" /></th>
+          <th pSortableColumn="stockActual">Stock Actual <p-sortIcon field="stockActual" /></th>
+          <th pSortableColumn="stockMinimo">Stock Mínimo <p-sortIcon field="stockMinimo" /></th>
+          <th pSortableColumn="precioBase">Precio <p-sortIcon field="precioBase" /></th>
+          <th pSortableColumn="estado">Estado <p-sortIcon field="estado" /></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-producto>
+        <tr (click)="verDetalle(producto)" class="table-row">
+          <td>{{ producto.codigo || '-' }}</td>
+          <td><strong>{{ producto.nombre }}</strong></td>
+          <td>
+            <p-tag [value]="producto.stockActual.toString()" [severity]="getStockSeverity(producto)" />
+          </td>
+          <td>{{ producto.stockMinimo }}</td>
+          <td>{{ producto.precioBase | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+          <td>
+            <p-tag [value]="producto.estado" [severity]="getEstadoSeverity(producto.estado)" />
+          </td>
+          <td>
+            <div class="action-buttons">
+              <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="info"
+                (onClick)="verDetalle(producto); $event.stopPropagation()" pTooltip="Ver Detalle"
+                tooltipPosition="top" />
+              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="warn"
+                (onClick)="editarProducto(producto); $event.stopPropagation()" pTooltip="Editar"
+                tooltipPosition="top" />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">
+            <div class="no-data">
+              <i class="pi pi-box no-data-icon"></i>
+              <p>No se encontraron productos</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
 
     <!-- Paginador -->
-    <mat-paginator [length]="totalItems()" [pageSize]="pageSize()" [pageIndex]="pageIndex()"
-      [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)" showFirstLastButtons>
-    </mat-paginator>
-
-    <!-- Mensaje cuando no hay datos -->
-    @if (productos().length === 0) {
-    <div class="no-data">
-      <mat-icon>inventory_2</mat-icon>
-      <p>No se encontraron productos</p>
-    </div>
-    }
+    <p-paginator (onPageChange)="onPageChange($event)" [first]="pageIndex() * pageSize()" [rows]="pageSize()"
+      [totalRecords]="totalItems()" [rowsPerPageOptions]="pageSizeOptions" [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} productos">
+    </p-paginator>
   </div>
   }
 </div>
