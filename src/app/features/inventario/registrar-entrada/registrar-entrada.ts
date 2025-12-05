@@ -10,15 +10,28 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { SelectModule } from 'primeng/select';
 import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
+import { TableModule } from 'primeng/table';
 import { MessageService } from 'primeng/api';
+import { forkJoin } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { ProductoService } from '../../../core/services/producto.service';
 import { InventarioService } from '../../../core/services/inventario.service';
 import { Producto } from '../../../core/models/producto/producto';
 import { Lote } from '../../../core/models/inventario/lote';
 import { RegistrarEntradaDTO } from '../../../core/models/inventario/registrarEntradaDTO';
+import { CrearLoteDTO } from '../../../core/models/inventario/crearLoteDTO';
 import { Loading } from '../../../shared/components/loading/loading';
 import { ErrorMessage } from '../../../shared/components/error-message/error-message';
+
+interface ProductoEntrada {
+  producto: Producto;
+  cantidad: number;
+  motivo: string;
+  lote?: Lote;
+  crearNuevoLote?: boolean;
+  nuevoLote?: CrearLoteDTO;
+}
 
 @Component({
   selector: 'app-registrar-entrada',
@@ -33,6 +46,7 @@ import { ErrorMessage } from '../../../shared/components/error-message/error-mes
     SelectModule,
     MessageModule,
     ToastModule,
+    TableModule,
     Loading,
     ErrorMessage
   ],
@@ -48,6 +62,7 @@ export class RegistrarEntrada implements OnInit {
   private readonly messageService = inject(MessageService);
 
   protected readonly entradaForm: FormGroup;
+  protected readonly loteForm: FormGroup;
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly productos = signal<Producto[]>([]);
@@ -55,6 +70,8 @@ export class RegistrarEntrada implements OnInit {
   protected readonly productoSeleccionado = signal<Producto | null>(null);
   protected readonly lotes = signal<Lote[]>([]);
   protected readonly mostrarLotes = signal(false);
+  protected readonly mostrarFormLote = signal(false);
+  protected readonly productosEntrada = signal<ProductoEntrada[]>([]);
 
   constructor() {
     this.entradaForm = this.fb.group({
@@ -62,6 +79,13 @@ export class RegistrarEntrada implements OnInit {
       cantidad: [null, [Validators.required, Validators.min(1)]],
       motivo: ['', Validators.required],
       codigoLote: [null]
+    });
+
+    this.loteForm = this.fb.group({
+      codigoLote: ['', Validators.required],
+      fechaElaboracion: [new Date().toISOString().split('T')[0], Validators.required],
+      fechaVencimiento: [null],
+      cantidad: [null, [Validators.required, Validators.min(1)]]
     });
   }
 
@@ -106,6 +130,7 @@ export class RegistrarEntrada implements OnInit {
       this.mostrarLotes.set(false);
       this.lotes.set([]);
       this.entradaForm.get('codigoLote')?.clearValidators();
+      this.mostrarFormLote.set(false);
     }
     this.entradaForm.get('codigoLote')?.updateValueAndValidity();
   }
@@ -130,7 +155,20 @@ export class RegistrarEntrada implements OnInit {
     });
   }
 
-  protected onSubmit(): void {
+  protected toggleFormLote(): void {
+    this.mostrarFormLote.set(!this.mostrarFormLote());
+    if (this.mostrarFormLote()) {
+      // Pre-llenar cantidad del lote con la cantidad del formulario
+      const cantidadEntrada = this.entradaForm.value.cantidad;
+      if (cantidadEntrada) {
+        this.loteForm.patchValue({ cantidad: cantidadEntrada });
+      }
+      // Fecha de elaboración por defecto es hoy
+      this.loteForm.patchValue({ fechaElaboracion: new Date().toISOString().split('T')[0] });
+    }
+  }
+
+  protected agregarProducto(): void {
     if (this.entradaForm.invalid) {
       this.entradaForm.markAllAsTouched();
       return;
@@ -141,40 +179,124 @@ export class RegistrarEntrada implements OnInit {
       return;
     }
 
-    const entrada: RegistrarEntradaDTO = {
-      idProducto: producto.idProducto!,
+    const entrada: ProductoEntrada = {
+      producto: producto,
       cantidad: this.entradaForm.value.cantidad,
       motivo: this.entradaForm.value.motivo,
-      codigoLote: this.entradaForm.value.codigoLote
+      crearNuevoLote: this.mostrarFormLote()
     };
 
+    // Si requiere lote y se va a crear uno nuevo
+    if (producto.requiereLote && this.mostrarFormLote()) {
+      if (this.loteForm.invalid) {
+        this.loteForm.markAllAsTouched();
+        return;
+      }
+
+      entrada.nuevoLote = {
+        idProducto: producto.idProducto!,
+        codigoLote: this.loteForm.value.codigoLote,
+        fechaElaboracion: this.loteForm.value.fechaElaboracion,
+        cantidad: this.loteForm.value.cantidad,
+        fechaVencimiento: this.loteForm.value.fechaVencimiento
+      };
+    } else if (producto.requiereLote) {
+      // Usar lote existente
+      const loteSeleccionado = this.lotes().find(
+        l => l.codigoLote === this.entradaForm.value.codigoLote
+      );
+      entrada.lote = loteSeleccionado;
+    }
+
+    // Agregar a la lista
+    this.productosEntrada.update(productos => [...productos, entrada]);
+
+    // Limpiar formularios
+    this.resetFormularioProducto();
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Producto agregado',
+      detail: `${producto.nombre} agregado a la lista`
+    });
+  }
+
+  protected eliminarProducto(index: number): void {
+    this.productosEntrada.update(productos =>
+      productos.filter((_, i) => i !== index)
+    );
+  }
+
+  protected registrarTodas(): void {
+    const productos = this.productosEntrada();
+    if (productos.length === 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Lista vacía',
+        detail: 'Agrega al menos un producto para registrar'
+      });
+      return;
+    }
+
     this.loading.set(true);
-    this.inventarioService.registrarEntrada(entrada).subscribe({
-      next: () => {
+
+    // Crear observables para cada entrada
+    const registros$ = productos.map(entrada => {
+      // Si necesita crear lote primero
+      if (entrada.crearNuevoLote && entrada.nuevoLote) {
+        return this.inventarioService.crearLote(entrada.nuevoLote).pipe(
+          // Después de crear el lote, registrar la entrada
+          switchMap((loteCreado: Lote) => {
+            const dto: RegistrarEntradaDTO = {
+              idProducto: entrada.producto.idProducto!,
+              cantidad: entrada.cantidad,
+              motivo: entrada.motivo,
+              codigoLote: loteCreado.codigoLote
+            };
+            return this.inventarioService.registrarEntrada(dto);
+          })
+        );
+      } else {
+        // Registrar entrada directamente
+        const dto: RegistrarEntradaDTO = {
+          idProducto: entrada.producto.idProducto!,
+          cantidad: entrada.cantidad,
+          motivo: entrada.motivo,
+          codigoLote: entrada.lote?.codigoLote
+        };
+        return this.inventarioService.registrarEntrada(dto);
+      }
+    });
+
+    // Ejecutar todas las llamadas en paralelo
+    forkJoin(registros$).subscribe({
+      next: (resultados) => {
         this.messageService.add({
           severity: 'success',
           summary: 'Éxito',
-          detail: 'Entrada registrada correctamente'
+          detail: `${resultados.length} entrada(s) registrada(s) correctamente`
         });
-        this.resetForm();
+        this.productosEntrada.set([]);
         this.loading.set(false);
       },
       error: (err: any) => {
-        console.error('Error al registrar entrada:', err);
+        console.error('Error al registrar entradas:', err);
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'No se pudo registrar la entrada'
+          detail: 'Ocurrió un error al registrar algunas entradas'
         });
         this.loading.set(false);
       }
     });
   }
 
-  protected resetForm(): void {
+  private resetFormularioProducto(): void {
     this.entradaForm.reset();
+    this.loteForm.reset();
     this.productoSeleccionado.set(null);
     this.mostrarLotes.set(false);
+    this.mostrarFormLote.set(false);
     this.lotes.set([]);
   }
 

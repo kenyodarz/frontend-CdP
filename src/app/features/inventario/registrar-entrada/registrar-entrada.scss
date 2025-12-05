@@ -1,163 +1,213 @@
 .registrar-entrada-container {
-  padding: 24px;
+  padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
-}
 
-.header {
-  margin-bottom: 24px;
+  .header {
+    margin-bottom: 2rem;
 
-  h2 {
-    margin: 0 0 8px 0;
-    font-size: 28px;
-    font-weight: 500;
-    color: #333;
+    h2 {
+      color: var(--primary-color);
+      margin: 0 0 0.5rem 0;
+      font-size: 1.75rem;
+    }
+
+    .subtitle {
+      color: var(--text-color-secondary);
+      margin: 0;
+    }
   }
 
-  .subtitle {
-    margin: 0;
-    color: #666;
-    font-size: 14px;
-  }
-}
+  .add-product-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--surface-border);
 
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  margin-bottom: 24px;
+    h3 {
+      margin: 0 0 1.5rem 0;
+      color: var(--text-color);
+      font-size: 1.25rem;
+    }
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-grid-lote {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
 
   .field {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 0.5rem;
 
-    &.full-width {
-      grid-column: 1 / -1;
+    .p-error,
+    .p-info {
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .p-info {
+      color: var(--primary-color);
     }
   }
-}
 
-.producto-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-
-  .producto-codigo {
-    font-family: monospace;
-    background-color: #f5f5f5;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
+  .lote-actions {
+    margin-top: 0.5rem;
   }
 
-  .producto-nombre {
-    flex: 1;
-    font-size: 14px;
+  .nuevo-lote-section {
+    background: var(--surface-50);
+    border: 1px solid var(--primary-200);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-top: 1rem;
+
+    h4 {
+      margin: 0 0 1rem 0;
+      color: var(--primary-color);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .p-info {
+      display: block;
+      margin-top: 1rem;
+      font-size: 0.875rem;
+    }
   }
 
-  .producto-stock {
-    font-size: 12px;
-    color: #666;
-  }
-}
+  .productos-lista-section {
+    margin-top: 2rem;
 
-.info-producto {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
-  background-color: #e3f2fd;
-  border-radius: 8px;
-  border-left: 4px solid #1976d2;
-
-  i {
-    color: #1976d2;
-    font-size: 20px;
-    margin-top: 2px;
+    h3 {
+      margin: 0 0 1rem 0;
+      color: var(--text-color);
+      font-size: 1.25rem;
+    }
   }
 
-  .info-content {
+  .producto-item {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    flex: 1;
+    gap: 0.25rem;
+
+    .producto-codigo {
+      font-size: 0.875rem;
+      color: var(--text-color-secondary);
+      font-weight: 600;
+    }
+
+    .producto-nombre {
+      font-weight: 500;
+    }
+
+    .producto-stock {
+      font-size: 0.875rem;
+      color: var(--text-color-secondary);
+    }
+  }
+
+  .producto-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 
     strong {
-      color: #0d47a1;
-      font-size: 16px;
+      color: var(--primary-color);
+      font-size: 0.875rem;
     }
 
     span {
-      color: #1565c0;
-      font-size: 14px;
+      font-size: 0.9rem;
+    }
+  }
+
+  .lote-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .lote-disponible {
+      font-size: 0.875rem;
+      color: var(--text-color-secondary);
+    }
+  }
+
+  .badge-nuevo-lote {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: var(--green-100);
+    color: var(--green-700);
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .text-muted {
+    color: var(--text-color-secondary);
+    font-style: italic;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-color-secondary);
+
+    i {
+      font-size: 3rem;
+      opacity: 0.5;
+      margin-bottom: 1rem;
     }
 
-    .badge-lote {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background-color: #fff3e0;
-      color: #e65100;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-      width: fit-content;
-      margin-top: 4px;
+    p {
+      font-size: 1.1rem;
+      margin: 0.5rem 0;
+    }
 
-      i {
-        color: #e65100;
-        font-size: 12px;
-        margin: 0;
+    small {
+      font-size: 0.875rem;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .form-grid-lote {
+      grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+      flex-direction: column-reverse;
+
+      button {
+        width: 100%;
       }
     }
-  }
-}
-
-.lote-item {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-
-  strong {
-    font-size: 14px;
-  }
-
-  .lote-disponible {
-    font-size: 12px;
-    color: #666;
-  }
-}
-
-.p-error {
-  color: #d32f2f;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-.p-info {
-  color: #1976d2;
-  font-size: 12px;
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid #e0e0e0;
-}
-
-// Responsive
-@media (max-width: 768px) {
-  .form-grid {
-    grid-template-columns: 1fr;
   }
 }
