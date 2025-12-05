@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { BadgeModule } from 'primeng/badge';
+import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { MenuItem } from 'primeng/api';
 
 @Component({
@@ -9,30 +10,41 @@ import { MenuItem } from 'primeng/api';
   imports: [
     ButtonModule,
     MenuModule,
-    BadgeModule
+    BadgeModule,
+    OverlayBadgeModule
   ],
   template: `
     <div class="navbar">
       <span class="app-title">Sistema de Inventario</span>
       <span class="spacer"></span>
       
-      <p-button 
-        icon="pi pi-bell" 
-        [badge]="notificationCount().toString()" 
-        badgeSeverity="danger"
-        [text]="true"
-        [rounded]="true"
-        (click)="notificationsMenu.toggle($event)" />
+      <p-overlaybadge [value]="notificationCount().toString()" severity="danger">
+        <p-button 
+          icon="pi pi-bell" 
+          [text]="true"
+          [rounded]="true"
+          styleClass="navbar-button"
+          (click)="notificationsMenu.toggle($event)" />
+      </p-overlaybadge>
       
-      <p-menu #notificationsMenu [model]="notificationItems" [popup]="true" />
+      <p-menu 
+        #notificationsMenu 
+        [model]="notificationItems" 
+        [popup]="true"
+        appendTo="body" />
 
       <p-button 
         icon="pi pi-user" 
         [text]="true"
         [rounded]="true"
+        styleClass="navbar-button"
         (click)="userMenu.toggle($event)" />
       
-      <p-menu #userMenu [model]="userMenuItems" [popup]="true" />
+      <p-menu 
+        #userMenu 
+        [model]="userMenuItems" 
+        [popup]="true"
+        appendTo="body" />
     </div>
   `,
   styles: [`
@@ -40,18 +52,19 @@ import { MenuItem } from 'primeng/api';
       position: sticky;
       top: 0;
       z-index: 1000;
-      background-color: var(--primary-color);
+      background-color: #1e40af;
       color: white;
-      padding: 0 1rem;
+      padding: 0 1.5rem;
       height: 64px;
       display: flex;
       align-items: center;
+      gap: 1rem;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .app-title {
       font-size: 20px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .spacer {
@@ -59,12 +72,27 @@ import { MenuItem } from 'primeng/api';
     }
 
     :host ::ng-deep {
-      .p-button.p-button-text {
-        color: white;
+      .navbar-button {
+        color: white !important;
       }
       
-      .p-button.p-button-text:hover {
-        background-color: rgba(255, 255, 255, 0.1);
+      .navbar-button .p-button-icon {
+        color: white !important;
+        font-size: 1.25rem;
+      }
+      
+      .navbar-button:hover {
+        background-color: rgba(255, 255, 255, 0.15) !important;
+      }
+
+      .navbar-button:focus {
+        box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.3) !important;
+      }
+
+      .p-overlaybadge .p-badge {
+        min-width: 1.25rem;
+        height: 1.25rem;
+        line-height: 1.25rem;
       }
     }
   `]
