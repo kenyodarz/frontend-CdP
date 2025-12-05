@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -56,7 +56,7 @@ interface ProductoEntrada {
 })
 export class RegistrarEntrada implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly router = inject(Router);
+  private readonly ref = inject(DynamicDialogRef);
   private readonly productoService = inject(ProductoService);
   private readonly inventarioService = inject(InventarioService);
   private readonly documentoRecepcionService = inject(DocumentoRecepcionService);
@@ -71,6 +71,7 @@ export class RegistrarEntrada implements OnInit {
   protected readonly productosFiltrados = signal<Producto[]>([]);
   protected readonly productoSeleccionado = signal<Producto | null>(null);
   protected readonly lotes = signal<Lote[]>([]);
+  protected readonly lotesFiltrados = signal<Lote[]>([]);
   protected readonly mostrarLotes = signal(false);
   protected readonly mostrarFormLote = signal(false);
   protected readonly productosEntrada = signal<ProductoEntrada[]>([]);
@@ -123,6 +124,7 @@ export class RegistrarEntrada implements OnInit {
 
   ngOnInit(): void {
     this.cargarProductos();
+    this.cargarLotes();
   }
 
   protected cargarProductos(): void {
@@ -149,21 +151,29 @@ export class RegistrarEntrada implements OnInit {
     this.productosFiltrados.set(filtrados);
   }
 
+  protected filtrarLotes(event: any): void {
+    const query = event.query.toLowerCase();
+    const filtrados = this.lotes().filter(l =>
+      l.codigoLote.toLowerCase().includes(query)
+    );
+    this.lotesFiltrados.set(filtrados);
+  }
+
   protected onProductoSeleccionado(event: any): void {
     const producto = event.value as Producto;
     this.productoSeleccionado.set(producto);
 
     // Todos los productos requieren lote, siempre mostrar sección de lotes
-    if (producto.idProducto) {
-      this.cargarLotesProducto(producto.idProducto);
-      this.mostrarLotes.set(true);
-      this.entradaForm.get('codigoLote')?.setValidators(Validators.required);
-      this.entradaForm.get('codigoLote')?.updateValueAndValidity();
-    }
+    this.mostrarLotes.set(true);
+    this.entradaForm.get('codigoLote')?.setValidators(Validators.required);
+    this.entradaForm.get('codigoLote')?.updateValueAndValidity();
   }
 
-  private cargarLotesProducto(idProducto: number): void {
-    this.inventarioService.obtenerLotesPorProducto(idProducto).subscribe({
+  private cargarLotes(): void {
+    // Cargar TODOS los lotes activos
+    // Esto permite compartir lotes entre productos relacionados
+    // Ej: Hamburguesa X10, X5, X6 pueden usar el mismo lote
+    this.inventarioService.obtenerTodosLotes().subscribe({
       next: (lotes: Lote[]) => {
         // Filtrar solo lotes activos con cantidad disponible
         const lotesDisponibles = lotes.filter(l =>
@@ -176,7 +186,7 @@ export class RegistrarEntrada implements OnInit {
         this.messageService.add({
           severity: 'warn',
           summary: 'Advertencia',
-          detail: 'No se pudieron cargar los lotes del producto'
+          detail: 'No se pudieron cargar los lotes disponibles'
         });
       }
     });
@@ -408,11 +418,10 @@ export class RegistrarEntrada implements OnInit {
       });
     } else {
       // Usar lote existente
-      const loteSeleccionado = this.lotes().find(
-        l => l.codigoLote === codigoLoteExistente
-      );
+      // El autocomplete devuelve el objeto Lote completo
+      const loteSeleccionado = codigoLoteExistente as Lote;
 
-      if (!loteSeleccionado) {
+      if (!loteSeleccionado || !loteSeleccionado.codigoLote) {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
@@ -494,13 +503,12 @@ export class RegistrarEntrada implements OnInit {
           summary: 'Documento registrado',
           detail: `Documento ${documentoConfirmado.numeroDocumento} con ${documentoConfirmado.totalProductos} producto(s) registrado correctamente`
         });
-        this.productosEntrada.set([]);
-        this.documentoForm.reset({
-          fechaElaboracion: new Date().toISOString().split('T')[0],
-          motivo: 'Producción diaria',
-          observaciones: ''
+
+        // Cerrar dialog con resultado exitoso
+        this.ref.close({
+          success: true,
+          documento: documentoConfirmado
         });
-        this.loading.set(false);
       },
       error: (err: any) => {
         console.error('Error al registrar documento:', err);
@@ -524,7 +532,7 @@ export class RegistrarEntrada implements OnInit {
   }
 
   protected onCancel(): void {
-    this.router.navigate(['/inventario/movimientos']);
+    this.ref.close(null);
   }
 
   protected getProductoDisplay(producto: Producto): string {

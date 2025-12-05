@@ -26,6 +26,10 @@ export class InventarioService {
     return this.http.get<Lote[]>(`${this.apiUrlLotes}/producto/${idProducto}`);
   }
 
+  obtenerTodosLotes(): Observable<Lote[]> {
+    return this.http.get<Lote[]>(this.apiUrlLotes);
+  }
+
   obtenerProximosAVencer(dias: number = 3): Observable<Lote[]> {
     const params = new HttpParams().set('dias', dias.toString());
     return this.http.get<Lote[]>(`${this.apiUrlLotes}/proximos-vencer`, { params });
