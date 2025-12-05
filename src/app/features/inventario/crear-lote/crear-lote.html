@@ -4,101 +4,92 @@
   } @else {
   <div class="header">
     <h2>Nuevo Lote de Inventario</h2>
-    <button mat-icon-button (click)="cancelar()" matTooltip="Cerrar">
-      <mat-icon>close</mat-icon>
-    </button>
+    <p-button icon="pi pi-times" [text]="true" [rounded]="true" (click)="cancelar()" />
   </div>
 
   <form [formGroup]="loteForm" (ngSubmit)="onSubmit()">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Información del Lote</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="form-grid">
-          <!-- Producto -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Producto *</mat-label>
-            <mat-select formControlName="idProducto">
-              @for (producto of productos(); track producto.idProducto) {
-              <mat-option [value]="producto.idProducto">
-                {{ producto.nombre }}
-              </mat-option>
-              }
-            </mat-select>
-            <mat-icon matPrefix>inventory_2</mat-icon>
-            @if (loteForm.get('idProducto')?.invalid && loteForm.get('idProducto')?.touched) {
-            <mat-error>El producto es requerido</mat-error>
-            }
-          </mat-form-field>
-
-          <!-- Código de Lote -->
-          <mat-form-field appearance="outline">
-            <mat-label>Código de Lote *</mat-label>
-            <input matInput formControlName="codigoLote" placeholder="Ej: LOTE-2024-001">
-            <mat-icon matPrefix>qr_code</mat-icon>
-            @if (loteForm.get('codigoLote')?.invalid && loteForm.get('codigoLote')?.touched) {
-            <mat-error>El código de lote es requerido</mat-error>
-            }
-          </mat-form-field>
-
-          <!-- Cantidad -->
-          <mat-form-field appearance="outline">
-            <mat-label>Cantidad *</mat-label>
-            <input matInput type="number" formControlName="cantidad" min="1">
-            <mat-icon matPrefix>inventory</mat-icon>
-            @if (loteForm.get('cantidad')?.invalid && loteForm.get('cantidad')?.touched) {
-            <mat-error>
-              @if (loteForm.get('cantidad')?.hasError('required')) {
-              La cantidad es requerida
-              } @else if (loteForm.get('cantidad')?.hasError('min')) {
-              La cantidad debe ser mayor a 0
-              }
-            </mat-error>
-            }
-          </mat-form-field>
-
-          <!-- Fecha de Elaboración -->
-          <mat-form-field appearance="outline">
-            <mat-label>Fecha de Elaboración *</mat-label>
-            <input matInput [matDatepicker]="pickerElaboracion" formControlName="fechaElaboracion">
-            <mat-datepicker-toggle matIconSuffix [for]="pickerElaboracion"></mat-datepicker-toggle>
-            <mat-datepicker #pickerElaboracion></mat-datepicker>
-            @if (loteForm.get('fechaElaboracion')?.invalid && loteForm.get('fechaElaboracion')?.touched) {
-            <mat-error>La fecha de elaboración es requerida</mat-error>
-            }
-          </mat-form-field>
-
-          <!-- Fecha de Vencimiento -->
-          <mat-form-field appearance="outline">
-            <mat-label>Fecha de Vencimiento</mat-label>
-            <input matInput [matDatepicker]="pickerVencimiento" formControlName="fechaVencimiento">
-            <mat-datepicker-toggle matIconSuffix [for]="pickerVencimiento"></mat-datepicker-toggle>
-            <mat-datepicker #pickerVencimiento></mat-datepicker>
-            <mat-hint>Se calcula automáticamente si el producto tiene días de vida útil</mat-hint>
-          </mat-form-field>
+    <p-card>
+      <ng-template pTemplate="header">
+        <span class="card-title">Información del Lote</span>
+      </ng-template>
+      <div class="form-grid">
+        <!-- Producto -->
+        <div class="field full-width">
+          <p-floatLabel>
+            <p-select formControlName="idProducto" [options]="productos()" optionLabel="nombre" optionValue="idProducto"
+              [filter]="true" filterBy="nombre" inputId="producto" [style]="{'width':'100%'}" />
+            <label for="producto">Producto *</label>
+          </p-floatLabel>
+          @if (loteForm.get('idProducto')?.invalid && loteForm.get('idProducto')?.touched) {
+          <small class="p-error">El producto es requerido</small>
+          }
         </div>
 
-        <!-- Info adicional -->
-        @if (loteForm.get('idProducto')?.value) {
-        <div class="info-producto">
-          <mat-icon>info</mat-icon>
-          <span>
-            Producto seleccionado: <strong>{{ getProductoNombre(loteForm.get('idProducto')?.value) }}</strong>
-          </span>
+        <!-- Código de Lote -->
+        <div class="field">
+          <p-floatLabel>
+            <input pInputText formControlName="codigoLote" id="codigoLote" placeholder="Ej: LOTE-2024-001" />
+            <label for="codigoLote">Código de Lote *</label>
+          </p-floatLabel>
+          @if (loteForm.get('codigoLote')?.invalid && loteForm.get('codigoLote')?.touched) {
+          <small class="p-error">El código de lote es requerido</small>
+          }
         </div>
-        }
-      </mat-card-content>
-    </mat-card>
+
+        <!-- Cantidad -->
+        <div class="field">
+          <p-floatLabel>
+            <p-inputNumber formControlName="cantidad" inputId="cantidad" [min]="1" [showButtons]="true" />
+            <label for="cantidad">Cantidad *</label>
+          </p-floatLabel>
+          @if (loteForm.get('cantidad')?.invalid && loteForm.get('cantidad')?.touched) {
+          <small class="p-error">
+            @if (loteForm.get('cantidad')?.hasError('required')) {
+            La cantidad es requerida
+            } @else if (loteForm.get('cantidad')?.hasError('min')) {
+            La cantidad debe ser mayor a 0
+            }
+          </small>
+          }
+        </div>
+
+        <!-- Fecha de Elaboración -->
+        <div class="field">
+          <p-floatLabel>
+            <p-datepicker formControlName="fechaElaboracion" inputId="fechaElaboracion" [showIcon]="true"
+              dateFormat="yy-mm-dd" />
+            <label for="fechaElaboracion">Fecha de Elaboración *</label>
+          </p-floatLabel>
+          @if (loteForm.get('fechaElaboracion')?.invalid && loteForm.get('fechaElaboracion')?.touched) {
+          <small class="p-error">La fecha de elaboración es requerida</small>
+          }
+        </div>
+
+        <!-- Fecha de Vencimiento -->
+        <div class="field">
+          <p-floatLabel>
+            <p-datepicker formControlName="fechaVencimiento" inputId="fechaVencimiento" [showIcon]="true"
+              dateFormat="yy-mm-dd" />
+            <label for="fechaVencimiento">Fecha de Vencimiento</label>
+          </p-floatLabel>
+          <small class="p-hint">Se calcula automáticamente si el producto tiene días de vida útil</small>
+        </div>
+      </div>
+
+      <!-- Info adicional -->
+      @if (loteForm.get('idProducto')?.value) {
+      <div class="info-producto">
+        <i class="pi pi-info-circle"></i>
+        <span>
+          Producto seleccionado: <strong>{{ getProductoNombre(loteForm.get('idProducto')?.value) }}</strong>
+        </span>
+      </div>
+      }
+    </p-card>
 
     <div class="form-actions">
-      <button mat-button type="button" (click)="cancelar()">
-        Cancelar
-      </button>
-      <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
-        <mat-icon>save</mat-icon>
-        Crear Lote
-      </button>
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (click)="cancelar()" />
+      <p-button label="Crear Lote" icon="pi pi-save" type="submit" [disabled]="loading()" />
     </div>
   </form>
   }

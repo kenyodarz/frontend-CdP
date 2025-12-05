@@ -99,11 +99,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/reportes/ventas/ventas').then(m => m.Ventas)
       },
       {
-        path: 'inventario',
+        path: 'inventario-valorizado',
         loadComponent: () => import('./features/reportes/inventario-valorizado/inventario-valorizado').then(m => m.InventarioValorizado)
       },
       {
-        path: 'productos-vendidos',
+        path: 'productos-mas-vendidos',
         loadComponent: () => import('./features/reportes/productos-mas-vendidos/productos-mas-vendidos').then(m => m.ProductosMasVendidos)
       }
     ]

@@ -1,18 +1,17 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { SelectModule } from 'primeng/select';
+import { DatePickerModule } from 'primeng/datepicker';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 import { InventarioService } from '../../../core/services/inventario.service';
 import { ProductoService } from '../../../core/services/producto.service';
+import { NotificationService } from '../../../shared/services/notification.service';
 import { CrearLoteDTO } from '../../../core/models/inventario/crearLoteDTO';
 import { ProductoSimple } from '../../../core/models/producto/productoSimple';
 import { Loading } from '../../../shared/components/loading/loading';
@@ -21,15 +20,13 @@ import { Loading } from '../../../shared/components/loading/loading';
   selector: 'app-crear-lote',
   imports: [
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatSnackBarModule,
+    CardModule,
+    InputTextModule,
+    ButtonModule,
+    SelectModule,
+    DatePickerModule,
+    FloatLabelModule,
+    InputNumberModule,
     Loading
   ],
   templateUrl: './crear-lote.html',
@@ -40,7 +37,7 @@ export class CrearLote implements OnInit {
   private readonly inventarioService = inject(InventarioService);
   private readonly productoService = inject(ProductoService);
   private readonly router = inject(Router);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notificationService = inject(NotificationService);
 
   protected readonly loading = signal(false);
   protected readonly productos = signal<ProductoSimple[]>([]);
@@ -119,7 +116,7 @@ export class CrearLote implements OnInit {
 
   protected onSubmit(): void {
     if (this.loteForm.invalid) {
-      this.snackBar.open('Por favor, completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
+      this.notificationService.warning('Por favor, completa todos los campos requeridos');
       return;
     }
 
@@ -137,13 +134,13 @@ export class CrearLote implements OnInit {
     this.inventarioService.crearLote(loteDTO).subscribe({
       next: () => {
         this.loading.set(false);
-        this.snackBar.open('Lote creado exitosamente', 'Cerrar', { duration: 3000 });
+        this.notificationService.success('Lote creado exitosamente');
         this.router.navigate(['/inventario/lotes']);
       },
       error: (err) => {
         console.error('Error al crear lote:', err);
         this.loading.set(false);
-        this.snackBar.open('Error al crear el lote', 'Cerrar', { duration: 3000 });
+        this.notificationService.error('Error al crear el lote');
       }
     });
   }

@@ -1,13 +1,11 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
-import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration } from 'chart.js';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { SelectModule } from 'primeng/select';
+import { ChartModule } from 'primeng/chart';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 import { ReporteService } from '../../../core/services/reporte.service';
 import { Loading } from '../../../shared/components/loading/loading';
@@ -27,14 +25,13 @@ interface ProductoVendido {
 @Component({
   selector: 'app-productos-mas-vendidos',
   imports: [
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatSelectModule,
+    CardModule,
+    ButtonModule,
+    SelectModule,
+    ChartModule,
+    FloatLabelModule,
     FormsModule,
     CurrencyPipe,
-    BaseChartDirective,
     Loading,
     ErrorMessage
   ],
@@ -49,47 +46,16 @@ export class ProductosMasVendidos implements OnInit {
   protected readonly productos = signal<ProductoVendido[]>([]);
   protected readonly limite = signal(10);
 
-  protected readonly limites = [5, 10, 15, 20];
+  protected readonly limites = [
+    { label: 'Top 5', value: 5 },
+    { label: 'Top 10', value: 10 },
+    { label: 'Top 15', value: 15 },
+    { label: 'Top 20', value: 20 }
+  ];
 
   // Chart configuration
-  protected barChartData: ChartConfiguration<'bar'>['data'] = {
-    labels: [],
-    datasets: [
-      {
-        data: [],
-        label: 'Cantidad Vendida',
-        backgroundColor: 'rgba(25, 118, 210, 0.7)',
-        borderColor: '#1976d2',
-        borderWidth: 1
-      }
-    ]
-  };
-
-  protected barChartOptions: ChartConfiguration<'bar'>['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top'
-      },
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            return context.dataset.label + ': ' + context.parsed.y + ' unidades';
-          }
-        }
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          stepSize: 1
-        }
-      }
-    }
-  };
+  protected barChartData: any;
+  protected barChartOptions: any;
 
   protected readonly topProductos = computed(() => {
     return this.productos().slice(0, this.limite());
@@ -104,7 +70,57 @@ export class ProductosMasVendidos implements OnInit {
   });
 
   ngOnInit(): void {
+    this.initChartOptions();
     this.cargarDatos();
+  }
+
+  private initChartOptions(): void {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+    this.barChartOptions = {
+      maintainAspectRatio: false,
+      aspectRatio: 0.8,
+      plugins: {
+        legend: {
+          labels: {
+            color: textColor
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context: any) {
+              return context.dataset.label + ': ' + context.parsed.y + ' unidades';
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: textColorSecondary,
+            font: {
+              weight: 500
+            }
+          },
+          grid: {
+            color: surfaceBorder,
+            drawBorder: false
+          }
+        },
+        y: {
+          ticks: {
+            color: textColorSecondary
+          },
+          grid: {
+            color: surfaceBorder,
+            drawBorder: false
+          }
+        }
+      }
+    };
   }
 
   protected cargarDatos(): void {
@@ -143,15 +159,20 @@ export class ProductosMasVendidos implements OnInit {
   }
 
   private actualizarGrafica(data: ProductoVendido[]): void {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const primaryColor = documentStyle.getPropertyValue('--primary-color');
+
     this.barChartData = {
       labels: data.map(p => p.nombre),
-      datasets: [{
-        data: data.map(p => p.cantidadVendida),
-        label: 'Cantidad Vendida',
-        backgroundColor: 'rgba(25, 118, 210, 0.7)',
-        borderColor: '#1976d2',
-        borderWidth: 1
-      }]
+      datasets: [
+        {
+          label: 'Cantidad Vendida',
+          data: data.map(p => p.cantidadVendida),
+          backgroundColor: primaryColor ? primaryColor + 'B3' : 'rgba(59, 130, 246, 0.7)', // Add opacity
+          borderColor: primaryColor || '#3B82F6',
+          borderWidth: 1
+        }
+      ]
     };
   }
 

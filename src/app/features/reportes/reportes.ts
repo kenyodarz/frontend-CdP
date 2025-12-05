@@ -1,50 +1,38 @@
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatTabsModule } from '@angular/material/tabs';
+import { Component, OnInit } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { TabsModule } from 'primeng/tabs';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-reportes',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, MatTabsModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TabsModule],
   template: `
     <div class="reportes-container">
-      <h1>Reportes</h1>
+      <h1 class="text-3xl font-bold mb-4">Reportes</h1>
       
-      <nav mat-tab-nav-bar [tabPanel]="tabPanel">
-        <a mat-tab-link
-           routerLink="/reportes/ventas"
-           routerLinkActive #rla1="routerLinkActive"
-           [active]="rla1.isActive">
-          Ventas
-        </a>
-        <a mat-tab-link
-           routerLink="/reportes/inventario"
-           routerLinkActive #rla2="routerLinkActive"
-           [active]="rla2.isActive">
-          Inventario Valorizado
-        </a>
-        <a mat-tab-link
-           routerLink="/reportes/productos-vendidos"
-           routerLinkActive #rla3="routerLinkActive"
-           [active]="rla3.isActive">
-          Productos Más Vendidos
-        </a>
-      </nav>
-      <mat-tab-nav-panel #tabPanel>
+      <p-tabs value="0">
+        <p-tablist>
+            <p-tab value="0" routerLink="/reportes/ventas">Ventas</p-tab>
+            <p-tab value="1" routerLink="/reportes/inventario-valorizado">Inventario Valorizado</p-tab>
+            <p-tab value="2" routerLink="/reportes/productos-mas-vendidos">Productos Más Vendidos</p-tab>
+        </p-tablist>
+      </p-tabs>
+
+      <div class="mt-4">
         <router-outlet />
-      </mat-tab-nav-panel>
+      </div>
     </div>
   `,
-  styles: `
+  styles: [`
     .reportes-container {
-      padding: 24px;
+      padding: 2rem;
     }
-    
-    h1 {
-      margin: 0 0 24px 0;
-      color: #1976d2;
-    }
-  `
+  `]
 })
-export class Reportes {
+export class Reportes implements OnInit {
+  constructor(private router: Router) { }
 
+  ngOnInit() {
+    // No specific logic needed for basic routing tabs
+  }
 }

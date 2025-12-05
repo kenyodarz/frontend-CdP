@@ -1,10 +1,7 @@
 <div class="lotes-container">
   <div class="header">
     <h2>Lotes de Inventario</h2>
-    <button mat-raised-button color="primary" (click)="nuevoLote()">
-      <mat-icon>add</mat-icon>
-      Nuevo Lote
-    </button>
+    <p-button label="Nuevo Lote" icon="pi pi-plus" (click)="nuevoLote()" />
   </div>
 
   @if (loading()) {
@@ -13,112 +10,89 @@
   <app-error-message [title]="'Error al cargar lotes'" [message]="error()!" (retry)="onRetry()" />
   } @else {
   <div class="table-container">
-    <!-- Barra de búsqueda -->
-    <mat-form-field class="search-field" appearance="outline">
-      <mat-label>Buscar lotes</mat-label>
-      <input matInput placeholder="Código de lote o producto" (input)="onSearch($event)" [value]="searchTerm()">
-      <mat-icon matPrefix>search</mat-icon>
-    </mat-form-field>
+    <p-table [value]="lotes()" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 25, 50]"
+      [globalFilterFields]="['codigoLote', 'productoNombre']" [tableStyle]="{'min-width': '60rem'}"
+      sortField="fechaElaboracion" [sortOrder]="-1" #dt>
 
-    <!-- Tabla -->
-    <table mat-table [dataSource]="paginatedData()" matSort (matSortChange)="onSort($event)" class="lotes-table">
+      <ng-template pTemplate="caption">
+        <div class="table-header">
+          <p-iconfield iconPosition="left">
+            <p-inputicon styleClass="pi pi-search" />
+            <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+              placeholder="Buscar lotes..." />
+          </p-iconfield>
+        </div>
+      </ng-template>
 
-      <!-- Columna Código de Lote -->
-      <ng-container matColumnDef="codigoLote">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Código Lote</th>
-        <td mat-cell *matCellDef="let lote">
-          <strong>{{ lote.codigoLote }}</strong>
-        </td>
-      </ng-container>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="codigoLote">
+            Código Lote <p-sortIcon field="codigoLote" />
+          </th>
+          <th pSortableColumn="productoNombre">
+            Producto <p-sortIcon field="productoNombre" />
+          </th>
+          <th pSortableColumn="cantidadInicial">
+            Cant. Inicial <p-sortIcon field="cantidadInicial" />
+          </th>
+          <th pSortableColumn="cantidadActual">
+            Cant. Actual <p-sortIcon field="cantidadActual" />
+          </th>
+          <th pSortableColumn="fechaElaboracion">
+            F. Elaboración <p-sortIcon field="fechaElaboracion" />
+          </th>
+          <th pSortableColumn="fechaVencimiento">
+            F. Vencimiento <p-sortIcon field="fechaVencimiento" />
+          </th>
+          <th pSortableColumn="estado">
+            Estado <p-sortIcon field="estado" />
+          </th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
 
-      <!-- Columna Producto -->
-      <ng-container matColumnDef="productoNombre">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Producto</th>
-        <td mat-cell *matCellDef="let lote">{{ lote.productoNombre }}</td>
-      </ng-container>
-
-      <!-- Columna Cantidad Inicial -->
-      <ng-container matColumnDef="cantidadInicial">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Cant. Inicial</th>
-        <td mat-cell *matCellDef="let lote">{{ lote.cantidadInicial }}</td>
-      </ng-container>
-
-      <!-- Columna Cantidad Actual -->
-      <ng-container matColumnDef="cantidadActual">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Cant. Actual</th>
-        <td mat-cell *matCellDef="let lote">
-          <mat-chip [class.cantidad-baja]="lote.cantidadActual === 0">
-            {{ lote.cantidadActual }}
-          </mat-chip>
-        </td>
-      </ng-container>
-
-      <!-- Columna Fecha Elaboración -->
-      <ng-container matColumnDef="fechaElaboracion">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>F. Elaboración</th>
-        <td mat-cell *matCellDef="let lote">
-          {{ lote.fechaElaboracion | date:'short' }}
-        </td>
-      </ng-container>
-
-      <!-- Columna Fecha Vencimiento -->
-      <ng-container matColumnDef="fechaVencimiento">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>F. Vencimiento</th>
-        <td mat-cell *matCellDef="let lote">
-          @if (lote.fechaVencimiento) {
-          <div class="fecha-vencimiento">
-            {{ lote.fechaVencimiento | date:'short' }}
-            @if (lote.diasParaVencer !== undefined) {
-            <span class="dias-restantes" [class.warning]="lote.estaProximoAVencer">
-              ({{ lote.diasParaVencer }} días)
-            </span>
+      <ng-template pTemplate="body" let-lote>
+        <tr>
+          <td><strong>{{ lote.codigoLote }}</strong></td>
+          <td>{{ lote.productoNombre }}</td>
+          <td>{{ lote.cantidadInicial }}</td>
+          <td>
+            <p-tag [value]="lote.cantidadActual.toString()"
+              [severity]="lote.cantidadActual === 0 ? 'danger' : 'secondary'" />
+          </td>
+          <td>{{ lote.fechaElaboracion | date:'short' }}</td>
+          <td>
+            @if (lote.fechaVencimiento) {
+            <div class="fecha-vencimiento">
+              {{ lote.fechaVencimiento | date:'short' }}
+              @if (lote.diasParaVencer !== undefined) {
+              <span class="dias-restantes" [class.warning]="lote.estaProximoAVencer">
+                ({{ lote.diasParaVencer }} días)
+              </span>
+              }
+            </div>
+            } @else {
+            <span class="sin-vencimiento">Sin vencimiento</span>
             }
-          </div>
-          } @else {
-          <span class="sin-vencimiento">Sin vencimiento</span>
-          }
-        </td>
-      </ng-container>
+          </td>
+          <td>
+            <p-tag [value]="getEstadoLabel(getEstadoLote(lote))" [severity]="getEstadoSeverity(getEstadoLote(lote))" />
+          </td>
+          <td>
+            <p-button icon="pi pi-eye" [text]="true" [rounded]="true" pTooltip="Ver detalle" tooltipPosition="top" />
+          </td>
+        </tr>
+      </ng-template>
 
-      <!-- Columna Estado -->
-      <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-        <td mat-cell *matCellDef="let lote">
-          <mat-chip [class]="getEstadoClass(getEstadoLote(lote))">
-            {{ getEstadoLabel(getEstadoLote(lote)) }}
-          </mat-chip>
-        </td>
-      </ng-container>
-
-      <!-- Columna Acciones -->
-      <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef>Acciones</th>
-        <td mat-cell *matCellDef="let lote">
-          <button mat-icon-button [matTooltip]="'Ver detalle'">
-            <mat-icon>visibility</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-
-    <!-- Paginador -->
-    <mat-paginator [length]="totalItems()" [pageSize]="pageSize()" [pageIndex]="pageIndex()"
-      [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)" showFirstLastButtons>
-    </mat-paginator>
-
-    <!-- Mensaje cuando no hay datos -->
-    @if (filteredData().length === 0) {
-    <div class="no-data">
-      <mat-icon>inventory</mat-icon>
-      <p>No se encontraron lotes</p>
-      @if (searchTerm()) {
-      <p class="hint">Intenta con otros términos de búsqueda</p>
-      }
-    </div>
-    }
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="no-data">
+            <i class="pi pi-inbox"></i>
+            <p>No se encontraron lotes</p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   </div>
   }
 </div>

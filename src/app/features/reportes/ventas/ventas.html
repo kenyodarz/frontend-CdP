@@ -1,108 +1,85 @@
 <div class="ventas-report">
   @if (loading()) {
-    <app-loading message="Cargando reporte..." />
+  <app-loading message="Cargando reporte..." />
   } @else if (error()) {
-    <app-error-message 
-      [title]="'Error'" 
-      [message]="error()!" 
-      (retry)="onRetry()" />
+  <app-error-message [title]="'Error'" [message]="error()!" (retry)="onRetry()" />
   } @else {
-    <!-- Filtros -->
-    <mat-card class="filtros-card">
-      <mat-card-header>
-        <mat-card-title>Filtros</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form [formGroup]="filtrosForm" class="filtros-form">
-          <mat-form-field appearance="outline">
-            <mat-label>Fecha Inicio</mat-label>
-            <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio">
-            <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
-            <mat-datepicker #pickerInicio></mat-datepicker>
-          </mat-form-field>
+  <!-- Filtros -->
+  <p-card header="Filtros" styleClass="filtros-card">
+    <form [formGroup]="filtrosForm" class="filtros-form">
+      <div class="field">
+        <p-floatLabel>
+          <p-datepicker formControlName="fechaInicio" [showIcon]="true" inputId="fechaInicio" dateFormat="yy-mm-dd" />
+          <label for="fechaInicio">Fecha Inicio</label>
+        </p-floatLabel>
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Fecha Fin</mat-label>
-            <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin">
-            <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
-            <mat-datepicker #pickerFin></mat-datepicker>
-          </mat-form-field>
+      <div class="field">
+        <p-floatLabel>
+          <p-datepicker formControlName="fechaFin" [showIcon]="true" inputId="fechaFin" dateFormat="yy-mm-dd" />
+          <label for="fechaFin">Fecha Fin</label>
+        </p-floatLabel>
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Período</mat-label>
-            <mat-select formControlName="periodo">
-              @for (periodo of periodos; track periodo) {
-                <mat-option [value]="periodo">{{ periodo }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+      <div class="field">
+        <p-floatLabel>
+          <p-select [options]="periodos" formControlName="periodo" optionLabel="label" optionValue="value"
+            inputId="periodo" [style]="{'width':'100%'}" />
+          <label for="periodo">Período</label>
+        </p-floatLabel>
+      </div>
 
-          <button mat-raised-button color="primary" (click)="cargarDatos()">
-            <mat-icon>search</mat-icon>
-            Consultar
-          </button>
+      <div class="actions">
+        <p-button label="Consultar" icon="pi pi-search" (click)="cargarDatos()" />
+        <p-button label="Exportar" icon="pi pi-download" severity="secondary" (click)="exportar()" />
+      </div>
+    </form>
+  </p-card>
 
-          <button mat-raised-button (click)="exportar()">
-            <mat-icon>download</mat-icon>
-            Exportar
-          </button>
-        </form>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Resumen -->
-    <div class="resumen-grid">
-      <mat-card class="stat-card">
-        <mat-card-content>
-          <div class="stat-icon">
-            <mat-icon>attach_money</mat-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-label">Total Ventas</div>
-            <div class="stat-value">{{ totalVentas() | currency:'COP':'symbol-narrow':'1.0-0' }}</div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="stat-card">
-        <mat-card-content>
-          <div class="stat-icon">
-            <mat-icon>trending_up</mat-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-label">Promedio</div>
-            <div class="stat-value">{{ promedioVentas() | currency:'COP':'symbol-narrow':'1.0-0' }}</div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="stat-card">
-        <mat-card-content>
-          <div class="stat-icon">
-            <mat-icon>calendar_today</mat-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-label">Registros</div>
-            <div class="stat-value">{{ ventasData().length }}</div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
-
-    <!-- Gráfica -->
-    <mat-card class="chart-card">
-      <mat-card-header>
-        <mat-card-title>Evolución de Ventas</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="chart-container">
-          <canvas baseChart
-            [data]="lineChartData"
-            [options]="lineChartOptions"
-            type="line">
-          </canvas>
+  <!-- Resumen -->
+  <div class="resumen-grid">
+    <p-card styleClass="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon valor">
+          <i class="pi pi-dollar"></i>
         </div>
-      </mat-card-content>
-    </mat-card>
+        <div class="stat-info">
+          <div class="stat-label">Total Ventas</div>
+          <div class="stat-value">{{ totalVentas() | currency:'COP':'symbol-narrow':'1.0-0' }}</div>
+        </div>
+      </div>
+    </p-card>
+
+    <p-card styleClass="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon promedio">
+          <i class="pi pi-chart-line"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Promedio</div>
+          <div class="stat-value">{{ promedioVentas() | currency:'COP':'symbol-narrow':'1.0-0' }}</div>
+        </div>
+      </div>
+    </p-card>
+
+    <p-card styleClass="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon registros">
+          <i class="pi pi-calendar"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Registros</div>
+          <div class="stat-value">{{ ventasData().length }}</div>
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Gráfica -->
+  <p-card header="Evolución de Ventas" styleClass="chart-card">
+    <div class="chart-container">
+      <p-chart type="line" [data]="lineChartData" [options]="lineChartOptions" height="400px" />
+    </div>
+  </p-card>
   }
 </div>

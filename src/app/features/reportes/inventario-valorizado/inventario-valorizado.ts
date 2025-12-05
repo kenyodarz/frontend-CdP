@@ -1,10 +1,11 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { MatSortModule, Sort } from '@angular/material/sort';
 import { CurrencyPipe } from '@angular/common';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { TableModule } from 'primeng/table';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
 
 import { ReporteService } from '../../../core/services/reporte.service';
 import { Loading } from '../../../shared/components/loading/loading';
@@ -22,11 +23,12 @@ interface ProductoValorizado {
 @Component({
   selector: 'app-inventario-valorizado',
   imports: [
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTableModule,
-    MatSortModule,
+    CardModule,
+    ButtonModule,
+    TableModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
     CurrencyPipe,
     Loading,
     ErrorMessage
@@ -40,34 +42,6 @@ export class InventarioValorizado implements OnInit {
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly productos = signal<ProductoValorizado[]>([]);
-
-  protected readonly sortColumn = signal<string>('nombre');
-  protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
-
-  protected readonly displayedColumns: string[] = [
-    'codigo',
-    'nombre',
-    'stockActual',
-    'precioPromedio',
-    'valorTotal'
-  ];
-
-  protected readonly sortedData = computed(() => {
-    const data = [...this.productos()];
-    const column = this.sortColumn();
-    const direction = this.sortDirection();
-
-    return data.sort((a, b) => {
-      let aValue: any = a[column as keyof ProductoValorizado];
-      let bValue: any = b[column as keyof ProductoValorizado];
-
-      if (aValue === undefined || aValue === null) return 1;
-      if (bValue === undefined || bValue === null) return -1;
-
-      const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-      return direction === 'asc' ? comparison : -comparison;
-    });
-  });
 
   protected readonly totalValorizado = computed(() => {
     return this.productos().reduce((sum, p) => sum + p.valorTotal, 0);
@@ -102,11 +76,6 @@ export class InventarioValorizado implements OnInit {
         this.loading.set(false);
       }
     });
-  }
-
-  protected onSort(sort: Sort): void {
-    this.sortColumn.set(sort.active);
-    this.sortDirection.set(sort.direction as 'asc' | 'desc' || 'asc');
   }
 
   protected exportar(): void {

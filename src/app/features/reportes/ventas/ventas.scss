@@ -9,16 +9,24 @@
 .filtros-form {
   display: flex;
   gap: 16px;
-  align-items: center;
+  align-items: flex-end;
   flex-wrap: wrap;
 
-  mat-form-field {
+  .field {
     flex: 1;
     min-width: 200px;
+
+    p-calendar,
+    p-dropdown {
+      width: 100%;
+      display: block;
+    }
   }
 
-  button {
-    height: 56px;
+  .actions {
+    display: flex;
+    gap: 8px;
+    padding-bottom: 4px; // Align with inputs
   }
 }
 
@@ -30,11 +38,10 @@
 }
 
 .stat-card {
-  mat-card-content {
+  .stat-content {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 16px !important;
   }
 
   .stat-icon {
@@ -44,13 +51,22 @@
     width: 60px;
     height: 60px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
 
-    mat-icon {
+    i {
       color: white;
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
+      font-size: 24px;
+    }
+
+    &.valor {
+      background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+    }
+
+    &.promedio {
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+    }
+
+    &.registros {
+      background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
     }
   }
 
@@ -60,14 +76,14 @@
 
   .stat-label {
     font-size: 14px;
-    color: #666;
+    color: var(--text-color-secondary);
     margin-bottom: 4px;
   }
 
   .stat-value {
     font-size: 24px;
     font-weight: 600;
-    color: #1976d2;
+    color: var(--text-color);
   }
 }
 

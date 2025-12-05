@@ -6,99 +6,98 @@
   } @else {
   <!-- Resumen -->
   <div class="resumen-grid">
-    <mat-card class="stat-card">
-      <mat-card-content>
+    <p-card styleClass="stat-card">
+      <div class="stat-content">
         <div class="stat-icon valor">
-          <mat-icon>account_balance_wallet</mat-icon>
+          <i class="pi pi-wallet"></i>
         </div>
         <div class="stat-info">
           <div class="stat-label">Valor Total Inventario</div>
           <div class="stat-value">{{ totalValorizado() | currency:'COP':'symbol-narrow':'1.0-0' }}</div>
         </div>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </p-card>
 
-    <mat-card class="stat-card">
-      <mat-card-content>
+    <p-card styleClass="stat-card">
+      <div class="stat-content">
         <div class="stat-icon productos">
-          <mat-icon>inventory_2</mat-icon>
+          <i class="pi pi-box"></i>
         </div>
         <div class="stat-info">
           <div class="stat-label">Total Productos</div>
           <div class="stat-value">{{ totalProductos() }}</div>
         </div>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </p-card>
 
-    <mat-card class="stat-card">
-      <mat-card-content>
+    <p-card styleClass="stat-card">
+      <div class="stat-content">
         <div class="stat-icon unidades">
-          <mat-icon>widgets</mat-icon>
+          <i class="pi pi-th-large"></i>
         </div>
         <div class="stat-info">
           <div class="stat-label">Total Unidades</div>
           <div class="stat-value">{{ totalUnidades() }}</div>
         </div>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </p-card>
   </div>
 
   <!-- Tabla -->
-  <mat-card class="table-card">
-    <mat-card-header>
-      <mat-card-title>Detalle de Inventario Valorizado</mat-card-title>
-      <button mat-raised-button color="primary" (click)="exportar()">
-        <mat-icon>download</mat-icon>
-        Exportar Excel
-      </button>
-    </mat-card-header>
-    <mat-card-content>
-      <table mat-table [dataSource]="sortedData()" matSort (matSortChange)="onSort($event)" class="inventario-table">
-        <!-- Código -->
-        <ng-container matColumnDef="codigo">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Código</th>
-          <td mat-cell *matCellDef="let producto">{{ producto.codigo }}</td>
-        </ng-container>
-
-        <!-- Nombre -->
-        <ng-container matColumnDef="nombre">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Producto</th>
-          <td mat-cell *matCellDef="let producto">{{ producto.nombre }}</td>
-        </ng-container>
-
-        <!-- Stock Actual -->
-        <ng-container matColumnDef="stockActual">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Stock</th>
-          <td mat-cell *matCellDef="let producto">{{ producto.stockActual }}</td>
-        </ng-container>
-
-        <!-- Precio Promedio -->
-        <ng-container matColumnDef="precioPromedio">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio Promedio</th>
-          <td mat-cell *matCellDef="let producto">
-            {{ producto.precioPromedio | currency:'COP':'symbol-narrow':'1.0-0' }}
-          </td>
-        </ng-container>
-
-        <!-- Valor Total -->
-        <ng-container matColumnDef="valorTotal">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Valor Total</th>
-          <td mat-cell *matCellDef="let producto" class="valor-total">
-            {{ producto.valorTotal | currency:'COP':'symbol-narrow':'1.0-0' }}
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-
-      @if (productos().length === 0) {
-      <div class="no-data">
-        <mat-icon>inventory</mat-icon>
-        <p>No hay productos en el inventario</p>
+  <p-card header="Detalle de Inventario Valorizado" styleClass="table-card">
+    <ng-template pTemplate="header">
+      <div class="flex justify-content-between align-items-center">
+        <span>Detalle de Inventario Valorizado</span>
+        <p-button label="Exportar Excel" icon="pi pi-file-excel" (onClick)="exportar()" />
       </div>
-      }
-    </mat-card-content>
-  </mat-card>
+    </ng-template>
+
+    <p-table [value]="productos()" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+      styleClass="p-datatable-sm" [globalFilterFields]="['nombre', 'codigo']" #dt>
+
+      <ng-template pTemplate="caption">
+        <div class="flex">
+          <p-iconField iconPosition="left" class="ml-auto">
+            <p-inputIcon>
+              <i class="pi pi-search"></i>
+            </p-inputIcon>
+            <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+              placeholder="Buscar producto..." />
+          </p-iconField>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="codigo">Código <p-sortIcon field="codigo" /></th>
+          <th pSortableColumn="nombre">Producto <p-sortIcon field="nombre" /></th>
+          <th pSortableColumn="stockActual">Stock <p-sortIcon field="stockActual" /></th>
+          <th pSortableColumn="precioPromedio">Precio Promedio <p-sortIcon field="precioPromedio" /></th>
+          <th pSortableColumn="valorTotal">Valor Total <p-sortIcon field="valorTotal" /></th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-producto>
+        <tr>
+          <td>{{ producto.codigo }}</td>
+          <td>{{ producto.nombre }}</td>
+          <td>{{ producto.stockActual }}</td>
+          <td>{{ producto.precioPromedio | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+          <td class="valor-total">{{ producto.valorTotal | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center p-4">
+            <div class="no-data">
+              <i class="pi pi-inbox text-4xl mb-3"></i>
+              <p>No hay productos en el inventario</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
   }
 </div>

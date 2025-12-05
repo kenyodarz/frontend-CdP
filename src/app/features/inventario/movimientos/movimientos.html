@@ -9,120 +9,90 @@
   <app-error-message [title]="'Error al cargar movimientos'" [message]="error()!" (retry)="onRetry()" />
   } @else {
   <div class="table-container">
-    <!-- Filtros -->
-    <div class="filters">
-      <mat-form-field class="search-field" appearance="outline">
-        <mat-label>Buscar</mat-label>
-        <input matInput placeholder="Producto, lote o motivo" (input)="onSearch($event)" [value]="searchTerm()">
-        <mat-icon matPrefix>search</mat-icon>
-      </mat-form-field>
+    <p-table [value]="movimientos()" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 25, 50]"
+      [globalFilterFields]="['productoNombre', 'loteCodigoLote', 'motivo']" [tableStyle]="{'min-width': '70rem'}"
+      sortField="fechaMovimiento" [sortOrder]="-1" #dt>
 
-      <mat-form-field appearance="outline" class="tipo-field">
-        <mat-label>Tipo de Movimiento</mat-label>
-        <mat-select [(ngModel)]="tipoFiltro" (selectionChange)="onTipoChange()">
-          <mat-option [value]="''">Todos</mat-option>
-          @for (tipo of tiposMovimiento; track tipo) {
-          <mat-option [value]="tipo">{{ getTipoLabel(tipo) }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
+      <ng-template pTemplate="caption">
+        <div class="table-header">
+          <p-iconfield iconPosition="left">
+            <p-inputicon styleClass="pi pi-search" />
+            <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+              placeholder="Buscar movimientos..." />
+          </p-iconfield>
 
-    <!-- Tabla -->
-    <table mat-table [dataSource]="paginatedData()" matSort (matSortChange)="onSort($event)" class="movimientos-table">
+          <div class="filter-tipo">
+            <p-select [(ngModel)]="tipoFiltro" [options]="tiposMovimiento" optionLabel="label" optionValue="value"
+              placeholder="Tipo de Movimiento" [showClear]="true"
+              (onChange)="dt.filter($event.value, 'tipoMovimiento', 'equals')" [style]="{'width':'200px'}" />
+          </div>
+        </div>
+      </ng-template>
 
-      <!-- Columna Fecha -->
-      <ng-container matColumnDef="fechaMovimiento">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
-        <td mat-cell *matCellDef="let mov">
-          {{ mov.fechaMovimiento | date:'short' }}
-        </td>
-      </ng-container>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="fechaMovimiento">
+            Fecha <p-sortIcon field="fechaMovimiento" />
+          </th>
+          <th pSortableColumn="tipoMovimiento">
+            Tipo <p-sortIcon field="tipoMovimiento" />
+          </th>
+          <th pSortableColumn="productoNombre">
+            Producto <p-sortIcon field="productoNombre" />
+          </th>
+          <th>Lote</th>
+          <th pSortableColumn="cantidad">
+            Cantidad <p-sortIcon field="cantidad" />
+          </th>
+          <th>Stock Anterior</th>
+          <th>Stock Nuevo</th>
+          <th>Motivo</th>
+        </tr>
+      </ng-template>
 
-      <!-- Columna Tipo -->
-      <ng-container matColumnDef="tipoMovimiento">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
-        <td mat-cell *matCellDef="let mov">
-          <mat-chip [class]="getTipoClass(mov.tipoMovimiento)">
-            <mat-icon>{{ getTipoIcon(mov.tipoMovimiento) }}</mat-icon>
-            {{ getTipoLabel(mov.tipoMovimiento) }}
-          </mat-chip>
-        </td>
-      </ng-container>
+      <ng-template pTemplate="body" let-mov>
+        <tr>
+          <td>{{ mov.fechaMovimiento | date:'short' }}</td>
+          <td>
+            <p-tag [value]="getTipoLabel(mov.tipoMovimiento)" [severity]="getTipoSeverity(mov.tipoMovimiento)">
+              <i [class]="'pi ' + getTipoIcon(mov.tipoMovimiento)"></i>
+              {{ getTipoLabel(mov.tipoMovimiento) }}
+            </p-tag>
+          </td>
+          <td>{{ mov.productoNombre }}</td>
+          <td>
+            @if (mov.loteCodigoLote) {
+            <span class="lote-codigo">{{ mov.loteCodigoLote }}</span>
+            } @else {
+            <span class="sin-lote">-</span>
+            }
+          </td>
+          <td>
+            <span [class.cantidad-positiva]="mov.tipoMovimiento === 'ENTRADA'"
+              [class.cantidad-negativa]="mov.tipoMovimiento === 'SALIDA'">
+              {{ mov.tipoMovimiento === 'SALIDA' ? '-' : '+' }}{{ mov.cantidad }}
+            </span>
+          </td>
+          <td>{{ mov.stockAnterior }}</td>
+          <td><strong>{{ mov.stockNuevo }}</strong></td>
+          <td>
+            <span class="motivo">{{ mov.motivo }}</span>
+            @if (mov.referencia) {
+            <span class="referencia">({{ mov.referencia }})</span>
+            }
+          </td>
+        </tr>
+      </ng-template>
 
-      <!-- Columna Producto -->
-      <ng-container matColumnDef="productoNombre">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Producto</th>
-        <td mat-cell *matCellDef="let mov">{{ mov.productoNombre }}</td>
-      </ng-container>
-
-      <!-- Columna Lote -->
-      <ng-container matColumnDef="loteCodigoLote">
-        <th mat-header-cell *matHeaderCellDef>Lote</th>
-        <td mat-cell *matCellDef="let mov">
-          @if (mov.loteCodigoLote) {
-          <span class="lote-codigo">{{ mov.loteCodigoLote }}</span>
-          } @else {
-          <span class="sin-lote">-</span>
-          }
-        </td>
-      </ng-container>
-
-      <!-- Columna Cantidad -->
-      <ng-container matColumnDef="cantidad">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Cantidad</th>
-        <td mat-cell *matCellDef="let mov">
-          <span [class.cantidad-positiva]="mov.tipoMovimiento === 'ENTRADA'"
-            [class.cantidad-negativa]="mov.tipoMovimiento === 'SALIDA'">
-            {{ mov.tipoMovimiento === 'SALIDA' ? '-' : '+' }}{{ mov.cantidad }}
-          </span>
-        </td>
-      </ng-container>
-
-      <!-- Columna Stock Anterior -->
-      <ng-container matColumnDef="stockAnterior">
-        <th mat-header-cell *matHeaderCellDef>Stock Anterior</th>
-        <td mat-cell *matCellDef="let mov">{{ mov.stockAnterior }}</td>
-      </ng-container>
-
-      <!-- Columna Stock Nuevo -->
-      <ng-container matColumnDef="stockNuevo">
-        <th mat-header-cell *matHeaderCellDef>Stock Nuevo</th>
-        <td mat-cell *matCellDef="let mov">
-          <strong>{{ mov.stockNuevo }}</strong>
-        </td>
-      </ng-container>
-
-      <!-- Columna Motivo -->
-      <ng-container matColumnDef="motivo">
-        <th mat-header-cell *matHeaderCellDef>Motivo</th>
-        <td mat-cell *matCellDef="let mov">
-          <span class="motivo">{{ mov.motivo }}</span>
-          @if (mov.referencia) {
-          <span class="referencia">({{ mov.referencia }})</span>
-          }
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-
-    <!-- Paginador -->
-    <mat-paginator [length]="totalItems()" [pageSize]="pageSize()" [pageIndex]="pageIndex()"
-      [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)" showFirstLastButtons>
-    </mat-paginator>
-
-    <!-- Mensaje cuando no hay datos -->
-    @if (filteredData().length === 0) {
-    <div class="no-data">
-      <mat-icon>swap_vert</mat-icon>
-      <p>No se encontraron movimientos</p>
-      @if (searchTerm() || tipoFiltro()) {
-      <p class="hint">Intenta ajustar los filtros</p>
-      }
-    </div>
-    }
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="no-data">
+            <i class="pi pi-inbox"></i>
+            <p>No se encontraron movimientos</p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   </div>
   }
 </div>

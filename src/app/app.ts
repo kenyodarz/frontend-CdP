@@ -5,10 +5,12 @@ import { Sidebar } from './layout/sidebar/sidebar';
 
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, Navbar, Sidebar, ConfirmDialogModule, ToastModule],
+  providers: [MessageService],
   template: `
     <div class="app-container">
       <app-navbar />

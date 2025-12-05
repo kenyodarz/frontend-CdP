@@ -1,74 +1,76 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { MatListModule } from '@angular/material/list';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDividerModule } from '@angular/material/divider';
-
-interface MenuItem {
-  label: string;
-  icon: string;
-  route: string;
-  children?: MenuItem[];
-}
+import { PanelMenuModule } from 'primeng/panelmenu';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-sidebar',
   imports: [
     RouterLink,
     RouterLinkActive,
-    MatListModule,
-    MatIconModule,
-    MatDividerModule
+    PanelMenuModule
   ],
   template: `
-    <mat-nav-list class="sidebar">
-      @for (item of menuItems; track item.route) {
-        <a mat-list-item
-           [routerLink]="item.route"
-           routerLinkActive="active"
-           class="menu-item">
-          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-          <span matListItemTitle>{{ item.label }}</span>
-        </a>
-      }
-    </mat-nav-list>
+    <div class="sidebar">
+      <p-panelMenu [model]="menuItems" [multiple]="false" />
+    </div>
   `,
   styles: [`
     .sidebar {
       width: 260px;
       height: 100%;
-      background-color: white;
-      border-right: 1px solid #e0e0e0;
-      padding-top: 8px;
+      background-color: var(--surface-ground);
+      border-right: 1px solid var(--surface-border);
+      overflow-y: auto;
     }
 
-    .menu-item {
-      margin: 4px 8px;
-      border-radius: 8px;
-      transition: background-color 0.2s;
-
-      &:hover {
-        background-color: #f5f5f5;
+    :host ::ng-deep {
+      .p-panelmenu {
+        border: none;
+        width: 100%;
       }
 
-      &.active {
-        background-color: #e3f2fd;
-        color: #1976d2;
-        
-        mat-icon {
-          color: #1976d2;
-        }
+      .p-panelmenu-header-action {
+        border-radius: 0;
+      }
+
+      .p-panelmenu-content {
+        border: none;
       }
     }
   `]
 })
 export class Sidebar {
   protected readonly menuItems: MenuItem[] = [
-    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
-    { label: 'Productos', icon: 'inventory_2', route: '/productos' },
-    { label: 'Clientes', icon: 'people', route: '/clientes' },
-    { label: 'Órdenes', icon: 'receipt_long', route: '/ordenes' },
-    { label: 'Inventario', icon: 'warehouse', route: '/inventario' },
-    { label: 'Reportes', icon: 'bar_chart', route: '/reportes' }
+    {
+      label: 'Dashboard',
+      icon: 'pi pi-home',
+      routerLink: '/dashboard'
+    },
+    {
+      label: 'Productos',
+      icon: 'pi pi-box',
+      routerLink: '/productos'
+    },
+    {
+      label: 'Clientes',
+      icon: 'pi pi-users',
+      routerLink: '/clientes'
+    },
+    {
+      label: 'Órdenes',
+      icon: 'pi pi-file',
+      routerLink: '/ordenes'
+    },
+    {
+      label: 'Inventario',
+      icon: 'pi pi-warehouse',
+      routerLink: '/inventario'
+    },
+    {
+      label: 'Reportes',
+      icon: 'pi pi-chart-bar',
+      routerLink: '/reportes'
+    }
   ];
 }
