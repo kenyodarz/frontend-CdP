@@ -1,0 +1,182 @@
+<div class="ver-documento-container" *ngIf="documento() as doc">
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="card-header">
+        <div class="header-content">
+          <div class="header-left">
+            <i class="pi pi-file-check"></i>
+            <div class="header-text">
+              <h2>{{ doc.numeroDocumento }}</h2>
+              <p>Documento de Salida</p>
+            </div>
+          </div>
+          <div class="header-right">
+            <p-tag [value]="getEstadoLabel(doc.estado)" [severity]="getEstadoSeverity(doc.estado)"></p-tag>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- Información General -->
+    <div class="info-section">
+      <div class="info-grid">
+        <div class="info-field">
+          <label>Ruta</label>
+          <span>{{ doc.nombreRuta || 'Ruta ' + doc.idRuta }}</span>
+        </div>
+        <div class="info-field">
+          <label>Conductor</label>
+          <span>{{ doc.nombreConductor || 'Conductor ' + doc.idConductor }}</span>
+        </div>
+        <div class="info-field">
+          <label>Fecha Salida</label>
+          <span>{{ doc.fechaSalida | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="info-field">
+          <label>Valor Total</label>
+          <span class="valor-total">{{ formatCurrency(doc.valorTotal) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Productos Consolidados -->
+    <div class="section">
+      <h3>Productos a Despachar</h3>
+      <p-table [value]="doc.detalles" styleClass="p-datatable-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Producto</th>
+            <th class="text-right">Cantidad</th>
+            <th class="text-right">Precio Unit.</th>
+            <th class="text-right">Subtotal</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-detalle>
+          <tr>
+            <td>{{ detalle.nombreProducto || 'Producto ' + detalle.idProducto }}</td>
+            <td class="text-right">{{ detalle.cantidadTotal }}</td>
+            <td class="text-right">{{ formatCurrency(detalle.precioUnitario) }}</td>
+            <td class="text-right">{{ formatCurrency(detalle.subtotal) }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="table-summary">
+            <strong>Total:</strong> {{ formatCurrency(doc.valorTotal) }}
+          </div>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Órdenes Incluidas -->
+    <div class="section">
+      <h3>Órdenes Incluidas ({{ doc.idsOrdenes?.length || 0 }})</h3>
+      <div class="ordenes-chips">
+        <span class="orden-chip" *ngFor="let idOrden of doc.idsOrdenes">
+          <i class="pi pi-shopping-cart"></i>
+          Orden #{{ idOrden }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Observaciones -->
+    <div class="section" *ngIf="doc.observaciones">
+      <h3>Observaciones</h3>
+      <p>{{ doc.observaciones }}</p>
+    </div>
+
+    <!-- Botones de Acciones -->
+    <ng-template pTemplate="footer">
+      <div class="card-footer">
+        <div class="footer-left">
+          <p-button label="Volver" icon="pi pi-arrow-left" (onClick)="volver()" styleClass="p-button-secondary">
+          </p-button>
+        </div>
+
+        <div class="footer-right">
+          <!-- Validar Stock -->
+          <p-button label="Validar Stock" icon="pi pi-check-circle" (onClick)="validarStock()" [loading]="loading()"
+            styleClass="p-button-info">
+          </p-button>
+
+          <!-- Cambiar Estado (solo si es posible) -->
+          <p-button *ngIf="estadosPermitidos.length > 0" label="Cambiar Estado" icon="pi pi-sync"
+            (onClick)="abrirDialogCambiarEstado()" [loading]="loading()">
+          </p-button>
+
+          <!-- Despachar (solo si está LISTO) -->
+          <p-button *ngIf="doc.estado === EstadoDocumentoSalida.LISTO" label="Despachar" icon="pi pi-truck"
+            (onClick)="despachar()" [loading]="loading()" styleClass="p-button-success">
+          </p-button>
+        </div>
+      </div>
+    </ng-template>
+  </p-card>
+</div>
+
+<!-- Dialog Cambiar Estado -->
+<p-dialog [(visible)]="mostrarDialogEstado" header="Cambiar Estado" [modal]="true" [style]="{width: '450px'}">
+  <div class="dialog-content">
+    <p>Seleccione el nuevo estado para el documento:</p>
+
+    <p-select [options]="getEstadosOptions()" [(ngModel)]="estadoSeleccionado" optionLabel="label" optionValue="value"
+      placeholder="Seleccione un estado" class="w-full">
+    </p-select>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" icon="pi pi-times" (onClick)="mostrarDialogEstado.set(false)"
+      styleClass="p-button-secondary">
+    </p-button>
+    <p-button label="Cambiar" icon="pi pi-check" (onClick)="cambiarEstado()" [disabled]="!estadoSeleccionado()"
+      [loading]="loading()">
+    </p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Dialog Validación Stock -->
+<p-dialog [(visible)]="mostrarDialogValidacion" header="Resultado Validación de Stock" [modal]="true"
+  [style]="{width: '600px'}">
+  <div class="dialog-content" *ngIf="validacionResult() as result">
+    <!-- Stock válido -->
+    <div *ngIf="result.valido" class="validation-success">
+      <i class="pi pi-check-circle"></i>
+      <p>Hay suficiente stock para todos los productos</p>
+    </div>
+
+    <!-- Stock insuficiente -->
+    <div *ngIf="!result.valido">
+      <p class="validation-error">
+        <i class="pi pi-exclamation-triangle"></i>
+        Stock insuficiente para {{ result.productosFaltantes.length }} producto(s)
+      </p>
+
+      <p-table [value]="result.productosFaltantes" styleClass="p-datatable-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Producto</th>
+            <th class="text-right">Necesario</th>
+            <th class="text-right">Disponible</th>
+            <th class="text-right">Faltante</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-producto>
+          <tr>
+            <td>{{ producto.nombreProducto }}</td>
+            <td class="text-right">{{ producto.cantidadNecesaria }}</td>
+            <td class="text-right">{{ producto.stockDisponible }}</td>
+            <td class="text-right text-danger">{{ producto.cantidadFaltante }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cerrar" icon="pi pi-times" (onClick)="mostrarDialogValidacion.set(false)"
+      styleClass="p-button-secondary">
+    </p-button>
+  </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

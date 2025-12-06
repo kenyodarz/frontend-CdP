@@ -11,7 +11,7 @@ export interface DocumentoSalida {
   fechaSalida: Date | string;
   fechaDespacho?: Date | string;
   estado: EstadoDocumentoSalida;
-  valorTotal?: number;
+  valorTotal: number;
   observaciones?: string;
 
   // Auditoría
@@ -24,6 +24,6 @@ export interface DocumentoSalida {
   updatedAt?: Date | string;
 
   // Relaciones
-  detalles?: DetalleDocumentoSalida[];
+  detalles: DetalleDocumentoSalida[];
   idsOrdenes?: number[];
 }

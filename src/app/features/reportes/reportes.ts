@@ -5,11 +5,11 @@ import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-reportes',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, TabsModule],
+  imports: [RouterOutlet, RouterLink, TabsModule],
   template: `
     <div class="reportes-container">
       <h1 class="text-3xl font-bold mb-6">Reportes</h1>
-      
+
       <p-tabs value="0">
         <p-tablist>
             <p-tab value="0" routerLink="/reportes/ventas">Ventas</p-tab>

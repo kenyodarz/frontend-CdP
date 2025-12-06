@@ -107,6 +107,10 @@ export const routes: Routes = [
       {
         path: 'documentos-salida/crear',
         loadComponent: () => import('./features/inventario/documentos-salida/crear-documento/crear-documento').then(m => m.CrearDocumentoComponent)
+      },
+      {
+        path: 'documentos-salida/:id',
+        loadComponent: () => import('./features/inventario/documentos-salida/ver-documento/ver-documento').then(m => m.VerDocumentoComponent)
       }
     ]
   },

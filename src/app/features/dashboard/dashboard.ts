@@ -14,8 +14,7 @@ import { CurrencyPipe, DecimalPipe } from '@angular/common';
     ButtonModule,
     ProgressSpinnerModule,
     RouterLink,
-    CurrencyPipe,
-    DecimalPipe
+    CurrencyPipe
   ],
   template: `
     <div class="dashboard">

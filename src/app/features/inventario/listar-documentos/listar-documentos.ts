@@ -1,15 +1,14 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
-import { Button, ButtonDirective } from 'primeng/button';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { DatePicker } from 'primeng/datepicker';
-import { Select } from 'primeng/select';
-import { Tag } from 'primeng/tag';
-import { MessageService } from 'primeng/api';
-import { DocumentoRecepcionService } from '../../../core/services/documento-recepcion.service';
-import { DocumentoRecepcion } from '../../../core/models/inventario/documento-recepcion';
+import {Component, inject, OnInit, signal} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {TableModule} from 'primeng/table';
+import {ButtonDirective} from 'primeng/button';
+import {DatePicker} from 'primeng/datepicker';
+import {Select} from 'primeng/select';
+import {Tag} from 'primeng/tag';
+import {MessageService} from 'primeng/api';
+import {DocumentoRecepcionService} from '../../../core/services/documento-recepcion.service';
+import {DocumentoRecepcion} from '../../../core/models/inventario/documento-recepcion';
 import {Dialog} from 'primeng/dialog';
 
 interface EstadoOption {
@@ -23,7 +22,6 @@ interface EstadoOption {
     CommonModule,
     FormsModule,
     TableModule,
-    Button,
     DatePicker,
     Select,
     Tag,
@@ -35,31 +33,27 @@ interface EstadoOption {
   standalone: true
 })
 export class ListarDocumentos implements OnInit {
-  private documentoService = inject(DocumentoRecepcionService);
-  private messageService = inject(MessageService);
-
   documentos = signal<DocumentoRecepcion[]>([]);
   loading = signal(false);
-
   // Filtros
   fechaInicio = signal<Date>(new Date());
   fechaFin = signal<Date>(new Date());
   estadoSeleccionado = signal<string | null>(null);
-
   // Dialog de detalle
   mostrarDetalle = signal(false);
   documentoSeleccionado = signal<DocumentoRecepcion | null>(null);
-
   estadosOptions: EstadoOption[] = [
-    { label: 'Todos', value: null },
-    { label: 'Pendiente', value: 'PENDIENTE' },
-    { label: 'Confirmado', value: 'CONFIRMADO' },
-    { label: 'Revisado', value: 'REVISADO' },
-    { label: 'Cerrado', value: 'CERRADO' },
-    { label: 'Corregido', value: 'CORREGIDO' },
-    { label: 'Con Ajustes', value: 'CON_AJUSTES' },
-    { label: 'Anulado', value: 'ANULADO' }
+    {label: 'Todos', value: null},
+    {label: 'Pendiente', value: 'PENDIENTE'},
+    {label: 'Confirmado', value: 'CONFIRMADO'},
+    {label: 'Revisado', value: 'REVISADO'},
+    {label: 'Cerrado', value: 'CERRADO'},
+    {label: 'Corregido', value: 'CORREGIDO'},
+    {label: 'Con Ajustes', value: 'CON_AJUSTES'},
+    {label: 'Anulado', value: 'ANULADO'}
   ];
+  private documentoService = inject(DocumentoRecepcionService);
+  private messageService = inject(MessageService);
 
   ngOnInit(): void {
     this.cargarDocumentos();
@@ -90,14 +84,6 @@ export class ListarDocumentos implements OnInit {
         this.loading.set(false);
       }
     });
-  }
-
-  private formatDate(date: Date | null): string | undefined {
-    if (!date) return undefined;
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
   }
 
   onFiltroChange(): void {
@@ -180,5 +166,13 @@ export class ListarDocumentos implements OnInit {
 
   puedeCorregir(documento: DocumentoRecepcion): boolean {
     return documento.estado === 'CONFIRMADO';
+  }
+
+  private formatDate(date: Date | null): string | undefined {
+    if (!date) return undefined;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }
