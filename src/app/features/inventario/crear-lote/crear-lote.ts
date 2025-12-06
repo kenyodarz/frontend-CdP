@@ -13,7 +13,7 @@ import { InventarioService } from '../../../core/services/inventario.service';
 import { ProductoService } from '../../../core/services/producto.service';
 import { NotificationService } from '../../../shared/services/notification.service';
 import { CrearLoteDTO } from '../../../core/models/inventario/crearLoteDTO';
-import { ProductoSimple } from '../../../core/models/producto/productoSimple';
+import { Producto } from '../../../core/models/producto/producto';
 import { Loading } from '../../../shared/components/loading/loading';
 
 @Component({
@@ -40,7 +40,7 @@ export class CrearLote implements OnInit {
   private readonly notificationService = inject(NotificationService);
 
   protected readonly loading = signal(false);
-  protected readonly productos = signal<ProductoSimple[]>([]);
+  protected readonly productos = signal<Producto[]>([]);
   protected loteForm!: FormGroup;
 
   ngOnInit(): void {
@@ -51,7 +51,9 @@ export class CrearLote implements OnInit {
 
   private initForm(): void {
     this.loteForm = this.fb.group({
+      idProducto: [null, Validators.required],
       codigoLote: ['', Validators.required],
+      cantidad: [1, [Validators.required, Validators.min(1)]],
       fechaElaboracion: [new Date(), Validators.required],
       fechaVencimiento: [null],
       observaciones: ['']
@@ -59,42 +61,115 @@ export class CrearLote implements OnInit {
   }
 
   private cargarProductos(): void {
-    // Solicitar una página grande para obtener todos los productos para el selector
     this.productoService.obtenerTodos(0, 1000).subscribe({
       next: (page) => {
-        // Mapear Producto[] a ProductoSimple[]
-        const productosSimple: ProductoSimple[] = page.content.map(p => ({
-          idProducto: p.idProducto,
-          codigo: p.codigo,
-          nombre: p.nombre,
-          stockActual: p.stockActual,
-          stockMinimo: p.stockMinimo,
-          precioBase: p.precioBase,
-          categoria: p.nombreCategoria || '',
-          unidad: p.abreviaturaUnidad || '',
-          stockBajo: p.stockActual <= p.stockMinimo,
-          diasVidaUtil: p.diasVidaUtil,
-          estado: p.estado
-        }));
-        this.productos.set(productosSimple);
+        this.productos.set(page.content);
       },
       error: (err) => console.error('Error al cargar productos:', err)
     });
   }
 
   private setupFormListeners(): void {
-    // Ya no se calcula automáticamente - el usuario debe ingresar las fechas manualmente
+    // Generar código de lote cuando cambia el producto o la fecha
+    this.loteForm.get('idProducto')?.valueChanges.subscribe(() => {
+      this.generarYAsignarCodigoLote();
+      this.calcularFechaVencimientoAutomatica();
+    });
+
+    this.loteForm.get('fechaElaboracion')?.valueChanges.subscribe(() => {
+      this.generarYAsignarCodigoLote();
+      this.calcularFechaVencimientoAutomatica();
+    });
   }
 
-  private calcularFechaVencimiento(fechaElaboracion: Date, diasVidaUtil: number): void {
-    const fechaVencimiento = new Date(fechaElaboracion);
-    fechaVencimiento.setDate(fechaVencimiento.getDate() + diasVidaUtil);
-    this.loteForm.patchValue({ fechaVencimiento }, { emitEvent: false });
+  private generarYAsignarCodigoLote(): void {
+    const idProducto = this.loteForm.get('idProducto')?.value;
+    const fechaElaboracion = this.loteForm.get('fechaElaboracion')?.value;
+
+    if (idProducto && fechaElaboracion) {
+      const producto = this.productos().find(p => p.idProducto === idProducto);
+      if (producto) {
+        const codigo = this.generarCodigoLote(producto, this.formatDate(fechaElaboracion));
+        this.loteForm.patchValue({ codigoLote: codigo }, { emitEvent: false });
+      }
+    }
+  }
+
+  private calcularFechaVencimientoAutomatica(): void {
+    const idProducto = this.loteForm.get('idProducto')?.value;
+    const fechaElaboracion = this.loteForm.get('fechaElaboracion')?.value;
+
+    if (idProducto && fechaElaboracion) {
+      const producto = this.productos().find(p => p.idProducto === idProducto);
+      if (producto?.diasVidaUtil) {
+        const fechaVencimiento = new Date(fechaElaboracion);
+        fechaVencimiento.setDate(fechaVencimiento.getDate() + producto.diasVidaUtil);
+        this.loteForm.patchValue({ fechaVencimiento }, { emitEvent: false });
+      }
+    }
+  }
+
+  private generarCodigoLote(producto: Producto, fechaElaboracion: string): string {
+    const prefijo = 'CDP';
+
+    // Tipo de producto (primera letra de categoría o 'P' por defecto)
+    const tipoProducto = this.obtenerTipoProducto(producto);
+
+    // 3 primeras consonantes del nombre del producto
+    const consonantes = this.extraerConsonantes(producto.nombre, 3);
+
+    // Fecha invertida YYMMDD
+    const fechaInvertida = this.invertirFecha(fechaElaboracion);
+
+    // Unidad de medida (primera letra de abreviatura o 'U')
+    const unidad = producto.abreviaturaUnidad?.charAt(0).toUpperCase() || 'U';
+
+    // Formato: CDP + Tipo + Consonantes + Fecha + Unidad
+    return `${prefijo}${tipoProducto}${consonantes}${fechaInvertida}${unidad}`;
+  }
+
+  private obtenerTipoProducto(producto: Producto): string {
+    const categoria = producto.nombreCategoria?.toUpperCase() || '';
+
+    // Mapeo de categorías a tipos
+    if (categoria.includes('PAN')) return 'P';
+    if (categoria.includes('GALLETA')) return 'G';
+    if (categoria.includes('PASTEL')) return 'T';
+    if (categoria.includes('TORTA')) return 'T';
+    if (categoria.includes('POSTRE')) return 'D';
+
+    // Por defecto, primera letra de la categoría
+    return categoria.charAt(0) || 'P';
+  }
+
+  private extraerConsonantes(texto: string, cantidad: number): string {
+    const consonantes = texto
+      .toUpperCase()
+      .replaceAll(/[AEIOUÁÉÍÓÚ\s]/g, '') // Eliminar vocales y espacios
+      .replaceAll(/[^A-Z]/g, '');         // Solo letras
+
+    return consonantes.substring(0, cantidad).padEnd(cantidad, 'X');
+  }
+
+  private invertirFecha(fecha: string): string {
+    const partes = fecha.split('-');
+    if (partes.length === 3) {
+      const dia = partes[2];
+      const mes = partes[1];
+      const anio = partes[0].substring(2); // Últimos 2 dígitos del año
+      const ddmmyy = `${dia}${mes}${anio}`;
+      // Invertir el string literalmente
+      return ddmmyy.split('').reverse().join('');
+    }
+    return '';
   }
 
   protected onSubmit(): void {
     if (this.loteForm.invalid) {
       this.notificationService.warning('Por favor, completa todos los campos requeridos');
+      Object.keys(this.loteForm.controls).forEach(key => {
+        this.loteForm.get(key)?.markAsTouched();
+      });
       return;
     }
 
@@ -133,5 +208,17 @@ export class CrearLote implements OnInit {
   protected getProductoNombre(idProducto: number): string {
     const producto = this.productos().find(p => p.idProducto === idProducto);
     return producto ? producto.nombre : '';
+  }
+
+  protected getProductoInfo(idProducto: number): string {
+    const producto = this.productos().find(p => p.idProducto === idProducto);
+    if (!producto) return '';
+
+    const info = [];
+    if (producto.nombreCategoria) info.push(`Categoría: ${producto.nombreCategoria}`);
+    if (producto.diasVidaUtil) info.push(`Vida útil: ${producto.diasVidaUtil} días`);
+    if (producto.abreviaturaUnidad) info.push(`Unidad: ${producto.abreviaturaUnidad}`);
+
+    return info.join(' | ');
   }
 }

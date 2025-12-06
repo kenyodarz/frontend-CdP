@@ -14,30 +14,40 @@
         <div class="field full-width">
           <p-floatLabel>
             <p-select formControlName="idProducto" [options]="productos()" optionLabel="nombre" optionValue="idProducto"
-              [filter]="true" filterBy="nombre" inputId="producto" [style]="{'width':'100%'}" />
+              [filter]="true" filterBy="nombre,codigo" inputId="producto" [style]="{'width':'100%'}"
+              placeholder="Seleccionar producto" />
             <label for="producto">Producto *</label>
           </p-floatLabel>
           @if (loteForm.get('idProducto')?.invalid && loteForm.get('idProducto')?.touched) {
           <small class="p-error">El producto es requerido</small>
           }
-          <br>
         </div>
 
-        <!-- Código de Lote -->
+        <!-- Info del producto seleccionado -->
+        @if (loteForm.get('idProducto')?.value) {
+        <div class="info-producto full-width">
+          <i class="pi pi-info-circle"></i>
+          <div class="info-content">
+            <strong>{{ getProductoNombre(loteForm.get('idProducto')?.value) }}</strong>
+            <span class="info-details">{{ getProductoInfo(loteForm.get('idProducto')?.value) }}</span>
+          </div>
+        </div>
+        }
+
+        <!-- Código de Lote (auto-generado) -->
         <div class="field">
           <p-floatLabel>
-            <input pInputText formControlName="codigoLote" id="codigoLote" placeholder="Ej: LOTE-2024-001" />
-            <label for="codigoLote">Código de Lote *</label>
+            <input pInputText formControlName="codigoLote" id="codigoLote" [readonly]="true" class="readonly-field" />
+            <label for="codigoLote">Código de Lote (Auto-generado)</label>
           </p-floatLabel>
-          @if (loteForm.get('codigoLote')?.invalid && loteForm.get('codigoLote')?.touched) {
-          <small class="p-error">El código de lote es requerido</small>
-          }
+          <small class="p-hint">Se genera automáticamente al seleccionar producto y fecha</small>
         </div>
 
         <!-- Cantidad -->
         <div class="field">
           <p-floatLabel>
-            <p-inputNumber formControlName="cantidad" inputId="cantidad" [min]="1" [showButtons]="true" />
+            <p-inputNumber formControlName="cantidad" inputId="cantidad" [min]="1" [showButtons]="true"
+              [style]="{'width':'100%'}" />
             <label for="cantidad">Cantidad *</label>
           </p-floatLabel>
           @if (loteForm.get('cantidad')?.invalid && loteForm.get('cantidad')?.touched) {
@@ -55,7 +65,7 @@
         <div class="field">
           <p-floatLabel>
             <p-datepicker formControlName="fechaElaboracion" inputId="fechaElaboracion" [showIcon]="true"
-              dateFormat="yy-mm-dd" />
+              dateFormat="yy-mm-dd" [style]="{'width':'100%'}" />
             <label for="fechaElaboracion">Fecha de Elaboración *</label>
           </p-floatLabel>
           @if (loteForm.get('fechaElaboracion')?.invalid && loteForm.get('fechaElaboracion')?.touched) {
@@ -67,27 +77,26 @@
         <div class="field">
           <p-floatLabel>
             <p-datepicker formControlName="fechaVencimiento" inputId="fechaVencimiento" [showIcon]="true"
-              dateFormat="yy-mm-dd" />
+              dateFormat="yy-mm-dd" [style]="{'width':'100%'}" />
             <label for="fechaVencimiento">Fecha de Vencimiento</label>
           </p-floatLabel>
           <small class="p-hint">Se calcula automáticamente si el producto tiene días de vida útil</small>
         </div>
-      </div>
 
-      <!-- Info adicional -->
-      @if (loteForm.get('idProducto')?.value) {
-      <div class="info-producto">
-        <i class="pi pi-info-circle"></i>
-        <span>
-          Producto seleccionado: <strong>{{ getProductoNombre(loteForm.get('idProducto')?.value) }}</strong>
-        </span>
+        <!-- Observaciones -->
+        <div class="field full-width">
+          <p-floatLabel>
+            <input pInputText formControlName="observaciones" id="observaciones" [style]="{'width':'100%'}" />
+            <label for="observaciones">Observaciones</label>
+          </p-floatLabel>
+        </div>
       </div>
-      }
     </p-card>
 
     <div class="form-actions">
       <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (click)="cancelar()" />
-      <p-button label="Crear Lote" icon="pi pi-save" type="submit" [disabled]="loading()" />
+      <p-button label="Crear Lote" icon="pi pi-save" type="submit" [loading]="loading()"
+        [disabled]="loteForm.invalid" />
     </div>
   </form>
   }
