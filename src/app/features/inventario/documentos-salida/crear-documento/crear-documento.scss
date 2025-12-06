@@ -1,0 +1,126 @@
+.crear-documento-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card-header {
+  padding: 1.5rem;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    i {
+      font-size: 2rem;
+      color: var(--primary-color);
+    }
+
+    .header-text {
+      h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.875rem;
+        color: var(--text-color-secondary);
+      }
+    }
+  }
+}
+
+.form-section {
+  margin-bottom: 2rem;
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-color);
+
+      &.required::after {
+        content: ' *';
+        color: var(--red-500);
+      }
+    }
+  }
+}
+
+.ordenes-section,
+.resumen-section {
+  margin-bottom: 2rem;
+
+  h3 {
+    margin: 0 0 1rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-color);
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--surface-border);
+  }
+
+  .loading-message,
+  .empty-message {
+    text-align: center;
+    padding: 3rem;
+
+    i {
+      font-size: 3rem;
+      color: var(--text-color-secondary);
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin: 0;
+      color: var(--text-color-secondary);
+    }
+  }
+}
+
+.summary-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 1rem;
+  background: var(--surface-50);
+  border-radius: 4px;
+
+  .ml-3 {
+    margin-left: 2rem;
+  }
+}
+
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-top: 1px solid var(--surface-border);
+}
+
+::ng-deep {
+  .p-datatable {
+    .text-right {
+      text-align: right !important;
+    }
+
+    .text-center {
+      text-align: center !important;
+    }
+  }
+}

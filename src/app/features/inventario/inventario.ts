@@ -38,6 +38,10 @@ import { RegistrarEntrada } from './registrar-entrada/registrar-entrada';
             <i class="pi pi-receipt"></i>
             <span>Recepciones</span>
           </p-tab>
+          <p-tab value="5" routerLink="/inventario/documentos-salida" routerLinkActive="active-tab">
+            <i class="pi pi-truck"></i>
+            <span>Despachos</span>
+          </p-tab>
           <p-tab value="0" routerLink="/inventario/lotes" routerLinkActive="active-tab">
             <i class="pi pi-box"></i>
             <span>Lotes</span>

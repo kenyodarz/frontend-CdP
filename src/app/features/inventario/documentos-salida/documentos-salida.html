@@ -1,0 +1,110 @@
+<p-card>
+  <ng-template pTemplate="header">
+    <div class="card-header">
+      <div class="header-content">
+        <i class="pi pi-truck"></i>
+        <div class="header-text">
+          <h2>Documentos de Salida</h2>
+          <p>Gestión de despachos por ruta</p>
+        </div>
+      </div>
+      <p-button label="Nuevo Documento" icon="pi pi-plus" (onClick)="nuevoDocumento()"
+        styleClass="p-button-success"></p-button>
+    </div>
+  </ng-template>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-field">
+        <label>Estado</label>
+        <p-select [options]="estadosOptions" [(ngModel)]="estadoFiltro" optionLabel="label" optionValue="value"
+          placeholder="Todos los estados" [showClear]="true">
+        </p-select>
+      </div>
+
+      <div class="filter-field">
+        <label>Fecha Inicio</label>
+        <p-datepicker [(ngModel)]="fechaInicio" dateFormat="dd/mm/yy" [showIcon]="true"
+          placeholder="Desde"></p-datepicker>
+      </div>
+
+      <div class="filter-field">
+        <label>Fecha Fin</label>
+        <p-datepicker [(ngModel)]="fechaFin" dateFormat="dd/mm/yy" [showIcon]="true" placeholder="Hasta"></p-datepicker>
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <p-button label="Aplicar" icon="pi pi-search" (onClick)="aplicarFiltros()"></p-button>
+      <p-button label="Limpiar" icon="pi pi-filter-slash" (onClick)="limpiarFiltros()"
+        styleClass="p-button-secondary"></p-button>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <p-table [value]="documentos()" [loading]="loading()" [paginator]="true" [rows]="10"
+    [rowsPerPageOptions]="[10, 20, 50]" [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} documentos" styleClass="p-datatable-sm"
+    [globalFilterFields]="['numeroDocumento', 'nombreRuta', 'nombreConductor']">
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="numeroDocumento">
+          Número
+          <p-sortIcon field="numeroDocumento"></p-sortIcon>
+        </th>
+        <th pSortableColumn="nombreRuta">
+          Ruta
+          <p-sortIcon field="nombreRuta"></p-sortIcon>
+        </th>
+        <th pSortableColumn="nombreConductor">
+          Conductor
+          <p-sortIcon field="nombreConductor"></p-sortIcon>
+        </th>
+        <th pSortableColumn="fechaSalida">
+          Fecha Salida
+          <p-sortIcon field="fechaSalida"></p-sortIcon>
+        </th>
+        <th pSortableColumn="estado">
+          Estado
+          <p-sortIcon field="estado"></p-sortIcon>
+        </th>
+        <th class="text-right">Órdenes</th>
+        <th class="text-right">Valor Total</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-documento>
+      <tr>
+        <td>{{ documento.numeroDocumento }}</td>
+        <td>{{ documento.nombreRuta || '-' }}</td>
+        <td>{{ documento.nombreConductor || '-' }}</td>
+        <td>{{ formatDate(documento.fechaSalida) }}</td>
+        <td>
+          <p-tag [value]="getEstadoLabel(documento.estado)" [severity]="getEstadoSeverity(documento.estado)"></p-tag>
+        </td>
+        <td class="text-right">{{ documento.idsOrdenes?.length || 0 }}</td>
+        <td class="text-right">{{ formatCurrency(documento.valorTotal || 0) }}</td>
+        <td class="text-center">
+          <p-button icon="pi pi-eye" (onClick)="verDocumento(documento)" styleClass="p-button-text p-button-sm"
+            pTooltip="Ver detalles"></p-button>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8" class="text-center empty-message">
+          <i class="pi pi-inbox"></i>
+          <p>No hay documentos de salida registrados</p>
+          <p-button label="Crear Primer Documento" icon="pi pi-plus" (onClick)="nuevoDocumento()"
+            styleClass="p-button-sm"></p-button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

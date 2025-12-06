@@ -1,0 +1,130 @@
+<div class="crear-documento-container">
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="card-header">
+        <div class="header-content">
+          <i class="pi pi-file-plus"></i>
+          <div class="header-text">
+            <h2>Nuevo Documento de Salida</h2>
+            <p>Agrupe órdenes por ruta para despacho</p>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <div class="form-section">
+      <div class="form-grid">
+        <div class="form-field">
+          <label class="required">Ruta</label>
+          <p-select [options]="rutas()" [(ngModel)]="rutaSeleccionada" (onChange)="onRutaChange()" optionLabel="nombre"
+            optionValue="idRuta" [filter]="true" filterBy="nombre" placeholder="Seleccione una ruta">
+          </p-select>
+        </div>
+
+        <div class="form-field">
+          <label class="required">Conductor</label>
+          <p-select [options]="conductores()" [(ngModel)]="conductorSeleccionado" optionLabel="nombre"
+            optionValue="idConductor" [filter]="true" filterBy="nombre" placeholder="Seleccione un conductor">
+          </p-select>
+        </div>
+
+        <div class="form-field">
+          <label class="required">Fecha de Salida</label>
+          <p-datepicker [(ngModel)]="fechaSalida" dateFormat="dd/mm/yy" [showIcon]="true"></p-datepicker>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>Observaciones</label>
+        <textarea pTextarea [(ngModel)]="observaciones" rows="3" placeholder="Observaciones opcionales..."></textarea>
+      </div>
+    </div>
+
+    <!-- Órdenes Disponibles -->
+    @if (rutaSeleccionada()) {
+    <div class="ordenes-section">
+      <h3>Órdenes Pendientes de la Ruta</h3>
+
+      @if (loadingOrdenes()) {
+      <div class="loading-message">
+        <i class="pi pi-spin pi-spinner"></i>
+        <p>Cargando órdenes...</p>
+      </div>
+      } @else if (ordenesDisponibles().length === 0) {
+      <div class="empty-message">
+        <i class="pi pi-inbox"></i>
+        <p>No hay órdenes pendientes para esta ruta</p>
+      </div>
+      } @else {
+      <p-table [value]="ordenesDisponibles()" styleClass="p-datatable-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 50px"></th>
+            <th>Número</th>
+            <th>Cliente</th>
+            <th>Fecha</th>
+            <th class="text-right">Total</th>
+            <th class="text-center">Productos</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-orden>
+          <tr>
+            <td>
+              <p-checkbox [binary]="true" [ngModel]="isOrdenSeleccionada(orden.idOrden)"
+                (ngModelChange)="toggleOrden(orden.idOrden)"></p-checkbox>
+            </td>
+            <td>{{ orden.numeroOrden }}</td>
+            <td>{{ orden.nombreCliente || 'Cliente ' + orden.idCliente }}</td>
+            <td>{{ orden.fechaOrden | date:'dd/MM/yyyy' }}</td>
+            <td class="text-right">{{ formatCurrency(orden.total) }}</td>
+            <td class="text-center">{{ orden.detalles?.length || 0 }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+      }
+    </div>
+    }
+
+    <!-- Resumen Consolidado -->
+    @if (productosConsolidados().length > 0) {
+    <div class="resumen-section">
+      <h3>Resumen de Productos Consolidados</h3>
+      <p-table [value]="productosConsolidados()" styleClass="p-datatable-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Producto</th>
+            <th class="text-right">Cantidad Total</th>
+            <th>Unidad</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-producto>
+          <tr>
+            <td>{{ producto.nombre }}</td>
+            <td class="text-right">{{ producto.cantidadTotal }}</td>
+            <td>{{ producto.unidad }}</td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="summary">
+          <div class="summary-footer">
+            <strong>Órdenes seleccionadas:</strong> {{ ordenesSeleccionadas().size }}
+            <strong class="ml-3">Valor total:</strong> {{ formatCurrency(totalDocumento()) }}
+          </div>
+        </ng-template>
+      </p-table>
+    </div>
+    }
+
+    <ng-template pTemplate="footer">
+      <div class="card-footer">
+        <p-button label="Cancelar" icon="pi pi-times" (onClick)="cancelar()" styleClass="p-button-secondary"></p-button>
+        <p-button label="Guardar Documento" icon="pi pi-check" (onClick)="guardar()" [loading]="loading()"
+          [disabled]="ordenesSeleccionadas().size === 0"></p-button>
+      </div>
+    </ng-template>
+  </p-card>
+</div>
+
+<p-toast></p-toast>

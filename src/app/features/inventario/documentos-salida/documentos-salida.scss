@@ -1,0 +1,96 @@
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    i {
+      font-size: 2rem;
+      color: var(--primary-color);
+    }
+
+    .header-text {
+      h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.875rem;
+        color: var(--text-color-secondary);
+      }
+    }
+  }
+}
+
+.filters-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--surface-50);
+  border-radius: 8px;
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    .filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-color);
+      }
+    }
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+  }
+}
+
+::ng-deep {
+  .p-datatable {
+    .text-right {
+      text-align: right !important;
+    }
+
+    .text-center {
+      text-align: center !important;
+    }
+
+    .empty-message {
+      padding: 3rem !important;
+
+      i {
+        font-size: 3rem;
+        color: var(--text-color-secondary);
+        margin-bottom: 1rem;
+      }
+
+      p {
+        margin: 0.5rem 0;
+        color: var(--text-color-secondary);
+
+        &:first-of-type {
+          font-weight: 500;
+          color: var(--text-color);
+        }
+      }
+    }
+  }
+}

@@ -99,6 +99,14 @@ export const routes: Routes = [
       {
         path: 'registrar-salida',
         loadComponent: () => import('./features/inventario/registrar-salida/registrar-salida').then(m => m.RegistrarSalida)
+      },
+      {
+        path: 'documentos-salida',
+        loadComponent: () => import('./features/inventario/documentos-salida/documentos-salida').then(m => m.DocumentosSalidaComponent)
+      },
+      {
+        path: 'documentos-salida/crear',
+        loadComponent: () => import('./features/inventario/documentos-salida/crear-documento/crear-documento').then(m => m.CrearDocumentoComponent)
       }
     ]
   },
