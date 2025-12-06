@@ -175,26 +175,25 @@ export class CrearDocumentoComponent implements OnInit {
 
     this.loadingOrdenes.set(true);
 
-    // Cargar órdenes PENDIENTES de clientes de la ruta
-    this.http.get<any>(`${environment.apiUrl}/ordenes`, {
-      params: { estado: 'PENDIENTE', page: '0', size: '100' }
-    }).subscribe({
-      next: (response) => {
-        // Filtrar órdenes de clientes de la ruta seleccionada
-        // Por ahora mostramos todas las pendientes
-        this.ordenesDisponibles.set(response.content || []);
-        this.loadingOrdenes.set(false);
-      },
-      error: (error) => {
-        console.error('Error cargando órdenes:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'No se pudieron cargar las órdenes'
-        });
-        this.loadingOrdenes.set(false);
-      }
-    });
+    // Cargar órdenes PENDIENTES usando el endpoint correcto
+    this.http.get<Orden[]>(`${environment.apiUrl}/ordenes/estado/PENDIENTE`)
+      .subscribe({
+        next: (ordenes) => {
+          // Filtrar órdenes de clientes de la ruta seleccionada
+          // Por ahora mostramos todas las pendientes
+          this.ordenesDisponibles.set(ordenes);
+          this.loadingOrdenes.set(false);
+        },
+        error: (error) => {
+          console.error('Error cargando órdenes:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudieron cargar las órdenes'
+          });
+          this.loadingOrdenes.set(false);
+        }
+      });
   }
 
   toggleOrden(idOrden: number): void {
