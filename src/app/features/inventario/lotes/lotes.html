@@ -5,8 +5,8 @@
   <app-error-message [title]="'Error'" [message]="error()!" (retry)="onRetry()" />
   } @else {
   <p-table [value]="lotes()" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 25, 50]"
-    [globalFilterFields]="['codigoLote', 'productoNombre']" [tableStyle]="{'min-width': '60rem'}"
-    sortField="fechaElaboracion" [sortOrder]="-1" #dt>
+    [globalFilterFields]="['codigoLote']" [tableStyle]="{'min-width': '50rem'}" sortField="fechaElaboracion"
+    [sortOrder]="-1" #dt>
 
     <ng-template pTemplate="caption">
       <div class="table-header">
@@ -23,15 +23,6 @@
         <th pSortableColumn="codigoLote">
           Código Lote <p-sortIcon field="codigoLote" />
         </th>
-        <th pSortableColumn="productoNombre">
-          Producto <p-sortIcon field="productoNombre" />
-        </th>
-        <th pSortableColumn="cantidadInicial">
-          Cant. Inicial <p-sortIcon field="cantidadInicial" />
-        </th>
-        <th pSortableColumn="cantidadActual">
-          Cant. Actual <p-sortIcon field="cantidadActual" />
-        </th>
         <th pSortableColumn="fechaElaboracion">
           F. Elaboración <p-sortIcon field="fechaElaboracion" />
         </th>
@@ -41,6 +32,7 @@
         <th pSortableColumn="estado">
           Estado <p-sortIcon field="estado" />
         </th>
+        <th>Observaciones</th>
         <th>Acciones</th>
       </tr>
     </ng-template>
@@ -48,30 +40,20 @@
     <ng-template pTemplate="body" let-lote>
       <tr>
         <td><strong>{{ lote.codigoLote }}</strong></td>
-        <td>{{ lote.productoNombre }}</td>
-        <td>{{ lote.cantidadInicial }}</td>
-        <td>
-          <p-tag [value]="lote.cantidadActual.toString()"
-            [severity]="lote.cantidadActual === 0 ? 'danger' : 'secondary'" />
-        </td>
-        <td>{{ lote.fechaElaboracion | date:'short' }}</td>
+        <td>{{ lote.fechaElaboracion | date:'dd/MM/yyyy' }}</td>
         <td>
           @if (lote.fechaVencimiento) {
           <div class="fecha-vencimiento">
-            {{ lote.fechaVencimiento | date:'short' }}
-            @if (lote.diasParaVencer !== undefined) {
-            <span class="dias-restantes" [class.warning]="lote.estaProximoAVencer">
-              ({{ lote.diasParaVencer }} días)
-            </span>
-            }
+            {{ lote.fechaVencimiento | date:'dd/MM/yyyy' }}
           </div>
           } @else {
           <span class="sin-vencimiento">Sin vencimiento</span>
           }
         </td>
         <td>
-          <p-tag [value]="getEstadoLabel(getEstadoLote(lote))" [severity]="getEstadoSeverity(getEstadoLote(lote))" />
+          <p-tag [value]="lote.estado" [severity]="getEstadoSeverity(getEstadoLote(lote))" />
         </td>
+        <td>{{ lote.observaciones || '-' }}</td>
         <td>
           <p-button icon="pi pi-eye" [text]="true" [rounded]="true" pTooltip="Ver detalle" tooltipPosition="top" />
         </td>
@@ -80,7 +62,7 @@
 
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="8" class="no-data">
+        <td colspan="6" class="no-data">
           <i class="pi pi-inbox"></i>
           <p>No se encontraron lotes</p>
         </td>

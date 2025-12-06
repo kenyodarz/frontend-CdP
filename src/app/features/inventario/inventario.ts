@@ -34,9 +34,9 @@ import { RegistrarEntrada } from './registrar-entrada/registrar-entrada';
             <i class="pi pi-box"></i>
             <span>Lotes</span>
           </p-tab>
-          <p-tab value="1" routerLink="/inventario/movimientos" routerLinkActive="active-tab">
+          <p-tab value="1" routerLink="/inventario/documentos" routerLinkActive="active-tab">
             <i class="pi pi-sync"></i>
-            <span>Movimientos</span>
+            <span>Recepciones</span>
           </p-tab>
           <p-tab value="2" routerLink="/inventario/crear-lote" routerLinkActive="active-tab">
             <i class="pi pi-plus"></i>

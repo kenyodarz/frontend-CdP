@@ -47,7 +47,7 @@ export class Lotes implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.inventarioService.obtenerProximosAVencer(365).subscribe({
+    this.inventarioService.obtenerTodosLotes().subscribe({
       next: (lotes) => {
         this.lotes.set(lotes);
         this.loading.set(false);
