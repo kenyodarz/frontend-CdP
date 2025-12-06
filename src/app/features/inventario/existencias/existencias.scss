@@ -11,12 +11,27 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
 
-  h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1f2937;
+  .header-content {
+    h2 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 0.75rem;
   }
 }
 
@@ -24,40 +39,116 @@
   padding: 1.5rem;
 }
 
+.table-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  .search-input {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
 .text-center {
   text-align: center;
 }
 
-.stock-badge {
+.text-right {
+  text-align: right;
+}
+
+.text-muted {
+  color: #6b7280;
+}
+
+.stock-value {
   padding: 0.25rem 0.75rem;
   border-radius: 4px;
   font-weight: 600;
   display: inline-block;
+
+  &.stock-alto {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+
+  &.stock-bajo {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+
+  &.stock-critico {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
 }
 
-.stock-success {
-  background-color: #d1fae5;
-  color: #065f46;
+.categoria-badge {
+  padding: 0.25rem 0.5rem;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: #374151;
 }
 
-.stock-warning {
-  background-color: #fef3c7;
-  color: #92400e;
+.empty-message {
+  padding: 3rem 1rem !important;
+
+  i {
+    font-size: 3rem;
+    color: #d1d5db;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: #6b7280;
+    font-size: 1rem;
+    margin: 0;
+  }
 }
 
-.stock-danger {
-  background-color: #fee2e2;
-  color: #991b1b;
+.table-summary {
+  padding: 0.75rem 0;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+tr.stock-critico {
+  background-color: #fef2f2 !important;
 }
 
 ::ng-deep {
-  .p-datatable .p-datatable-thead>tr>th {
-    background-color: #f9fafb;
-    color: #374151;
-    font-weight: 600;
+  .p-datatable {
+    .p-datatable-thead>tr>th {
+      background-color: #f9fafb;
+      color: #374151;
+      font-weight: 600;
+      padding: 1rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .p-datatable-tbody>tr {
+      &:hover {
+        background-color: #f9fafb;
+      }
+
+      >td {
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid #f3f4f6;
+      }
+    }
+
+    .p-paginator {
+      background-color: #f9fafb;
+      border-top: 1px solid #e5e7eb;
+      padding: 1rem;
+    }
   }
 
-  .p-datatable .p-datatable-tbody>tr:hover {
-    background-color: #f3f4f6;
+  .p-iconfield {
+    width: 100%;
   }
 }
