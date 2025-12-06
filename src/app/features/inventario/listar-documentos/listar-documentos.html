@@ -1,1 +1,90 @@
-<p>listar-documentos works!</p>
+<div class="card">
+  <div class="card-header">
+    <h2>Documentos de Recepción</h2>
+  </div>
+
+  <div class="card-body">
+    <!-- Filtros -->
+    <div class="filters-container">
+      <div class="filter-group">
+        <label for="fechaInicio">Fecha Inicio</label>
+        <p-datepicker inputId="fechaInicio" [(ngModel)]="fechaInicio" (onSelect)="onFiltroChange()"
+          dateFormat="yy-mm-dd" [showIcon]="true" placeholder="Seleccionar fecha"></p-datepicker>
+      </div>
+
+      <div class="filter-group">
+        <label for="fechaFin">Fecha Fin</label>
+        <p-datepicker inputId="fechaFin" [(ngModel)]="fechaFin" (onSelect)="onFiltroChange()" dateFormat="yy-mm-dd"
+          [showIcon]="true" placeholder="Seleccionar fecha"></p-datepicker>
+      </div>
+
+      <div class="filter-group">
+        <label for="estado">Estado</label>
+        <p-select inputId="estado" [options]="estadosOptions" [(ngModel)]="estadoSeleccionado"
+          (onChange)="onFiltroChange()" optionLabel="label" optionValue="value" placeholder="Todos los estados"
+          [showClear]="true"></p-select>
+      </div>
+
+      <div class="filter-group">
+        <button pButton type="button" label="Buscar" icon="pi pi-search" (click)="cargarDocumentos()"
+          [loading]="loading()"></button>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <p-table [value]="documentos()" [loading]="loading()" [paginator]="true" [rows]="10"
+      [rowsPerPageOptions]="[10, 25, 50]" [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} documentos" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Número</th>
+          <th>Fecha Recepción</th>
+          <th>Motivo</th>
+          <th>Total Productos</th>
+          <th>Cantidad Total</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-documento>
+        <tr>
+          <td>{{ documento.numeroDocumento }}</td>
+          <td>{{ documento.fechaRecepcion | date: 'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ documento.motivo }}</td>
+          <td class="text-center">{{ documento.totalProductos }}</td>
+          <td class="text-center">{{ documento.cantidadTotal }}</td>
+          <td>
+            <p-tag [value]="documento.estado" [severity]="getSeverity(documento.estado)"></p-tag>
+          </td>
+          <td>
+            <div class="action-buttons">
+              @if (puedeConfirmar(documento)) {
+              <button pButton type="button" icon="pi pi-check" class="p-button-sm p-button-success" pTooltip="Confirmar"
+                (click)="confirmarDocumento(documento.id!)"></button>
+              }
+              @if (puedeRevisar(documento)) {
+              <button pButton type="button" icon="pi pi-eye" class="p-button-sm p-button-info" pTooltip="Revisar"
+                (click)="revisarDocumento(documento.id!)"></button>
+              }
+              @if (puedeCorregir(documento)) {
+              <button pButton type="button" icon="pi pi-pencil" class="p-button-sm p-button-warning"
+                pTooltip="Crear Corrección" [disabled]="true"></button>
+              }
+              <button pButton type="button" icon="pi pi-info-circle" class="p-button-sm p-button-secondary"
+                pTooltip="Ver Detalle"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="text-center">
+            No se encontraron documentos para los filtros seleccionados
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

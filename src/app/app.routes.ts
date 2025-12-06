@@ -81,8 +81,8 @@ export const routes: Routes = [
         loadComponent: () => import('./features/inventario/lotes/lotes').then(m => m.Lotes)
       },
       {
-        path: 'movimientos',
-        loadComponent: () => import('./features/inventario/movimientos/movimientos').then(m => m.Movimientos)
+        path: 'documentos',
+        loadComponent: () => import('./features/inventario/listar-documentos/listar-documentos').then(m => m.ListarDocumentos)
       },
       {
         path: 'crear-lote',

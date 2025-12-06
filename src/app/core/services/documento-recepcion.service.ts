@@ -34,9 +34,9 @@ export class DocumentoRecepcionService {
   }
 
   listar(
-    estado?: EstadoDocumento,
-    fechaInicio?: string,
-    fechaFin?: string
+      estado?: string | null,
+      fechaInicio?: string | undefined,
+      fechaFin?: string | undefined
   ): Observable<DocumentoRecepcion[]> {
     let params = new HttpParams();
 
@@ -51,5 +51,9 @@ export class DocumentoRecepcionService {
     }
 
     return this.http.get<DocumentoRecepcion[]>(this.apiUrl, { params });
+  }
+
+  revisar(id: number): Observable<DocumentoRecepcion> {
+    return this.http.post<DocumentoRecepcion>(`${this.apiUrl}/${id}/revisar`, {});
   }
 }
