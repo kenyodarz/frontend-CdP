@@ -1,14 +1,16 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TableModule  } from 'primeng/table';
-import {Button, ButtonDirective} from 'primeng/button';
+import { TableModule } from 'primeng/table';
+import { Button, ButtonDirective } from 'primeng/button';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { DatePicker } from 'primeng/datepicker';
 import { Select } from 'primeng/select';
 import { Tag } from 'primeng/tag';
 import { MessageService } from 'primeng/api';
 import { DocumentoRecepcionService } from '../../../core/services/documento-recepcion.service';
 import { DocumentoRecepcion } from '../../../core/models/inventario/documento-recepcion';
+import {Dialog} from 'primeng/dialog';
 
 interface EstadoOption {
   label: string;
@@ -25,7 +27,8 @@ interface EstadoOption {
     DatePicker,
     Select,
     Tag,
-    ButtonDirective
+    ButtonDirective,
+    Dialog
   ],
   templateUrl: './listar-documentos.html',
   styleUrl: './listar-documentos.scss',
@@ -39,9 +42,13 @@ export class ListarDocumentos implements OnInit {
   loading = signal(false);
 
   // Filtros
-  fechaInicio = signal<Date>(new Date()); // Default: hoy
-  fechaFin = signal<Date>(new Date());     // Default: hoy
+  fechaInicio = signal<Date>(new Date());
+  fechaFin = signal<Date>(new Date());
   estadoSeleccionado = signal<string | null>(null);
+
+  // Dialog de detalle
+  mostrarDetalle = signal(false);
+  documentoSeleccionado = signal<DocumentoRecepcion | null>(null);
 
   estadosOptions: EstadoOption[] = [
     { label: 'Todos', value: null },
@@ -97,6 +104,11 @@ export class ListarDocumentos implements OnInit {
     this.cargarDocumentos();
   }
 
+  verDetalle(documento: DocumentoRecepcion): void {
+    this.documentoSeleccionado.set(documento);
+    this.mostrarDetalle.set(true);
+  }
+
   confirmarDocumento(id: number): void {
     this.loading.set(true);
     this.documentoService.confirmar(id).subscribe({
@@ -129,12 +141,14 @@ export class ListarDocumentos implements OnInit {
           summary: 'Revisado',
           detail: 'Documento revisado exitosamente'
         });
+        this.mostrarDetalle.set(false);
         this.cargarDocumentos();
       },
       error: (error) => {
         console.error('Error al revisar:', error);
         this.messageService.add({
           severity: 'error',
+          summary: 'Error',
           detail: 'No se pudo revisar el documento'
         });
         this.loading.set(false);
@@ -142,7 +156,7 @@ export class ListarDocumentos implements OnInit {
     });
   }
 
-  getSeverity(estado: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' {
+  getSeverity(estado?: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' {
     const severityMap: Record<string, 'success' | 'info' | 'warn' | 'danger' | 'secondary'> = {
       'PENDIENTE': 'warn',
       'CONFIRMADO': 'info',
@@ -152,7 +166,8 @@ export class ListarDocumentos implements OnInit {
       'CON_AJUSTES': 'info',
       'ANULADO': 'danger'
     };
-    return severityMap[estado] || 'secondary';
+
+    return estado ? severityMap[estado] || 'secondary' : 'secondary';
   }
 
   puedeConfirmar(documento: DocumentoRecepcion): boolean {

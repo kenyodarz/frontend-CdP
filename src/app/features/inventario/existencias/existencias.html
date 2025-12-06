@@ -1,0 +1,57 @@
+<div class="card">
+  <div class="card-header">
+    <h2>Existencias en Inventario</h2>
+    <button pButton type="button" icon="pi pi-refresh" label="Actualizar" (click)="cargarExistencias()"
+      [loading]="loading()"></button>
+  </div>
+
+  <div class="card-body">
+    <p-table [value]="productos()" [loading]="loading()" [paginator]="true" [rows]="20"
+      [rowsPerPageOptions]="[20, 50, 100]" [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} productos"
+      [globalFilterFields]="['codigo', 'nombre']" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="codigo">
+            Código
+            <p-sortIcon field="codigo"></p-sortIcon>
+          </th>
+          <th pSortableColumn="nombre">
+            Nombre
+            <p-sortIcon field="nombre"></p-sortIcon>
+          </th>
+          <th pSortableColumn="stockActual" class="text-center">
+            Stock Actual
+            <p-sortIcon field="stockActual"></p-sortIcon>
+          </th>
+          <th>Unidad</th>
+          <th>Categoría</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-producto>
+        <tr>
+          <td>{{ producto.codigo }}</td>
+          <td>{{ producto.nombre }}</td>
+          <td class="text-center">
+            <span class="stock-badge" [class.stock-success]="producto.stockActual > 50"
+              [class.stock-warning]="producto.stockActual > 10 && producto.stockActual <= 50"
+              [class.stock-danger]="producto.stockActual <= 10">
+              {{ producto.stockActual }}
+            </span>
+          </td>
+          <td>{{ producto.unidadMedida }}</td>
+          <td>{{ producto.nombreCategoria || '-' }}</td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center">
+            No hay productos con existencias en inventario
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

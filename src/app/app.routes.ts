@@ -75,7 +75,7 @@ export const routes: Routes = [
     path: 'inventario',
     loadComponent: () => import('./features/inventario/inventario').then(m => m.Inventario),
     children: [
-      { path: '', redirectTo: 'lotes', pathMatch: 'full' },
+      { path: '', redirectTo: 'documentos', pathMatch: 'full' },
       {
         path: 'lotes',
         loadComponent: () => import('./features/inventario/lotes/lotes').then(m => m.Lotes)
@@ -83,6 +83,10 @@ export const routes: Routes = [
       {
         path: 'documentos',
         loadComponent: () => import('./features/inventario/listar-documentos/listar-documentos').then(m => m.ListarDocumentos)
+      },
+      {
+        path: 'existencias',
+        loadComponent: () => import('./features/inventario/existencias/existencias').then(m => m.Existencias)
       },
       {
         path: 'crear-lote',

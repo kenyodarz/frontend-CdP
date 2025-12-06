@@ -14,20 +14,20 @@ import { RegistrarEntrada } from './registrar-entrada/registrar-entrada';
       <div class="header-section">
         <h1>Inventario</h1>
         <div class="actions">
-          <p-button 
-            label="Nueva Entrada" 
-            icon="pi pi-arrow-down" 
+          <p-button
+            label="Nueva Entrada"
+            icon="pi pi-arrow-down"
             severity="success"
             (onClick)="abrirRegistroEntrada()" />
-          <p-button 
-            label="Nueva Salida" 
-            icon="pi pi-arrow-up" 
+          <p-button
+            label="Nueva Salida"
+            icon="pi pi-arrow-up"
             severity="danger"
             [outlined]="true"
             routerLink="/inventario/registrar-salida" />
         </div>
       </div>
-      
+
       <p-tabs value="0">
         <p-tablist>
           <p-tab value="0" routerLink="/inventario/lotes" routerLinkActive="active-tab">
@@ -102,7 +102,9 @@ export class Inventario {
       height: '90vh',
       maximizable: true,
       modal: true,
-      dismissableMask: false
+      dismissableMask: false,
+      closeOnEscape: true,
+      closable: true
     });
 
     this.ref?.onClose.subscribe((resultado) => {

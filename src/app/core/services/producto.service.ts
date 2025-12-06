@@ -68,4 +68,8 @@ export class ProductoService {
       motivo
     });
   }
+
+  listarExistencias(): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${this.apiUrl}/existencias`);
+  }
 }

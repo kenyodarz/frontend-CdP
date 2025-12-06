@@ -1,7 +1,11 @@
 export enum EstadoDocumento {
   PENDIENTE = 'PENDIENTE',
   CONFIRMADO = 'CONFIRMADO',
-  ANULADO = 'ANULADO'
+  ANULADO = 'ANULADO',
+  REVISADO = 'REVISADO',
+  CERRADO = 'CERRADO',
+  CORREGIDO = 'CORREGIDO',
+  CON_AJUSTES = 'CON_AJUSTES',
 }
 
 export interface DetalleRecepcion {
