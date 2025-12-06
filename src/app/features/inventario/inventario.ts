@@ -30,13 +30,17 @@ import { RegistrarEntrada } from './registrar-entrada/registrar-entrada';
 
       <p-tabs value="0">
         <p-tablist>
+          <p-tab value="0" routerLink="/inventario/existencias" routerLinkActive="active-tab">
+            <i class="pi pi-ticket"></i>
+            <span>Existencias</span>
+          </p-tab>
+          <p-tab value="1" routerLink="/inventario/documentos" routerLinkActive="active-tab">
+            <i class="pi pi-receipt"></i>
+            <span>Recepciones</span>
+          </p-tab>
           <p-tab value="0" routerLink="/inventario/lotes" routerLinkActive="active-tab">
             <i class="pi pi-box"></i>
             <span>Lotes</span>
-          </p-tab>
-          <p-tab value="1" routerLink="/inventario/documentos" routerLinkActive="active-tab">
-            <i class="pi pi-sync"></i>
-            <span>Recepciones</span>
           </p-tab>
           <p-tab value="2" routerLink="/inventario/crear-lote" routerLinkActive="active-tab">
             <i class="pi pi-plus"></i>
