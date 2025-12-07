@@ -140,5 +140,32 @@ export const routes: Routes = [
       }
     ]
   },
+  {
+    path: 'supervision',
+    loadComponent: () => import('./features/supervision/supervision').then(m => m.Supervision),
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/supervision/dashboard/dashboard').then(m => m.Dashboard)
+      },
+      {
+        path: 'ordenes',
+        loadComponent: () => import('./features/supervision/ordenes/ordenes').then(m => m.Ordenes)
+      },
+      {
+        path: 'despachos',
+        loadComponent: () => import('./features/supervision/despachos/despachos').then(m => m.Despachos)
+      },
+      {
+        path: 'rutas',
+        loadComponent: () => import('./features/supervision/rutas/rutas').then(m => m.Rutas)
+      },
+      {
+        path: 'inventario',
+        loadComponent: () => import('./features/supervision/inventario/inventario').then(m => m.InventarioSupervision)
+      }
+    ]
+  },
   { path: '**', redirectTo: '/dashboard' }
 ];
