@@ -79,6 +79,7 @@ export class Sidebar {
     { label: 'Clientes', icon: 'pi-users', route: '/clientes' },
     { label: 'Órdenes', icon: 'pi-file', route: '/ordenes' },
     { label: 'Inventario', icon: 'pi-warehouse', route: '/inventario' },
+    { label: 'Supervisión', icon: 'pi-shield', route: '/supervision' },
     { label: 'Reportes', icon: 'pi-chart-bar', route: '/reportes' }
   ];
 }
