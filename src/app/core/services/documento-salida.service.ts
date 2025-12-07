@@ -96,6 +96,14 @@ export class DocumentoSalidaService {
   }
 
   /**
+   * Descargar PDF del documento
+   */
+  descargarPdf(id: number): Observable<Blob> {
+    const url = `${this.apiUrl}/${id}/pdf`;
+    return this.http.get(url, { responseType: 'blob' });
+  }
+
+  /**
    * Formatea fecha para backend (YYYY-MM-DD)
    */
   private formatDate(date: Date): string {

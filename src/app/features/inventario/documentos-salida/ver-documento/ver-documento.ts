@@ -15,7 +15,7 @@ import { DocumentoSalida } from '../../../../core/models/documento-salida.model'
 import { DocumentoSalidaService } from '../../../../core/services/documento-salida.service';
 import { EstadoDocumentoSalida, ESTADO_LABELS, ESTADO_SEVERITIES } from '../../../../core/models/estado-documento-salida.enum';
 import { ValidacionStockResult } from '../../../../core/models/validacion-stock-result.model';
-import {FormsModule} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-ver-documento-salida',
@@ -234,5 +234,17 @@ export class VerDocumentoComponent implements OnInit {
       label: ESTADO_LABELS[estado],
       value: estado
     }));
+  }
+
+  descargarPdf(): void {
+    const id = this.documento()?.id;
+    if (!id) return;
+
+    this.documentoService.descargarPdf(id);
+    this.messageService.add({
+      severity: 'success',
+      summary: 'PDF Generado',
+      detail: 'El PDF se está descargando'
+    });
   }
 }

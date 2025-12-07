@@ -93,6 +93,11 @@
         </div>
 
         <div class="footer-right">
+          <!-- Descargar PDF -->
+          <p-button label="Descargar PDF" icon="pi pi-file-pdf" (onClick)="descargarPdf()"
+            styleClass="p-button-secondary">
+          </p-button>
+
           <!-- Validar Stock -->
           <p-button label="Validar Stock" icon="pi pi-check-circle" (onClick)="validarStock()" [loading]="loading()"
             styleClass="p-button-info">
