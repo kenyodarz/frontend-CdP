@@ -8,6 +8,12 @@ import { ProductoVendido } from '../models/reporte/productoVendido';
 import { ClienteTop } from '../models/reporte/clienteTop';
 import { ReporteInventario } from '../models/reporte/reporteInventario';
 import { DashboardProformaResponse } from '../models/reporte/dashboard-proforma';
+import { ProductoSimple } from '../models/reporte/producto-simple';
+import { ComparacionProducto } from '../models/reporte/comparacion-producto';
+import { ProductoVendidoMes } from '../models/reporte/producto-vendido-mes';
+import { ClienteBusqueda } from '../models/reporte/cliente-busqueda';
+import { ProductoBusqueda } from '../models/reporte/producto-busqueda';
+import { DetalleVenta } from '../models/reporte/detalle-venta';
 
 @Injectable({
   providedIn: 'root'
@@ -58,5 +64,64 @@ export class ReporteService {
 
   inventarioValorizado(): Observable<ReporteInventario> {
     return this.http.get<ReporteInventario>(`${this.apiUrl}/inventario-valorizado`);
+  }
+
+  /**
+   * Obtiene la lista de productos para filtros
+   */
+  getProductos(): Observable<ProductoSimple[]> {
+    return this.http.get<ProductoSimple[]>(`${this.apiUrl}/productos`);
+  }
+
+  /**
+   * Obtiene la lista de meses con ventas disponibles
+   */
+  getMesesDisponibles(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/meses-disponibles`);
+  }
+
+  /**
+   * Obtiene la comparación de ventas de un producto por año
+   */
+  getComparacionProducto(productoId: number, anio: number): Observable<ComparacionProducto> {
+    const params = new HttpParams()
+      .set('productoId', productoId.toString())
+      .set('anio', anio.toString());
+    return this.http.get<ComparacionProducto>(`${this.apiUrl}/comparacion-producto`, { params });
+  }
+
+  /**
+   * Obtiene los productos vendidos en un mes específico
+   */
+  getProductosPorMes(mes: string): Observable<ProductoVendidoMes[]> {
+    const params = new HttpParams().set('mes', mes);
+    return this.http.get<ProductoVendidoMes[]>(`${this.apiUrl}/productos-por-mes`, { params });
+  }
+
+  /**
+   * Busca clientes por nombre con estadísticas de compra
+   */
+  buscarClientes(query: string): Observable<ClienteBusqueda[]> {
+    const params = new HttpParams().set('q', query);
+    return this.http.get<ClienteBusqueda[]>(`${this.apiUrl}/buscar-clientes`, { params });
+  }
+
+  /**
+   * Busca productos por nombre con estadísticas de ventas
+   */
+  buscarProductos(query: string): Observable<ProductoBusqueda[]> {
+    const params = new HttpParams().set('q', query);
+    return this.http.get<ProductoBusqueda[]>(`${this.apiUrl}/buscar-productos`, { params });
+  }
+
+  /**
+   * Obtiene los detalles de ventas con filtros opcionales
+   */
+  getDetallesVentas(fechaDesde?: string, fechaHasta?: string, tipoCliente?: string): Observable<DetalleVenta[]> {
+    let params = new HttpParams();
+    if (fechaDesde) params = params.set('fechaDesde', fechaDesde);
+    if (fechaHasta) params = params.set('fechaHasta', fechaHasta);
+    if (tipoCliente) params = params.set('tipoCliente', tipoCliente);
+    return this.http.get<DetalleVenta[]>(`${this.apiUrl}/detalles-ventas`, { params });
   }
 }

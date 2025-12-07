@@ -126,6 +126,11 @@ export const routes: Routes = [
     path: 'reportes',
     loadComponent: () => import('./features/reportes/reportes').then(m => m.Reportes),
     children: [
+      { path: '', redirectTo: 'dashboard-proforma', pathMatch: 'full' },
+      {
+        path: 'dashboard-proforma',
+        loadComponent: () => import('./features/reportes/dashboard-proforma/dashboard-proforma').then(m => m.DashboardProforma)
+      },
       {
         path: 'ventas',
         loadComponent: () => import('./features/reportes/ventas/ventas').then(m => m.Ventas)

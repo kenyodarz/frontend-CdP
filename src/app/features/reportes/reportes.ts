@@ -12,9 +12,10 @@ import { MenuItem } from 'primeng/api';
 
       <p-tabs value="0">
         <p-tablist>
-            <p-tab value="0" routerLink="/reportes/ventas">Ventas</p-tab>
-            <p-tab value="1" routerLink="/reportes/inventario-valorizado">Inventario Valorizado</p-tab>
-            <p-tab value="2" routerLink="/reportes/productos-mas-vendidos">Productos Más Vendidos</p-tab>
+            <p-tab value="0" routerLink="/reportes/dashboard-proforma">Dashboard Proforma 2025</p-tab>
+            <p-tab value="1" routerLink="/reportes/ventas">Ventas</p-tab>
+            <p-tab value="2" routerLink="/reportes/inventario-valorizado">Inventario Valorizado</p-tab>
+            <p-tab value="3" routerLink="/reportes/productos-mas-vendidos">Productos Más Vendidos</p-tab>
         </p-tablist>
       </p-tabs>
 

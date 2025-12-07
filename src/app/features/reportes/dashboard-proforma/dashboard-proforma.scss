@@ -1,0 +1,241 @@
+.dashboard-proforma-container {
+  padding: 1.5rem;
+  max-width: 100%;
+}
+
+// Grid system
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+// Column spans
+.col-12 {
+  grid-column: span 12;
+}
+
+.col-6 {
+  grid-column: span 6;
+}
+
+.col-4 {
+  grid-column: span 4;
+}
+
+.col-3 {
+  grid-column: span 3;
+}
+
+.col-2 {
+  grid-column: span 2;
+}
+
+// Responsive columns
+@media (min-width: 768px) {
+  .md\:col-12 {
+    grid-column: span 12;
+  }
+
+  .md\:col-10 {
+    grid-column: span 10;
+  }
+
+  .md\:col-8 {
+    grid-column: span 8;
+  }
+
+  .md\:col-6 {
+    grid-column: span 6;
+  }
+
+  .md\:col-4 {
+    grid-column: span 4;
+  }
+
+  .md\:col-3 {
+    grid-column: span 3;
+  }
+
+  .md\:col-2 {
+    grid-column: span 2;
+  }
+}
+
+// Mobile: stack everything
+@media (max-width: 767px) {
+  .grid>* {
+    grid-column: span 12 !important;
+  }
+}
+
+// Typography
+.text-center {
+  text-align: center;
+}
+
+.text-500 {
+  color: var(--text-color-secondary);
+}
+
+.text-900 {
+  color: var(--text-color);
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+// Spacing
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+// Width
+.w-full {
+  width: 100%;
+}
+
+// Custom card styling for summary cards
+:host ::ng-deep {
+  .p-card {
+    height: 100%;
+
+    .p-card-body {
+      padding: 1.5rem;
+    }
+
+    .p-card-content {
+      padding: 0;
+    }
+  }
+
+  // Tab styling
+  .p-tabview {
+    .p-tabview-panels {
+      padding: 1.5rem 0;
+    }
+  }
+
+  // Table styling
+  .p-datatable {
+    .p-datatable-thead>tr>th {
+      background-color: var(--surface-100);
+      font-weight: 600;
+    }
+  }
+
+  // Chart containers
+  .p-chart {
+    canvas {
+      max-height: 300px;
+    }
+  }
+
+  // Form fields
+  .p-float-label {
+    margin-bottom: 1rem;
+  }
+
+  .p-inputtext,
+  .p-select,
+  .p-datepicker {
+    width: 100%;
+  }
+
+  // Button styling
+  .p-button {
+    width: 100%;
+  }
+}
+
+// Summary cards specific styling
+.summary-card {
+  .p-card-body {
+    padding: 1.25rem;
+  }
+
+  .summary-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-top: 0.5rem;
+  }
+
+  .summary-label {
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+// Chart card styling
+.chart-card {
+  .p-card-header {
+    font-weight: 600;
+    font-size: 1.125rem;
+    padding: 1.25rem 1.25rem 0.75rem;
+  }
+}
+
+// Search results styling
+.search-results {
+  margin-top: 1.5rem;
+
+  .p-datatable {
+    .p-datatable-tbody>tr {
+      &:hover {
+        background-color: var(--surface-hover);
+      }
+    }
+  }
+}
+
+// Empty state
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-color-secondary);
+
+  i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+}
