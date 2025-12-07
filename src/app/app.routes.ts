@@ -111,6 +111,14 @@ export const routes: Routes = [
       {
         path: 'documentos-salida/:id',
         loadComponent: () => import('./features/inventario/documentos-salida/ver-documento/ver-documento').then(m => m.VerDocumentoComponent)
+      },
+      {
+        path: 'cierres',
+        loadComponent: () => import('./features/inventario/cierres/cierres').then(m => m.CierresComponent)
+      },
+      {
+        path: 'recalcular-stock',
+        loadComponent: () => import('./features/inventario/recalcular-stock/recalcular-stock').then(m => m.RecalcularStockComponent)
       }
     ]
   },

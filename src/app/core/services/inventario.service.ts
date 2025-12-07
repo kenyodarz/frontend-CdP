@@ -8,6 +8,10 @@ import { RegistrarEntradaDTO } from '../models/inventario/registrarEntradaDTO';
 import { MovimientoInventario } from '../models/inventario/movimientoInventario';
 import { RegistrarSalidaDTO } from '../models/inventario/registrarSalidaDTO';
 import { TipoMovimiento } from '../models/inventario/tipoMovimiento';
+import { MovimientoEntrada } from '../models/inventario/movimientoEntrada';
+import { MovimientoSalida } from '../models/inventario/movimientoSalida';
+import { CierreInventario } from '../models/inventario/cierreInventario';
+import { Producto } from '../models/producto/producto';
 
 @Injectable({
   providedIn: 'root'
@@ -58,5 +62,55 @@ export class InventarioService {
       .set('fechaFin', fin);
 
     return this.http.get<MovimientoInventario[]>(this.apiUrlMovimientos, { params });
+  }
+
+  // ========== CIERRES DE INVENTARIO ==========
+  ejecutarCierreMensual(periodo: string, idUsuario: number): Observable<CierreInventario[]> {
+    const params = new HttpParams()
+      .set('periodo', periodo)
+      .set('idUsuario', idUsuario.toString());
+
+    return this.http.post<CierreInventario[]>(
+      `${environment.apiUrl}/inventario/cierres/mensual`,
+      null,
+      { params }
+    );
+  }
+
+  listarCierresPorPeriodo(periodo: string): Observable<CierreInventario[]> {
+    const params = new HttpParams().set('periodo', periodo);
+    return this.http.get<CierreInventario[]>(
+      `${environment.apiUrl}/inventario/cierres`,
+      { params }
+    );
+  }
+
+  // ========== RECALCULAR STOCK ==========
+  recalcularStockProducto(idProducto: number): Observable<Producto> {
+    return this.http.post<Producto>(
+      `${environment.apiUrl}/inventario/stock/recalcular/${idProducto}`,
+      null
+    );
+  }
+
+  recalcularStockTodos(): Observable<string> {
+    return this.http.post(
+      `${environment.apiUrl}/inventario/stock/recalcular-todos`,
+      null,
+      { responseType: 'text' }
+    );
+  }
+
+  // ========== MOVIMIENTOS POR TIPO ==========
+  listarMovimientosEntrada(idProducto: number): Observable<MovimientoEntrada[]> {
+    return this.http.get<MovimientoEntrada[]>(
+      `${environment.apiUrl}/inventario/movimientos/entrada/producto/${idProducto}`
+    );
+  }
+
+  listarMovimientosSalida(idProducto: number): Observable<MovimientoSalida[]> {
+    return this.http.get<MovimientoSalida[]>(
+      `${environment.apiUrl}/inventario/movimientos/salida/producto/${idProducto}`
+    );
   }
 }
