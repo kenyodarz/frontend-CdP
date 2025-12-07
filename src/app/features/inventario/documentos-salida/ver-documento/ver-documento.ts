@@ -238,13 +238,35 @@ export class VerDocumentoComponent implements OnInit {
 
   descargarPdf(): void {
     const id = this.documento()?.id;
+    const numeroDocumento = this.documento()?.numeroDocumento;
     if (!id) return;
 
-    this.documentoService.descargarPdf(id);
-    this.messageService.add({
-      severity: 'success',
-      summary: 'PDF Generado',
-      detail: 'El PDF se está descargando'
+    this.loading.set(true);
+    this.documentoService.descargarPdf(id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${numeroDocumento || 'documento'}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'PDF Descargado',
+          detail: 'El PDF se ha descargado correctamente'
+        });
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error descargando PDF:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo descargar el PDF'
+        });
+        this.loading.set(false);
+      }
     });
   }
 }
