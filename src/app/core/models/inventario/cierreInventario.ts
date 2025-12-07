@@ -1,6 +1,7 @@
 export interface CierreInventario {
   idCierre?: number;
   idProducto: number;
+  nombreProducto?: string; // ← Nuevo campo del backend
   periodo: string; // Format: "YYYY-MM" for monthly, "YYYY" for annual
   tipoCierre: 'MENSUAL' | 'ANUAL';
   stockInicial: number;

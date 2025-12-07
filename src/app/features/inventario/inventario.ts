@@ -20,11 +20,11 @@ import { RegistrarEntrada } from './registrar-entrada/registrar-entrada';
             severity="success"
             (onClick)="abrirRegistroEntrada()" />
           <p-button
-            label="Nueva Salida"
-            icon="pi pi-arrow-up"
-            severity="danger"
+            label="Ejecutar Cierre"
+            icon="pi pi-check-circle"
+            severity="warn"
             [outlined]="true"
-            routerLink="/inventario/registrar-salida" />
+            routerLink="/inventario/cierres" />
         </div>
       </div>
 
@@ -38,7 +38,7 @@ import { RegistrarEntrada } from './registrar-entrada/registrar-entrada';
             <i class="pi pi-receipt"></i>
             <span>Recepciones</span>
           </p-tab>
-          <p-tab value="4" routerLink="/inventario/documentos-salida" routerLinkActive="active-tab">
+          <p-tab value="2" routerLink="/inventario/documentos-salida" routerLinkActive="active-tab">
             <i class="pi pi-truck"></i>
             <span>Despachos</span>
           </p-tab>
@@ -46,9 +46,13 @@ import { RegistrarEntrada } from './registrar-entrada/registrar-entrada';
             <i class="pi pi-box"></i>
             <span>Lotes</span>
           </p-tab>
-          <p-tab value="2" routerLink="/inventario/crear-lote" routerLinkActive="active-tab">
+          <p-tab value="4" routerLink="/inventario/crear-lote" routerLinkActive="active-tab">
             <i class="pi pi-plus"></i>
             <span>Crear Lote</span>
+          </p-tab>
+          <p-tab value="5" routerLink="/inventario/recalcular-stock" routerLinkActive="active-tab">
+            <i class="pi pi-calculator"></i>
+            <span>Recalcular Stock</span>
           </p-tab>
         </p-tablist>
       </p-tabs>

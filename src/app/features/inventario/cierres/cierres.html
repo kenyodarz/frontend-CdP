@@ -30,7 +30,7 @@
         <ng-template pTemplate="header">
           <tr>
             <th pSortableColumn="periodo">Período <p-sortIcon field="periodo"></p-sortIcon></th>
-            <th pSortableColumn="idProducto">ID Producto <p-sortIcon field="idProducto"></p-sortIcon></th>
+            <th pSortableColumn="nombreProducto">Producto <p-sortIcon field="nombreProducto"></p-sortIcon></th>
             <th>Stock Inicial</th>
             <th>Entradas</th>
             <th>Salidas</th>
@@ -43,7 +43,7 @@
         <ng-template pTemplate="body" let-cierre>
           <tr>
             <td>{{ cierre.periodo }}</td>
-            <td>{{ cierre.idProducto }}</td>
+            <td><strong>{{ cierre.nombreProducto || 'Producto #' + cierre.idProducto }}</strong></td>
             <td>{{ cierre.stockInicial }}</td>
             <td class="text-success">+{{ cierre.totalEntradas }}</td>
             <td class="text-danger">-{{ cierre.totalSalidas }}</td>

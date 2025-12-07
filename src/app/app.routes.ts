@@ -75,7 +75,7 @@ export const routes: Routes = [
     path: 'inventario',
     loadComponent: () => import('./features/inventario/inventario').then(m => m.Inventario),
     children: [
-      { path: '', redirectTo: 'documentos', pathMatch: 'full' },
+      { path: '', redirectTo: 'existencias', pathMatch: 'full' },
       {
         path: 'lotes',
         loadComponent: () => import('./features/inventario/lotes/lotes').then(m => m.Lotes)
