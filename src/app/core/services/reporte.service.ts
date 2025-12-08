@@ -109,8 +109,10 @@ export class ReporteService {
   /**
    * Busca productos por nombre con estadísticas de ventas
    */
-  buscarProductos(query: string): Observable<ProductoBusqueda[]> {
-    const params = new HttpParams().set('q', query);
+  buscarProductos(query: string, fechaDesde?: string, fechaHasta?: string): Observable<ProductoBusqueda[]> {
+    let params = new HttpParams().set('q', query);
+    if (fechaDesde) params = params.set('fechaDesde', fechaDesde);
+    if (fechaHasta) params = params.set('fechaHasta', fechaHasta);
     return this.http.get<ProductoBusqueda[]>(`${this.apiUrl}/buscar-productos`, { params });
   }
 

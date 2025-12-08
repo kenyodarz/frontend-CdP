@@ -322,12 +322,31 @@
       <!-- Tab 5: Búsqueda de Productos -->
       <p-tabpanel value="4">
         <p-card>
-          <form [formGroup]="buscarProductosForm">
-            <p-floatlabel>
-              <input pInputText id="buscarProducto" formControlName="query" placeholder="Buscar producto..."
-                class="w-full" />
-              <label for="buscarProducto">Buscar Producto</label>
-            </p-floatlabel>
+          <form [formGroup]="buscarProductosForm" class="grid">
+            <div class="col-12 md:col-5">
+              <p-floatlabel>
+                <input pInputText id="buscarProducto" formControlName="query" placeholder="Buscar producto..."
+                  class="w-full" />
+                <label for="buscarProducto">Buscar Producto</label>
+              </p-floatlabel>
+            </div>
+            <div class="col-12 md:col-3">
+              <p-floatlabel>
+                <p-select id="mesProducto" formControlName="mes" [options]="mesesOptions" optionLabel="label"
+                  optionValue="value" placeholder="Todos" styleClass="w-full" />
+                <label for="mesProducto">Mes</label>
+              </p-floatlabel>
+            </div>
+            <div class="col-12 md:col-2">
+              <p-floatlabel>
+                <p-select id="anioProducto" formControlName="anio" [options]="aniosOptions()" styleClass="w-full" />
+                <label for="anioProducto">Año</label>
+              </p-floatlabel>
+            </div>
+            <div class="col-12 md:col-2">
+              <p-button label="Buscar" (onClick)="buscarProductosAction(buscarProductosForm.get('query')?.value || '')"
+                styleClass="w-full" />
+            </div>
           </form>
 
           @if (productosResultados().length > 0) {

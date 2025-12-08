@@ -139,7 +139,9 @@ export class DashboardProforma implements OnInit {
     });
 
     this.buscarProductosForm = this.fb.group({
-      query: ['']
+      query: [''],
+      mes: [null],
+      anio: [currentYear]
     });
 
     this.detallesVentasForm = this.fb.group({
@@ -161,7 +163,6 @@ export class DashboardProforma implements OnInit {
     this.cargarProductos();
     this.cargarMesesDisponibles();
     this.cargarTodosLosClientes();
-    this.setupSearchDebounce();
     this.setupOverviewYearChange();
   }
 
@@ -392,33 +393,6 @@ export class DashboardProforma implements OnInit {
     });
   }
 
-  // Tab 5: Búsqueda productos (sin cambios)
-  private setupSearchDebounce(): void {
-    this.buscarProductosForm.get('query')?.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-      )
-      .subscribe(query => {
-        if (query && query.length >= 2) {
-          this.buscarProductosAction(query);
-        } else {
-          this.productosResultados.set([]);
-        }
-      });
-  }
-
-  private buscarProductosAction(query: string): void {
-    this.reporteService.buscarProductos(query).subscribe({
-      next: (productos) => {
-        this.productosResultados.set(productos);
-      },
-      error: (err) => {
-        console.error('Error al buscar productos:', err);
-      }
-    });
-  }
-
   protected buscarComprasCliente(): void {
     const { clienteId, mes, anio } = this.buscarClientesForm.value;
 
@@ -475,6 +449,45 @@ export class DashboardProforma implements OnInit {
 
   protected onRetry(): void {
     this.cargarDashboard();
+  }
+
+  // Tab 5: Búsqueda de Productos
+  protected buscarProductosAction(query: string): void {
+    const { mes, anio } = this.buscarProductosForm.value;
+
+    // Si no hay query, limpiar resultados
+    if (!query || query.length < 2) {
+      this.productosResultados.set([]);
+      return;
+    }
+
+    // Construir rango de fechas basado en filtros
+    let fechaDesde: string | undefined;
+    let fechaHasta: string | undefined;
+
+    if (mes && anio) {
+      // Mes específico
+      const lastDay = new Date(anio, mes, 0).getDate();
+      fechaDesde = `${anio}-${String(mes).padStart(2, '0')}-01`;
+      fechaHasta = `${anio}-${String(mes).padStart(2, '0')}-${lastDay}`;
+    } else if (anio) {
+      // Todo el año
+      fechaDesde = `${anio}-01-01`;
+      fechaHasta = `${anio}-12-31`;
+    }
+
+    this.loading.set(true);
+    this.reporteService.buscarProductos(query, fechaDesde, fechaHasta).subscribe({
+      next: (productos) => {
+        this.productosResultados.set(productos);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error al buscar productos:', err);
+        this.productosResultados.set([]);
+        this.loading.set(false);
+      }
+    });
   }
 
   protected verDetalleOrden(detalle: DetalleVenta): void {
