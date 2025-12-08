@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
@@ -12,7 +12,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DialogModule } from 'primeng/dialog';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 
 import { ReporteService } from '../../../core/services/reporte.service';
@@ -20,7 +19,10 @@ import { OrdenService } from '../../../core/services/orden.service';
 import { ProductoService } from '../../../core/services/producto.service';
 import { Loading } from '../../../shared/components/loading/loading';
 import { ErrorMessage } from '../../../shared/components/error-message/error-message';
-import { DashboardProformaResponse } from '../../../core/models/reporte/dashboard-proforma';
+import {
+  DashboardProformaResponse,
+  VentaPorTipoClienteDTO
+} from '../../../core/models/reporte/dashboard-proforma';
 import { ProductoSimple } from '../../../core/models/reporte/producto-simple';
 import { ComparacionProducto } from '../../../core/models/reporte/comparacion-producto';
 import { ProductoVendidoMes } from '../../../core/models/reporte/producto-vendido-mes';
@@ -28,7 +30,6 @@ import { ClienteBusqueda } from '../../../core/models/reporte/cliente-busqueda';
 import { ProductoBusqueda } from '../../../core/models/reporte/producto-busqueda';
 import { DetalleVenta } from '../../../core/models/reporte/detalle-venta';
 import { ProductoOrden } from '../../../core/models/reporte/producto-orden';
-import { VentaPorTipoClienteDTO } from '../../../core/models/reporte/dashboard-proforma';
 
 @Component({
   selector: 'app-dashboard-proforma',
@@ -53,32 +54,23 @@ import { VentaPorTipoClienteDTO } from '../../../core/models/reporte/dashboard-p
   styleUrl: './dashboard-proforma.scss',
 })
 export class DashboardProforma implements OnInit {
-  private readonly reporteService = inject(ReporteService);
-  private readonly ordenService = inject(OrdenService);
-  private readonly productoService = inject(ProductoService);
-  private readonly fb = inject(FormBuilder);
-
   // Loading and error states
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
-
   // Tab 1: Overview data
   protected readonly dashboardData = signal<DashboardProformaResponse | null>(null);
   protected ventasMensualesChart: any;
   protected ventasTipoClienteChart: any;
-
   // Tab 2: Comparación Producto
   protected readonly productos = signal<ProductoSimple[]>([]);
   protected readonly comparacionData = signal<ComparacionProducto | null>(null);
   protected comparacionForm: FormGroup;
   protected comparacionChart: any;
-
   // Tab 3: Productos por Mes
   protected readonly mesesDisponibles = signal<string[]>([]);
   protected readonly productosMes = signal<ProductoVendidoMes[]>([]);
   protected productosMesForm: FormGroup;
   protected productosMesChart: any;
-
   // Tab 4: Búsqueda Clientes
   protected readonly todosLosClientes = signal<ClienteBusqueda[]>([]);
   protected readonly loadingClientes = signal<boolean>(false);
@@ -104,29 +96,30 @@ export class DashboardProforma implements OnInit {
     { label: 'Diciembre', value: 12 }
   ];
   protected readonly aniosOptions = signal<number[]>([]);
-
   // Tab 5: Búsqueda Productos
   protected readonly productosResultados = signal<ProductoBusqueda[]>([]);
   protected buscarProductosForm: FormGroup;
-
   // Tab 5.5: Ventas por Tipo Cliente
   protected readonly ventasPorTipoCliente = signal<VentaPorTipoClienteDTO[]>([]);
   protected ventasTipoClienteForm: FormGroup;
   protected pieChartData: any;
   protected pieChartOptions: any;
-
   // Tab 6: Detalles Ventas
   protected readonly detallesVentas = signal<DetalleVenta[]>([]);
   protected detallesVentasForm: FormGroup;
   protected detalleVentaDialogVisible = signal<boolean>(false);
   protected ventaSeleccionada = signal<DetalleVenta | null>(null);
-
+  protected productosVentaSeleccionada = signal<ProductoOrden[]>([]);
+  protected loadingProductosDetalle = signal<boolean>(false);
   // Overview year filter
   protected overviewForm: FormGroup;
   protected readonly availableYears = signal<number[]>([]);
-
   // Chart options
   protected chartOptions: any;
+  private readonly reporteService = inject(ReporteService);
+  private readonly ordenService = inject(OrdenService);
+  private readonly productoService = inject(ProductoService);
+  private readonly fb = inject(FormBuilder);
 
   constructor() {
     const currentYear = new Date().getFullYear();
@@ -193,70 +186,6 @@ export class DashboardProforma implements OnInit {
     this.setupOverviewYearChange();
   }
 
-  // Métodos privados (sin cambios, excepto initChartOptions si necesitas)
-  private initAvailableYears(): void {
-    const currentYear = new Date().getFullYear();
-    const years = [];
-    for (let i = 0; i < 5; i++) {
-      years.push(currentYear - i);
-    }
-    this.availableYears.set(years);
-  }
-
-  private initAniosOptions(): void {
-    const currentYear = new Date().getFullYear();
-    const years = [];
-    for (let i = 0; i < 5; i++) {
-      years.push(currentYear - i);
-    }
-    this.aniosOptions.set(years);
-  }
-
-  private setupOverviewYearChange(): void {
-    this.overviewForm.get('anio')?.valueChanges.subscribe(() => {
-      this.cargarDashboard();
-    });
-  }
-
-  private initChartOptions(): void {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
-
-    this.chartOptions = {
-      maintainAspectRatio: false,
-      aspectRatio: 0.6,
-      plugins: {
-        legend: {
-          labels: {
-            color: textColor
-          }
-        }
-      },
-      scales: {
-        x: {
-          ticks: {
-            color: textColorSecondary
-          },
-          grid: {
-            color: surfaceBorder,
-            drawBorder: false
-          }
-        },
-        y: {
-          ticks: {
-            color: textColorSecondary
-          },
-          grid: {
-            color: surfaceBorder,
-            drawBorder: false
-          }
-        }
-      }
-    };
-  }
-
   // Tab 1: Overview (cargarDashboard sin cambios)
   protected cargarDashboard(): void {
     this.loading.set(true);
@@ -278,33 +207,6 @@ export class DashboardProforma implements OnInit {
         this.loading.set(false);
       }
     });
-  }
-
-  private actualizarGraficasOverview(data: DashboardProformaResponse): void {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const primaryColor = documentStyle.getPropertyValue('--primary-color') || '#3B82F6';
-
-    this.ventasMensualesChart = {
-      labels: data.ventasMensuales.map(v => v.mes),
-      datasets: [
-        {
-          label: 'Ingresos',
-          data: data.ventasMensuales.map(v => v.ingresos),
-          borderColor: primaryColor,
-          tension: 0.4
-        }
-      ]
-    };
-
-    this.ventasTipoClienteChart = {
-      labels: data.ventasPorTipoCliente.map(v => v.tipo),
-      datasets: [
-        {
-          data: data.ventasPorTipoCliente.map(v => v.ingresos),
-          backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#AB47BC']
-        }
-      ]
-    };
   }
 
   // Tab 2: Comparación (sin cambios mayores)
@@ -340,23 +242,6 @@ export class DashboardProforma implements OnInit {
     });
   }
 
-  private actualizarGraficaComparacion(data: ComparacionProducto): void {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const primaryColor = documentStyle.getPropertyValue('--primary-color') || '#3B82F6';
-
-    this.comparacionChart = {
-      labels: data.meses.map(m => m.mes),
-      datasets: [
-        {
-          label: 'Cantidad',
-          data: data.meses.map(m => m.cantidad),
-          borderColor: primaryColor,
-          tension: 0.4
-        }
-      ]
-    };
-  }
-
   // Tab 3: Productos por Mes (sin cambios)
   protected cargarMesesDisponibles(): void {
     this.reporteService.getMesesDisponibles().subscribe({
@@ -386,36 +271,6 @@ export class DashboardProforma implements OnInit {
         console.error('Error al cargar productos por mes:', err);
         this.error.set('No se pudieron cargar los productos.');
         this.loading.set(false);
-      }
-    });
-  }
-
-  private actualizarGraficaProductosMes(productos: ProductoVendidoMes[]): void {
-    const top10 = productos.slice(0, 10);
-
-    this.productosMesChart = {
-      labels: top10.map(p => p.producto),
-      datasets: [
-        {
-          label: 'Unidades Vendidas',
-          data: top10.map(p => p.unidades),
-          backgroundColor: '#42A5F5'
-        }
-      ]
-    };
-  }
-
-  // Tab 4: Clientes (cargarTodosLosClientes sin cambios)
-  private cargarTodosLosClientes(): void {
-    this.loadingClientes.set(true);
-    this.reporteService.buscarClientes('').subscribe({
-      next: (clientes) => {
-        this.todosLosClientes.set(clientes);
-        this.loadingClientes.set(false);
-      },
-      error: (err) => {
-        console.error('Error al cargar clientes:', err);
-        this.loadingClientes.set(false);
       }
     });
   }
@@ -616,5 +471,187 @@ export class DashboardProforma implements OnInit {
   protected verDetalleVenta(venta: DetalleVenta): void {
     this.ventaSeleccionada.set(venta);
     this.detalleVentaDialogVisible.set(true);
+    this.loadingProductosDetalle.set(true);
+    this.productosVentaSeleccionada.set([]);
+
+    // Cargar la orden completa con sus detalles
+    this.ordenService.obtenerPorId(venta.idOrden).subscribe({
+      next: (ordenCompleta) => {
+        // Obtener IDs únicos de productos
+        const productosIds = [...new Set(ordenCompleta.detalles.map(d => d.idProducto))];
+
+        // Crear observables para cada producto
+        const productosRequests = productosIds.map(id =>
+          this.productoService.obtenerPorId(id)
+        );
+
+        // Ejecutar todas las peticiones en paralelo
+        forkJoin(productosRequests).subscribe({
+          next: (productosData) => {
+            // Crear mapa de ID -> Nombre
+            const productosMap = new Map(
+              productosData.map(p => [p.idProducto, p.nombre])
+            );
+
+            // Mapear detalles con nombres reales
+            const productos: ProductoOrden[] = ordenCompleta.detalles.map(d => ({
+              nombreProducto: productosMap.get(d.idProducto) || 'Producto desconocido',
+              cantidad: d.cantidad,
+              precioUnitario: d.precioUnitario,
+              subtotal: d.subtotal
+            }));
+
+            this.productosVentaSeleccionada.set(productos);
+            this.loadingProductosDetalle.set(false);
+          },
+          error: (err) => {
+            console.error('Error al cargar nombres de productos:', err);
+            this.loadingProductosDetalle.set(false);
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error al cargar orden:', err);
+        this.loadingProductosDetalle.set(false);
+      }
+    });
+  }
+
+  // Métodos privados (sin cambios, excepto initChartOptions si necesitas)
+  private initAvailableYears(): void {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = 0; i < 5; i++) {
+      years.push(currentYear - i);
+    }
+    this.availableYears.set(years);
+  }
+
+  private initAniosOptions(): void {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = 0; i < 5; i++) {
+      years.push(currentYear - i);
+    }
+    this.aniosOptions.set(years);
+  }
+
+  private setupOverviewYearChange(): void {
+    this.overviewForm.get('anio')?.valueChanges.subscribe(() => {
+      this.cargarDashboard();
+    });
+  }
+
+  private initChartOptions(): void {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+    this.chartOptions = {
+      maintainAspectRatio: false,
+      aspectRatio: 0.6,
+      plugins: {
+        legend: {
+          labels: {
+            color: textColor
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: textColorSecondary
+          },
+          grid: {
+            color: surfaceBorder,
+            drawBorder: false
+          }
+        },
+        y: {
+          ticks: {
+            color: textColorSecondary
+          },
+          grid: {
+            color: surfaceBorder,
+            drawBorder: false
+          }
+        }
+      }
+    };
+  }
+
+  private actualizarGraficasOverview(data: DashboardProformaResponse): void {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const primaryColor = documentStyle.getPropertyValue('--primary-color') || '#3B82F6';
+
+    this.ventasMensualesChart = {
+      labels: data.ventasMensuales.map(v => v.mes),
+      datasets: [
+        {
+          label: 'Ingresos',
+          data: data.ventasMensuales.map(v => v.ingresos),
+          borderColor: primaryColor,
+          tension: 0.4
+        }
+      ]
+    };
+
+    this.ventasTipoClienteChart = {
+      labels: data.ventasPorTipoCliente.map(v => v.tipo),
+      datasets: [
+        {
+          data: data.ventasPorTipoCliente.map(v => v.ingresos),
+          backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#AB47BC']
+        }
+      ]
+    };
+  }
+
+  private actualizarGraficaComparacion(data: ComparacionProducto): void {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const primaryColor = documentStyle.getPropertyValue('--primary-color') || '#3B82F6';
+
+    this.comparacionChart = {
+      labels: data.meses.map(m => m.mes),
+      datasets: [
+        {
+          label: 'Cantidad',
+          data: data.meses.map(m => m.cantidad),
+          borderColor: primaryColor,
+          tension: 0.4
+        }
+      ]
+    };
+  }
+
+  private actualizarGraficaProductosMes(productos: ProductoVendidoMes[]): void {
+    const top10 = productos.slice(0, 10);
+
+    this.productosMesChart = {
+      labels: top10.map(p => p.producto),
+      datasets: [
+        {
+          label: 'Unidades Vendidas',
+          data: top10.map(p => p.unidades),
+          backgroundColor: '#42A5F5'
+        }
+      ]
+    };
+  }
+
+  // Tab 4: Clientes (cargarTodosLosClientes sin cambios)
+  private cargarTodosLosClientes(): void {
+    this.loadingClientes.set(true);
+    this.reporteService.buscarClientes('').subscribe({
+      next: (clientes) => {
+        this.todosLosClientes.set(clientes);
+        this.loadingClientes.set(false);
+      },
+      error: (err) => {
+        console.error('Error al cargar clientes:', err);
+        this.loadingClientes.set(false);
+      }
+    });
   }
 }

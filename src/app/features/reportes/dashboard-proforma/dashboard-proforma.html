@@ -495,8 +495,35 @@
               <div class="col-6">
                 <strong>Total:</strong> {{ ventaSeleccionada()!.total | currency }}
               </div>
+              <div class="col-12 mt-3">
+                <strong>Productos:</strong>
+              </div>
               <div class="col-12">
-                <strong>Número de Productos:</strong> {{ ventaSeleccionada()!.numProductos }}
+                @if (loadingProductosDetalle()) {
+                <div class="text-center p-3">
+                  <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                  <p>Cargando productos...</p>
+                </div>
+                } @else if (productosVentaSeleccionada().length > 0) {
+                <p-table [value]="productosVentaSeleccionada()" [tableStyle]="{'min-width': '30rem'}">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Producto</th>
+                      <th>Cantidad</th>
+                      <th>Precio Unit.</th>
+                      <th>Subtotal</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-producto>
+                    <tr>
+                      <td>{{ producto.nombreProducto }}</td>
+                      <td>{{ producto.cantidad }}</td>
+                      <td>{{ producto.precioUnitario | currency }}</td>
+                      <td>{{ producto.subtotal | currency }}</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+                }
               </div>
             </div>
             }
