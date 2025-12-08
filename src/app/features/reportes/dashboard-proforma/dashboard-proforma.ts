@@ -17,12 +17,14 @@ import { forkJoin } from 'rxjs';
 import { ReporteService } from '../../../core/services/reporte.service';
 import { OrdenService } from '../../../core/services/orden.service';
 import { ProductoService } from '../../../core/services/producto.service';
+import { ClienteService } from '../../../core/services/cliente.service';
 import { Loading } from '../../../shared/components/loading/loading';
 import { ErrorMessage } from '../../../shared/components/error-message/error-message';
 import {
   DashboardProformaResponse,
   VentaPorTipoClienteDTO
 } from '../../../core/models/reporte/dashboard-proforma';
+import { ClienteSimple } from '../../../core/models/cliente/clienteSimple';
 import { ProductoSimple } from '../../../core/models/reporte/producto-simple';
 import { ComparacionProducto } from '../../../core/models/reporte/comparacion-producto';
 import { ProductoVendidoMes } from '../../../core/models/reporte/producto-vendido-mes';
@@ -30,6 +32,7 @@ import { ClienteBusqueda } from '../../../core/models/reporte/cliente-busqueda';
 import { ProductoBusqueda } from '../../../core/models/reporte/producto-busqueda';
 import { DetalleVenta } from '../../../core/models/reporte/detalle-venta';
 import { ProductoOrden } from '../../../core/models/reporte/producto-orden';
+import { Cliente } from '../../../core/models/cliente/cliente';
 
 @Component({
   selector: 'app-dashboard-proforma',
@@ -72,7 +75,8 @@ export class DashboardProforma implements OnInit {
   protected productosMesForm: FormGroup;
   protected productosMesChart: any;
   // Tab 4: Búsqueda Clientes
-  protected readonly todosLosClientes = signal<ClienteBusqueda[]>([]);
+  // Tab 4: Búsqueda Clientes
+  protected readonly clientesSelect = signal<ClienteBusqueda[]>([]);
   protected readonly loadingClientes = signal<boolean>(false);
   protected readonly detallesClienteSeleccionado = signal<DetalleVenta[]>([]);
   protected readonly productosOrdenExpandida = signal<ProductoOrden[]>([]);
@@ -119,6 +123,7 @@ export class DashboardProforma implements OnInit {
   private readonly reporteService = inject(ReporteService);
   private readonly ordenService = inject(OrdenService);
   private readonly productoService = inject(ProductoService);
+  private readonly clienteService = inject(ClienteService);
   private readonly fb = inject(FormBuilder);
 
   constructor() {
@@ -182,7 +187,7 @@ export class DashboardProforma implements OnInit {
     this.cargarDashboard();
     this.cargarProductos();
     this.cargarMesesDisponibles();
-    this.cargarTodosLosClientes();
+    this.cargarTodosLosClientesActivos();
     this.setupOverviewYearChange();
   }
 
@@ -640,16 +645,24 @@ export class DashboardProforma implements OnInit {
     };
   }
 
-  // Tab 4: Clientes (cargarTodosLosClientes sin cambios)
-  private cargarTodosLosClientes(): void {
+  private cargarTodosLosClientesActivos(): void {
     this.loadingClientes.set(true);
-    this.reporteService.buscarClientes('').subscribe({
-      next: (clientes) => {
-        this.todosLosClientes.set(clientes);
+    // Buscar todos los clientes activos (paginado, traemos 1000)
+    // Usamos el servicio de Cliente (maestro) para traer todos
+    this.clienteService.obtenerTodos(0, 1000).subscribe({
+      next: (data) => {
+        // Mapear Cliente a ClienteBusqueda para compatibilidad con el Select
+        const clientesMapeados: ClienteBusqueda[] = data.content.map((cliente: Cliente) => ({
+          nombre: cliente.nombre,
+          tipo: cliente.tipoNegocio?.toString() || 'GENERAL',
+          numCompras: 0,
+          totalComprado: 0
+        }));
+        this.clientesSelect.set(clientesMapeados);
         this.loadingClientes.set(false);
       },
       error: (err) => {
-        console.error('Error al cargar clientes:', err);
+        console.error('Error al cargar clientes activos:', err);
         this.loadingClientes.set(false);
       }
     });

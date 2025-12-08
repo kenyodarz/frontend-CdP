@@ -228,23 +228,23 @@
           <form [formGroup]="buscarClientesForm" class="grid">
             <div class="col-12 md:col-5">
               <p-floatlabel>
-                <p-select id="cliente" formControlName="clienteId" [options]="todosLosClientes()" optionLabel="nombre"
+                <p-select id="cliente" formControlName="clienteId" [options]="clientesSelect()" optionLabel="nombre"
                   optionValue="nombre" [filter]="true" filterPlaceholder="Buscar cliente..."
                   placeholder="Seleccione un cliente" styleClass="w-full" [loading]="loadingClientes()" />
-                <label for="cliente">Cliente</label>
+                <!-- <label for="cliente">Cliente</label> -->
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-3">
               <p-floatlabel>
                 <p-select id="mes" formControlName="mes" [options]="mesesOptions" optionLabel="label"
                   optionValue="value" placeholder="Todos" styleClass="w-full" />
-                <label for="mes">Mes</label>
+                <!-- <label for="mes">Mes</label> -->
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-2">
               <p-floatlabel>
                 <p-select id="anio" formControlName="anio" [options]="aniosOptions()" styleClass="w-full" />
-                <label for="anio">Año</label>
+                <!-- <label for="anio">Año</label> -->
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-2">
