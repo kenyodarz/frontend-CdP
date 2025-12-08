@@ -13,9 +13,11 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DialogModule } from 'primeng/dialog';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
 
 import { ReporteService } from '../../../core/services/reporte.service';
 import { OrdenService } from '../../../core/services/orden.service';
+import { ProductoService } from '../../../core/services/producto.service';
 import { Loading } from '../../../shared/components/loading/loading';
 import { ErrorMessage } from '../../../shared/components/error-message/error-message';
 import { DashboardProformaResponse } from '../../../core/models/reporte/dashboard-proforma';
@@ -52,6 +54,7 @@ import { ProductoOrden } from '../../../core/models/reporte/producto-orden';
 export class DashboardProforma implements OnInit {
   private readonly reporteService = inject(ReporteService);
   private readonly ordenService = inject(OrdenService);
+  private readonly productoService = inject(ProductoService);
   private readonly fb = inject(FormBuilder);
 
   // Loading and error states
@@ -482,14 +485,46 @@ export class DashboardProforma implements OnInit {
 
     this.ordenService.obtenerPorId(detalle.idOrden).subscribe({
       next: (ordenCompleta) => {
-        const productos: ProductoOrden[] = ordenCompleta.detalles.map(d => ({
-          nombreProducto: `Producto #${d.idProducto}`,
-          cantidad: d.cantidad,
-          precioUnitario: d.precioUnitario,
-          subtotal: d.subtotal
-        }));
-        this.productosOrdenExpandida.set(productos);
-        this.loadingOrdenProductos.set(false);
+        // Obtener IDs únicos de productos
+        const productosIds = [...new Set(ordenCompleta.detalles.map(d => d.idProducto))];
+
+        // Crear observables para cada producto
+        const productosRequests = productosIds.map(id =>
+          this.productoService.obtenerPorId(id)
+        );
+
+        // Ejecutar todas las peticiones en paralelo
+        forkJoin(productosRequests).subscribe({
+          next: (productosData) => {
+            // Crear mapa de ID -> Nombre
+            const productosMap = new Map(
+              productosData.map(p => [p.idProducto, p.nombre])
+            );
+
+            // Mapear detalles con nombres reales
+            const productos: ProductoOrden[] = ordenCompleta.detalles.map(d => ({
+              nombreProducto: productosMap.get(d.idProducto) || `Producto #${d.idProducto}`,
+              cantidad: d.cantidad,
+              precioUnitario: d.precioUnitario,
+              subtotal: d.subtotal
+            }));
+
+            this.productosOrdenExpandida.set(productos);
+            this.loadingOrdenProductos.set(false);
+          },
+          error: (err) => {
+            console.error('Error al cargar nombres de productos:', err);
+            // Fallback: usar IDs si falla la carga de nombres
+            const productos: ProductoOrden[] = ordenCompleta.detalles.map(d => ({
+              nombreProducto: `Producto #${d.idProducto}`,
+              cantidad: d.cantidad,
+              precioUnitario: d.precioUnitario,
+              subtotal: d.subtotal
+            }));
+            this.productosOrdenExpandida.set(productos);
+            this.loadingOrdenProductos.set(false);
+          }
+        });
       },
       error: (err) => {
         console.error('Error al cargar productos de la orden:', err);
