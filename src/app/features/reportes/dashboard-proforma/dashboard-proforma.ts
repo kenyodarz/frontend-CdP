@@ -10,8 +10,8 @@ import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabelModule } from 'primeng/floatlabel';
-import { ProgressSpinnerModule } from 'primeng/progressspinner'; // Cambiado a Module para v21
-import { RippleModule } from 'primeng/ripple'; // Para pRipple en v21
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { DialogModule } from 'primeng/dialog';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { ReporteService } from '../../../core/services/reporte.service';
@@ -41,8 +41,8 @@ import { ProductoOrden } from '../../../core/models/reporte/producto-orden';
     InputTextModule,
     FloatLabelModule,
     ReactiveFormsModule,
-    RippleModule, // Agregado para pRipple
-    ProgressSpinnerModule, // Corregido
+    ProgressSpinnerModule,
+    DialogModule,
     Loading,
     ErrorMessage
   ],
@@ -79,9 +79,10 @@ export class DashboardProforma implements OnInit {
   protected readonly todosLosClientes = signal<ClienteBusqueda[]>([]);
   protected readonly loadingClientes = signal<boolean>(false);
   protected readonly detallesClienteSeleccionado = signal<DetalleVenta[]>([]);
-  protected readonly expandedRows = signal<{ [key: string]: boolean }>({});
   protected readonly productosOrdenExpandida = signal<ProductoOrden[]>([]);
   protected readonly loadingOrdenProductos = signal<boolean>(false);
+  protected dialogVisible = signal<boolean>(false);
+  protected ordenSeleccionada = signal<DetalleVenta | null>(null);
   protected buscarClientesForm: FormGroup;
   protected readonly mesesOptions = [
     { label: 'Todos', value: null },
@@ -391,17 +392,17 @@ export class DashboardProforma implements OnInit {
   // Tab 5: Búsqueda productos (sin cambios)
   private setupSearchDebounce(): void {
     this.buscarProductosForm.get('query')?.valueChanges
-    .pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    )
-    .subscribe(query => {
-      if (query && query.length >= 2) {
-        this.buscarProductosAction(query);
-      } else {
-        this.productosResultados.set([]);
-      }
-    });
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe(query => {
+        if (query && query.length >= 2) {
+          this.buscarProductosAction(query);
+        } else {
+          this.productosResultados.set([]);
+        }
+      });
   }
 
   private buscarProductosAction(query: string): void {
@@ -473,24 +474,16 @@ export class DashboardProforma implements OnInit {
     this.cargarDashboard();
   }
 
-  // MÉTODOS CORREGIDOS PARA EXPANSIÓN (clave del fix)
-  protected onRowExpand(event: any): void {
-    const detalle = event.data as DetalleVenta;
-    console.log('Expandiendo orden:', detalle.idOrden);
-
-    // FIX: Actualizar signal ANTES del subscribe para expansión inmediata en v21
-    this.expandedRows.update(rows => ({
-      ...rows,
-      [detalle.idOrden]: true
-    }));
-
+  protected verDetalleOrden(detalle: DetalleVenta): void {
+    this.ordenSeleccionada.set(detalle);
     this.productosOrdenExpandida.set([]);
     this.loadingOrdenProductos.set(true);
+    this.dialogVisible.set(true);
 
     this.ordenService.obtenerPorId(detalle.idOrden).subscribe({
       next: (ordenCompleta) => {
         const productos: ProductoOrden[] = ordenCompleta.detalles.map(d => ({
-          nombreProducto:`Producto #${d.idProducto}`, // FIX: Usa nombre si existe
+          nombreProducto: `Producto #${d.idProducto}`,
           cantidad: d.cantidad,
           precioUnitario: d.precioUnitario,
           subtotal: d.subtotal
@@ -504,27 +497,5 @@ export class DashboardProforma implements OnInit {
         this.loadingOrdenProductos.set(false);
       }
     });
-  }
-
-  protected onRowCollapse(event: any): void {
-    const detalle = event.data as DetalleVenta;
-    this.expandedRows.update(rows => {
-      const newRows = { ...rows };
-      delete newRows[detalle.idOrden];
-      return newRows;
-    });
-  }
-
-  // BONUS: Métodos para botones Expand/Collapse (opcionales)
-  protected expandAll(): void {
-    const allExpanded = this.detallesClienteSeleccionado().reduce((acc, detalle) => {
-      acc[detalle.idOrden] = true;
-      return acc;
-    }, {} as { [key: string]: boolean });
-    this.expandedRows.set(allExpanded);
-  }
-
-  protected collapseAll(): void {
-    this.expandedRows.set({});
   }
 }
