@@ -10,9 +10,11 @@ import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { ProgressSpinner } from 'primeng/progressspinner';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { ReporteService } from '../../../core/services/reporte.service';
+import { OrdenService } from '../../../core/services/orden.service';
 import { Loading } from '../../../shared/components/loading/loading';
 import { ErrorMessage } from '../../../shared/components/error-message/error-message';
 import { DashboardProformaResponse } from '../../../core/models/reporte/dashboard-proforma';
@@ -22,6 +24,7 @@ import { ProductoVendidoMes } from '../../../core/models/reporte/producto-vendid
 import { ClienteBusqueda } from '../../../core/models/reporte/cliente-busqueda';
 import { ProductoBusqueda } from '../../../core/models/reporte/producto-busqueda';
 import { DetalleVenta } from '../../../core/models/reporte/detalle-venta';
+import { ProductoOrden } from '../../../core/models/reporte/producto-orden';
 
 @Component({
   selector: 'app-dashboard-proforma',
@@ -38,13 +41,15 @@ import { DetalleVenta } from '../../../core/models/reporte/detalle-venta';
     FloatLabelModule,
     ReactiveFormsModule,
     Loading,
-    ErrorMessage
+    ErrorMessage,
+    ProgressSpinner
   ],
   templateUrl: './dashboard-proforma.html',
   styleUrl: './dashboard-proforma.scss',
 })
 export class DashboardProforma implements OnInit {
   private readonly reporteService = inject(ReporteService);
+  private readonly ordenService = inject(OrdenService);
   private readonly fb = inject(FormBuilder);
 
   // Loading and error states
@@ -72,6 +77,8 @@ export class DashboardProforma implements OnInit {
   protected readonly clientesResultados = signal<ClienteBusqueda[]>([]);
   protected readonly clienteSeleccionado = signal<ClienteBusqueda | null>(null);
   protected readonly detallesClienteSeleccionado = signal<DetalleVenta[]>([]);
+  protected readonly productosOrdenExpandida = signal<ProductoOrden[]>([]);
+  protected readonly loadingOrdenProductos = signal<boolean>(false);
   protected buscarClientesForm: FormGroup;
 
   // Tab 5: Búsqueda Productos
@@ -431,5 +438,30 @@ export class DashboardProforma implements OnInit {
 
   protected onRetry(): void {
     this.cargarDashboard();
+  }
+
+  // Manejar expansión de fila para mostrar productos de la orden
+  protected onRowExpand(event: any): void {
+    const detalle = event.data as DetalleVenta;
+    this.loadingOrdenProductos.set(true);
+
+    // Cargar productos de la orden
+    this.ordenService.obtenerPorId(detalle.idOrden).subscribe({
+      next: (ordenCompleta) => {
+        // Mapear detalles de orden a ProductoOrden
+        const productos: ProductoOrden[] = ordenCompleta.detalles.map(detalle => ({
+          nombreProducto: `Producto #${detalle.idProducto}`,
+          cantidad: detalle.cantidad,
+          precioUnitario: detalle.precioUnitario,
+          subtotal: detalle.subtotal
+        }));
+        this.productosOrdenExpandida.set(productos);
+        this.loadingOrdenProductos.set(false);
+      },
+      error: (err) => {
+        console.error('Error al cargar productos de la orden:', err);
+        this.loadingOrdenProductos.set(false);
+      }
+    });
   }
 }
