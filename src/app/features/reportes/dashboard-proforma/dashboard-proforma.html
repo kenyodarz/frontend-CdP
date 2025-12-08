@@ -22,6 +22,19 @@
     <p-tabpanels>
       <!-- Tab 1: Overview -->
       <p-tabpanel value="0">
+        <!-- Year Filter -->
+        <form [formGroup]="overviewForm" class="mb-4">
+          <div class="grid">
+            <div class="col-12 md:col-3">
+              <p-floatlabel>
+                <p-select id="anioOverview" formControlName="anio" [options]="availableYears()"
+                  placeholder="Seleccione un año" styleClass="w-full" />
+                <label for="anioOverview">Año</label>
+              </p-floatlabel>
+            </div>
+          </div>
+        </form>
+
         @if (dashboardData()) {
         <!-- Resumen Cards -->
         <div class="grid">

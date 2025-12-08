@@ -80,14 +80,20 @@ export class DashboardProforma implements OnInit {
   protected readonly detallesVentas = signal<DetalleVenta[]>([]);
   protected detallesVentasForm: FormGroup;
 
+  // Overview year filter
+  protected overviewForm: FormGroup;
+  protected readonly availableYears = signal<number[]>([]);
+
   // Chart options
   protected chartOptions: any;
 
   constructor() {
+    const currentYear = new Date().getFullYear();
+
     // Initialize forms
     this.comparacionForm = this.fb.group({
       productoId: [null],
-      anio: [new Date().getFullYear()]
+      anio: [currentYear]
     });
 
     this.productosMesForm = this.fb.group({
@@ -107,14 +113,37 @@ export class DashboardProforma implements OnInit {
       fechaHasta: [null],
       tipoCliente: [null]
     });
+
+    // Overview year filter form
+    this.overviewForm = this.fb.group({
+      anio: [currentYear]
+    });
   }
 
   ngOnInit(): void {
     this.initChartOptions();
+    this.initAvailableYears();
     this.cargarDashboard();
     this.cargarProductos();
     this.cargarMesesDisponibles();
     this.setupSearchDebounce();
+    this.setupOverviewYearChange();
+  }
+
+  private initAvailableYears(): void {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    // Last 5 years including current
+    for (let i = 0; i < 5; i++) {
+      years.push(currentYear - i);
+    }
+    this.availableYears.set(years);
+  }
+
+  private setupOverviewYearChange(): void {
+    this.overviewForm.get('anio')?.valueChanges.subscribe(() => {
+      this.cargarDashboard();
+    });
   }
 
   private initChartOptions(): void {
@@ -161,7 +190,11 @@ export class DashboardProforma implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.reporteService.obtenerDashboardProforma().subscribe({
+    const anio = this.overviewForm.get('anio')?.value || new Date().getFullYear();
+    const fechaInicio = `${anio}-01-01`;
+    const fechaFin = `${anio}-12-31`;
+
+    this.reporteService.obtenerDashboardProforma(fechaInicio, fechaFin).subscribe({
       next: (data) => {
         this.dashboardData.set(data);
         this.actualizarGraficasOverview(data);
