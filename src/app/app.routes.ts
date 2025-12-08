@@ -124,26 +124,7 @@ export const routes: Routes = [
   },
   {
     path: 'reportes',
-    loadComponent: () => import('./features/reportes/reportes').then(m => m.Reportes),
-    children: [
-      { path: '', redirectTo: 'dashboard-proforma', pathMatch: 'full' },
-      {
-        path: 'dashboard-proforma',
-        loadComponent: () => import('./features/reportes/dashboard-proforma/dashboard-proforma').then(m => m.DashboardProforma)
-      },
-      {
-        path: 'ventas',
-        loadComponent: () => import('./features/reportes/ventas/ventas').then(m => m.Ventas)
-      },
-      {
-        path: 'inventario-valorizado',
-        loadComponent: () => import('./features/reportes/inventario-valorizado/inventario-valorizado').then(m => m.InventarioValorizado)
-      },
-      {
-        path: 'productos-mas-vendidos',
-        loadComponent: () => import('./features/reportes/productos-mas-vendidos/productos-mas-vendidos').then(m => m.ProductosMasVendidos)
-      }
-    ]
+    loadComponent: () => import('./features/reportes/dashboard-proforma/dashboard-proforma').then(m => m.DashboardProforma)
   },
   {
     path: 'supervision',
