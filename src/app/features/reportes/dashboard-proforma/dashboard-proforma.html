@@ -2,11 +2,11 @@
   <h1 class="text-3xl font-bold mb-4">Reportes</h1>
 
   @if (loading()) {
-  <app-loading />
+    <app-loading/>
   }
 
   @if (error()) {
-  <app-error-message [message]="error()!" (retry)="onRetry()" />
+    <app-error-message [message]="error()!" (retry)="onRetry()"/>
   }
 
   <p-tabs value="0">
@@ -28,7 +28,7 @@
             <div class="col-12 md:col-3">
               <p-floatlabel>
                 <p-select id="anioOverview" formControlName="anio" [options]="availableYears()"
-                  placeholder="Seleccione un año" styleClass="w-full" />
+                          placeholder="Seleccione un año" styleClass="w-full"/>
                 <label for="anioOverview">Año</label>
               </p-floatlabel>
             </div>
@@ -36,75 +36,83 @@
         </form>
 
         @if (dashboardData()) {
-        <!-- Resumen Cards -->
-        <div class="grid">
-          <div class="col-12 md:col-3">
-            <p-card>
-              <div class="text-center">
-                <div class="text-500 font-medium mb-2">Ingresos Totales</div>
-                <div class="text-900 font-bold text-xl">{{ dashboardData()!.resumen.ingresos | currency }}</div>
-              </div>
-            </p-card>
-          </div>
-          <div class="col-12 md:col-3">
-            <p-card>
-              <div class="text-center">
-                <div class="text-500 font-medium mb-2">Ventas</div>
-                <div class="text-900 font-bold text-xl">{{ dashboardData()!.resumen.ventas }}</div>
-              </div>
-            </p-card>
-          </div>
-          <div class="col-12 md:col-3">
-            <p-card>
-              <div class="text-center">
-                <div class="text-500 font-medium mb-2">Ticket Promedio</div>
-                <div class="text-900 font-bold text-xl">{{ dashboardData()!.resumen.ticketPromedio | currency }}</div>
-              </div>
-            </p-card>
-          </div>
-          <div class="col-12 md:col-3">
-            <p-card>
-              <div class="text-center">
-                <div class="text-500 font-medium mb-2">Productos Únicos</div>
-                <div class="text-900 font-bold text-xl">{{ dashboardData()!.resumen.productosUnicos }}</div>
-              </div>
-            </p-card>
-          </div>
+          <!-- Resumen Cards -->
+          <div class="grid">
+            <div class="col-12 md:col-3">
+              <p-card>
+                <div class="text-center">
+                  <div class="text-500 font-medium mb-2">Ingresos Totales</div>
+                  <div
+                    class="text-900 font-bold text-xl">{{ dashboardData()!.resumen.ingresos | currency }}
+                  </div>
+                </div>
+              </p-card>
+            </div>
+            <div class="col-12 md:col-3">
+              <p-card>
+                <div class="text-center">
+                  <div class="text-500 font-medium mb-2">Ventas</div>
+                  <div class="text-900 font-bold text-xl">{{ dashboardData()!.resumen.ventas }}
+                  </div>
+                </div>
+              </p-card>
+            </div>
+            <div class="col-12 md:col-3">
+              <p-card>
+                <div class="text-center">
+                  <div class="text-500 font-medium mb-2">Ticket Promedio</div>
+                  <div
+                    class="text-900 font-bold text-xl">{{ dashboardData()!.resumen.ticketPromedio | currency }}
+                  </div>
+                </div>
+              </p-card>
+            </div>
+            <div class="col-12 md:col-3">
+              <p-card>
+                <div class="text-center">
+                  <div class="text-500 font-medium mb-2">Productos Únicos</div>
+                  <div
+                    class="text-900 font-bold text-xl">{{ dashboardData()!.resumen.productosUnicos }}
+                  </div>
+                </div>
+              </p-card>
+            </div>
 
-          <!-- Charts -->
-          <div class="col-12 md:col-8">
-            <p-card header="Ventas Mensuales">
-              <p-chart type="line" [data]="ventasMensualesChart" [options]="chartOptions" height="300px" />
-            </p-card>
-          </div>
-          <div class="col-12 md:col-4">
-            <p-card header="Ventas por Tipo de Negocio">
-              <p-chart type="pie" [data]="ventasTipoClienteChart" height="300px" />
-            </p-card>
-          </div>
+            <!-- Charts -->
+            <div class="col-12 md:col-8">
+              <p-card header="Ventas Mensuales">
+                <p-chart type="line" [data]="ventasMensualesChart" [options]="chartOptions"
+                         height="300px"/>
+              </p-card>
+            </div>
+            <div class="col-12 md:col-4">
+              <p-card header="Ventas por Tipo de Negocio">
+                <p-chart type="pie" [data]="ventasTipoClienteChart" height="300px"/>
+              </p-card>
+            </div>
 
-          <!-- Top Productos Table -->
-          <div class="col-12">
-            <p-card header="Top Productos">
-              <p-table [value]="dashboardData()!.topProductos">
-                <ng-template #header>
-                  <tr>
-                    <th>Producto</th>
-                    <th>Unidades</th>
-                    <th>Ingresos</th>
-                  </tr>
-                </ng-template>
-                <ng-template #body let-producto>
-                  <tr>
-                    <td>{{ producto.producto }}</td>
-                    <td>{{ producto.unidades }}</td>
-                    <td>{{ producto.ingresos | currency }}</td>
-                  </tr>
-                </ng-template>
-              </p-table>
-            </p-card>
+            <!-- Top Productos Table -->
+            <div class="col-12">
+              <p-card header="Top Productos">
+                <p-table [value]="dashboardData()!.topProductos">
+                  <ng-template #header>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Unidades</th>
+                      <th>Ingresos</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-producto>
+                    <tr>
+                      <td>{{ producto.producto }}</td>
+                      <td>{{ producto.unidades }}</td>
+                      <td>{{ producto.ingresos | currency }}</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-card>
+            </div>
           </div>
-        </div>
         }
       </p-tabpanel>
 
@@ -114,62 +122,69 @@
           <form [formGroup]="comparacionForm" class="grid">
             <div class="col-12 md:col-6">
               <p-floatlabel>
-                <p-select id="producto" formControlName="productoId" [options]="productos()" optionLabel="nombre"
-                  optionValue="id" [filter]="true" filterPlaceholder="Buscar producto" styleClass="w-full" />
+                <p-select id="producto" formControlName="productoId" [options]="productos()"
+                          optionLabel="nombre"
+                          optionValue="id" [filter]="true" filterPlaceholder="Buscar producto"
+                          styleClass="w-full"/>
                 <label for="producto">Producto</label>
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-4">
               <p-floatlabel>
-                <input pInputText id="anio" formControlName="anio" type="number" class="w-full" />
+                <input pInputText id="anio" formControlName="anio" type="number" class="w-full"/>
                 <label for="anio">Año</label>
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-2">
-              <p-button label="Buscar" (onClick)="cargarComparacion()" styleClass="w-full" />
+              <p-button label="Buscar" (onClick)="cargarComparacion()" styleClass="w-full"/>
             </div>
           </form>
 
           @if (comparacionData()) {
-          <div class="mt-4">
-            <h3 class="text-xl font-bold mb-3">{{ comparacionData()!.productoNombre }}</h3>
+            <div class="mt-4">
+              <h3 class="text-xl font-bold mb-3">{{ comparacionData()!.productoNombre }}</h3>
 
-            <div class="grid mb-4">
-              <div class="col-12 md:col-4">
-                <div class="text-500">Total Unidades</div>
-                <div class="text-900 font-bold">{{ comparacionData()!.totalUnidades }}</div>
+              <div class="grid mb-4">
+                <div class="col-12 md:col-4">
+                  <div class="text-500">Total Unidades</div>
+                  <div class="text-900 font-bold">{{ comparacionData()!.totalUnidades }}</div>
+                </div>
+                <div class="col-12 md:col-4">
+                  <div class="text-500">Total Ingresos</div>
+                  <div
+                    class="text-900 font-bold">{{ comparacionData()!.totalIngresos | currency }}
+                  </div>
+                </div>
+                <div class="col-12 md:col-4">
+                  <div class="text-500">Precio Promedio</div>
+                  <div
+                    class="text-900 font-bold">{{ comparacionData()!.precioPromedio | currency }}
+                  </div>
+                </div>
               </div>
-              <div class="col-12 md:col-4">
-                <div class="text-500">Total Ingresos</div>
-                <div class="text-900 font-bold">{{ comparacionData()!.totalIngresos | currency }}</div>
-              </div>
-              <div class="col-12 md:col-4">
-                <div class="text-500">Precio Promedio</div>
-                <div class="text-900 font-bold">{{ comparacionData()!.precioPromedio | currency }}</div>
-              </div>
+
+              <p-chart type="line" [data]="comparacionChart" [options]="chartOptions" height="300px"
+                       class="mb-4"/>
+
+              <p-table [value]="comparacionData()!.meses">
+                <ng-template #header>
+                  <tr>
+                    <th>Mes</th>
+                    <th>Cantidad</th>
+                    <th>Ingresos</th>
+                    <th>Precio Promedio</th>
+                  </tr>
+                </ng-template>
+                <ng-template #body let-mes>
+                  <tr>
+                    <td>{{ mes.mes }}</td>
+                    <td>{{ mes.cantidad }}</td>
+                    <td>{{ mes.ingresos | currency }}</td>
+                    <td>{{ mes.precioPromedio | currency }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
             </div>
-
-            <p-chart type="line" [data]="comparacionChart" [options]="chartOptions" height="300px" class="mb-4" />
-
-            <p-table [value]="comparacionData()!.meses">
-              <ng-template #header>
-                <tr>
-                  <th>Mes</th>
-                  <th>Cantidad</th>
-                  <th>Ingresos</th>
-                  <th>Precio Promedio</th>
-                </tr>
-              </ng-template>
-              <ng-template #body let-mes>
-                <tr>
-                  <td>{{ mes.mes }}</td>
-                  <td>{{ mes.cantidad }}</td>
-                  <td>{{ mes.ingresos | currency }}</td>
-                  <td>{{ mes.precioPromedio | currency }}</td>
-                </tr>
-              </ng-template>
-            </p-table>
-          </div>
           }
         </p-card>
       </p-tabpanel>
@@ -180,37 +195,39 @@
           <form [formGroup]="productosMesForm" class="grid">
             <div class="col-12 md:col-10">
               <p-floatlabel>
-                <p-select id="mes" formControlName="mes" [options]="mesesDisponibles()" placeholder="Seleccione un mes"
-                  styleClass="w-full" />
+                <p-select id="mes" formControlName="mes" [options]="mesesDisponibles()"
+                          placeholder="Seleccione un mes"
+                          styleClass="w-full"/>
                 <label for="mes">Mes</label>
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-2">
-              <p-button label="Buscar" (onClick)="cargarProductosPorMes()" styleClass="w-full" />
+              <p-button label="Buscar" (onClick)="cargarProductosPorMes()" styleClass="w-full"/>
             </div>
           </form>
 
           @if (productosMes().length > 0) {
-          <div class="mt-4">
-            <p-chart type="bar" [data]="productosMesChart" [options]="chartOptions" height="300px" class="mb-4" />
+            <div class="mt-4">
+              <p-chart type="bar" [data]="productosMesChart" [options]="chartOptions" height="300px"
+                       class="mb-4"/>
 
-            <p-table [value]="productosMes()">
-              <ng-template #header>
-                <tr>
-                  <th>Producto</th>
-                  <th>Unidades</th>
-                  <th>Venta Total</th>
-                </tr>
-              </ng-template>
-              <ng-template #body let-producto>
-                <tr>
-                  <td>{{ producto.producto }}</td>
-                  <td>{{ producto.unidades }}</td>
-                  <td>{{ producto.ventaTotal | currency }}</td>
-                </tr>
-              </ng-template>
-            </p-table>
-          </div>
+              <p-table [value]="productosMes()">
+                <ng-template #header>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Unidades</th>
+                    <th>Venta Total</th>
+                  </tr>
+                </ng-template>
+                <ng-template #body let-producto>
+                  <tr>
+                    <td>{{ producto.producto }}</td>
+                    <td>{{ producto.unidades }}</td>
+                    <td>{{ producto.ventaTotal | currency }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
           }
         </p-card>
       </p-tabpanel>
@@ -221,179 +238,196 @@
           <form [formGroup]="buscarClientesForm" class="grid">
             <div class="col-12 md:col-5">
               <p-floatlabel>
-                <p-select id="cliente" formControlName="clienteId" [options]="todosLosClientes()" optionLabel="nombre"
-                  optionValue="nombre" [filter]="true" filterPlaceholder="Buscar cliente..."
-                  placeholder="Seleccione un cliente" styleClass="w-full" [loading]="loadingClientes()" />
+                <p-select id="cliente" formControlName="clienteId" [options]="todosLosClientes()"
+                          optionLabel="nombre"
+                          optionValue="nombre" [filter]="true" filterPlaceholder="Buscar cliente..."
+                          placeholder="Seleccione un cliente" styleClass="w-full"
+                          [loading]="loadingClientes()"/>
                 <label for="cliente">Cliente</label>
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-3">
               <p-floatlabel>
-                <p-select id="mes" formControlName="mes" [options]="mesesOptions" optionLabel="label"
-                  optionValue="value" placeholder="Todos" styleClass="w-full" />
+                <p-select id="mes" formControlName="mes" [options]="mesesOptions"
+                          optionLabel="label"
+                          optionValue="value" placeholder="Todos" styleClass="w-full"/>
                 <label for="mes">Mes</label>
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-2">
               <p-floatlabel>
-                <p-select id="anio" formControlName="anio" [options]="aniosOptions()" styleClass="w-full" />
+                <p-select id="anio" formControlName="anio" [options]="aniosOptions()"
+                          styleClass="w-full"/>
                 <label for="anio">Año</label>
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-2">
               <p-button label="Buscar" (onClick)="buscarComprasCliente()" styleClass="w-full"
-                [disabled]="!buscarClientesForm.get('clienteId')?.value" />
+                        [disabled]="!buscarClientesForm.get('clienteId')?.value"/>
             </div>
           </form>
 
           @if (detallesClienteSeleccionado().length > 0) {
-          <div class="mt-4">
-            <h4 class="text-lg font-bold mb-3">Detalle de Compras - {{ buscarClientesForm.get('clienteId')?.value }}
-            </h4>
-            <p-table [value]="detallesClienteSeleccionado()" [tableStyle]="{'min-width': '50rem'}" dataKey="idOrden"
-              (onRowExpand)="onRowExpand($event)">
+            <div class="mt-4">
+              <h4 class="text-lg font-bold mb-3">Detalle de Compras - {{
+                  buscarClientesForm.get('clienteId')?.value
+                }}
+              </h4>
+              <p-table
+                [value]="detallesClienteSeleccionado()"
+                [tableStyle]="{'min-width': '50rem'}"
+                dataKey="idOrden"
+                [expandedRowKeys]="expandedRows()"
+                (onRowExpand)="onRowExpand($event)"
+                (onRowCollapse)="onRowCollapse($event)">
+                <ng-template #header>
+                  <tr>
+                    <th style="width: 3rem"></th>
+                    <th>Fecha</th>
+                    <th># Productos</th>
+                    <th>Total</th>
+                  </tr>
+                </ng-template>
+                <ng-template #body let-detalle let-expanded="expanded">
+                  <tr>
+                    <td>
+                      <p-button type="button" [pRowToggler]="detalle" [text]="true" [rounded]="true"
+                                [plain]="true"
+                                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"/>
+                    </td>
+                    <td>{{ detalle.fecha | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ detalle.numProductos }}</td>
+                    <td>{{ detalle.total | currency }}</td>
+                  </tr>
+                </ng-template>
+                <ng-template #rowexpansion let-detalle>
+                  <tr>
+                    <td colspan="4">
+                      <div class="p-3">
+                        <h5 class="text-md font-semibold mb-2">Productos de la Orden
+                          #{{ detalle.idOrden }}</h5>
+                        @if (loadingOrdenProductos()) {
+                          <p-progressSpinner styleClass="w-4rem h-4rem"/>
+                        } @else if (productosOrdenExpandida().length > 0) {
+                          <p-table [value]="productosOrdenExpandida()"
+                                   [tableStyle]="{'min-width': '40rem'}">
+                            <ng-template #header>
+                              <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario</th>
+                                <th>Subtotal</th>
+                              </tr>
+                            </ng-template>
+                            <ng-template #body let-producto>
+                              <tr>
+                                <td>{{ producto.nombreProducto }}</td>
+                                <td>{{ producto.cantidad }}</td>
+                                <td>{{ producto.precioUnitario | currency }}</td>
+                                <td>{{ producto.subtotal | currency }}</td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                        } @else {
+                          <p class="text-500">No se encontraron productos para esta orden.</p>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          }
+        </p-card>
+      </p-tabpanel>
+
+      <!-- Tab 5: Búsqueda de Productos -->
+      <p-tabpanel value="4">
+        <p-card>
+          <form [formGroup]="buscarProductosForm">
+            <p-floatlabel>
+              <input pInputText id="buscarProducto" formControlName="query"
+                     placeholder="Buscar producto..." class="w-full"/>
+              <label for="buscarProducto">Buscar Producto</label>
+            </p-floatlabel>
+          </form>
+
+          @if (productosResultados().length > 0) {
+            <p-table [value]="productosResultados()" class="mt-4">
               <ng-template #header>
                 <tr>
-                  <th style="width: 3rem"></th>
-                  <th>Fecha</th>
-                  <th># Productos</th>
-                  <th>Total</th>
-                </tr>
-              </ng-template>
-              <ng-template #body let-detalle let-expanded="expanded">
-                <tr>
-                  <td>
-                    <p-button type="button" [pRowToggler]="detalle" [text]="true" [rounded]="true" [plain]="true"
-                      [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
-                  </td>
-                  <td>{{ detalle.fecha | date:'dd/MM/yyyy' }}</td>
-                  <td>{{ detalle.numProductos }}</td>
-                  <td>{{ detalle.total | currency }}</td>
-                </tr>
-              </ng-template>
-              <ng-template #rowexpansion let-detalle>
-                <tr>
-                  <td colspan="4">
-                    <div class="p-3">
-                      <h5 class="text-md font-semibold mb-2">Productos de la Orden #{{ detalle.idOrden }}</h5>
-                      @if (loadingOrdenProductos()) {
-                      <p-progressSpinner styleClass="w-4rem h-4rem" />
-                      } @else if (productosOrdenExpandida().length > 0) {
-                      <p-table [value]="productosOrdenExpandida()" [tableStyle]="{'min-width': '40rem'}">
-                        <ng-template #header>
-                <tr>
-                  <th>Producto</th>
-                  <th>Cantidad</th>
-                  <th>Precio Unitario</th>
-                  <th>Subtotal</th>
+                  <th>Nombre</th>
+                  <th>Unidades Vendidas</th>
+                  <th>Ingresos</th>
+                  <th>Precio Promedio</th>
                 </tr>
               </ng-template>
               <ng-template #body let-producto>
                 <tr>
-                  <td>{{ producto.nombreProducto }}</td>
-                  <td>{{ producto.cantidad }}</td>
-                  <td>{{ producto.precioUnitario | currency }}</td>
-                  <td>{{ producto.subtotal | currency }}</td>
+                  <td>{{ producto.nombre }}</td>
+                  <td>{{ producto.unidadesVendidas }}</td>
+                  <td>{{ producto.ingresos | currency }}</td>
+                  <td>{{ producto.precioPromedio | currency }}</td>
                 </tr>
               </ng-template>
             </p-table>
-            } @else {
-            <p class="text-500">No se encontraron productos para esta orden.</p>
-            }
-          </div>
-          </td>
-          </tr>
-          </ng-template>
-          </p-table>
-</div>
-}
-</p-card>
-</p-tabpanel>
+          }
+        </p-card>
+      </p-tabpanel>
 
-<!-- Tab 5: Búsqueda de Productos -->
-<p-tabpanel value="4">
-  <p-card>
-    <form [formGroup]="buscarProductosForm">
-      <p-floatlabel>
-        <input pInputText id="buscarProducto" formControlName="query" placeholder="Buscar producto..." class="w-full" />
-        <label for="buscarProducto">Buscar Producto</label>
-      </p-floatlabel>
-    </form>
+      <!-- Tab 6: Detalles de Ventas -->
+      <p-tabpanel value="5">
+        <p-card>
+          <form [formGroup]="detallesVentasForm" class="grid">
+            <div class="col-12 md:col-4">
+              <p-floatlabel>
+                <p-datepicker id="fechaDesde" formControlName="fechaDesde" dateFormat="yy-mm-dd"
+                              styleClass="w-full"/>
+                <label for="fechaDesde">Fecha Desde</label>
+              </p-floatlabel>
+            </div>
+            <div class="col-12 md:col-4">
+              <p-floatlabel>
+                <p-datepicker id="fechaHasta" formControlName="fechaHasta" dateFormat="yy-mm-dd"
+                              styleClass="w-full"/>
+                <label for="fechaHasta">Fecha Hasta</label>
+              </p-floatlabel>
+            </div>
+            <div class="col-12 md:col-2">
+              <p-floatlabel>
+                <input pInputText id="tipoNegocio" formControlName="tipoCliente" class="w-full"/>
+                <label for="tipoNegocio">Tipo de Negocio</label>
+              </p-floatlabel>
+            </div>
+            <div class="col-12 md:col-2">
+              <p-button label="Buscar" (onClick)="cargarDetallesVentas()" styleClass="w-full"/>
+            </div>
+          </form>
 
-    @if (productosResultados().length > 0) {
-    <p-table [value]="productosResultados()" class="mt-4">
-      <ng-template #header>
-        <tr>
-          <th>Nombre</th>
-          <th>Unidades Vendidas</th>
-          <th>Ingresos</th>
-          <th>Precio Promedio</th>
-        </tr>
-      </ng-template>
-      <ng-template #body let-producto>
-        <tr>
-          <td>{{ producto.nombre }}</td>
-          <td>{{ producto.unidadesVendidas }}</td>
-          <td>{{ producto.ingresos | currency }}</td>
-          <td>{{ producto.precioPromedio | currency }}</td>
-        </tr>
-      </ng-template>
-    </p-table>
-    }
-  </p-card>
-</p-tabpanel>
-
-<!-- Tab 6: Detalles de Ventas -->
-<p-tabpanel value="5">
-  <p-card>
-    <form [formGroup]="detallesVentasForm" class="grid">
-      <div class="col-12 md:col-4">
-        <p-floatlabel>
-          <p-datepicker id="fechaDesde" formControlName="fechaDesde" dateFormat="yy-mm-dd" styleClass="w-full" />
-          <label for="fechaDesde">Fecha Desde</label>
-        </p-floatlabel>
-      </div>
-      <div class="col-12 md:col-4">
-        <p-floatlabel>
-          <p-datepicker id="fechaHasta" formControlName="fechaHasta" dateFormat="yy-mm-dd" styleClass="w-full" />
-          <label for="fechaHasta">Fecha Hasta</label>
-        </p-floatlabel>
-      </div>
-      <div class="col-12 md:col-2">
-        <p-floatlabel>
-          <input pInputText id="tipoNegocio" formControlName="tipoCliente" class="w-full" />
-          <label for="tipoNegocio">Tipo de Negocio</label>
-        </p-floatlabel>
-      </div>
-      <div class="col-12 md:col-2">
-        <p-button label="Buscar" (onClick)="cargarDetallesVentas()" styleClass="w-full" />
-      </div>
-    </form>
-
-    @if (detallesVentas().length > 0) {
-    <p-table [value]="detallesVentas()" class="mt-4" [paginator]="true" [rows]="10">
-      <ng-template #header>
-        <tr>
-          <th>Fecha</th>
-          <th>Cliente</th>
-          <th>Tipo de Negocio</th>
-          <th># Productos</th>
-          <th>Total</th>
-        </tr>
-      </ng-template>
-      <ng-template #body let-detalle>
-        <tr>
-          <td>{{ detalle.fecha }}</td>
-          <td>{{ detalle.cliente }}</td>
-          <td>{{ detalle.tipoCliente }}</td>
-          <td>{{ detalle.numProductos }}</td>
-          <td>{{ detalle.total | currency }}</td>
-        </tr>
-      </ng-template>
-    </p-table>
-    }
-  </p-card>
-</p-tabpanel>
-</p-tabpanels>
-</p-tabs>
+          @if (detallesVentas().length > 0) {
+            <p-table [value]="detallesVentas()" class="mt-4" [paginator]="true" [rows]="10">
+              <ng-template #header>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Cliente</th>
+                  <th>Tipo de Negocio</th>
+                  <th># Productos</th>
+                  <th>Total</th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-detalle>
+                <tr>
+                  <td>{{ detalle.fecha }}</td>
+                  <td>{{ detalle.cliente }}</td>
+                  <td>{{ detalle.tipoCliente }}</td>
+                  <td>{{ detalle.numProductos }}</td>
+                  <td>{{ detalle.total | currency }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          }
+        </p-card>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
 </div>

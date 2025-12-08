@@ -77,6 +77,7 @@ export class DashboardProforma implements OnInit {
   protected readonly todosLosClientes = signal<ClienteBusqueda[]>([]);
   protected readonly loadingClientes = signal<boolean>(false);
   protected readonly detallesClienteSeleccionado = signal<DetalleVenta[]>([]);
+  protected readonly expandedRows = signal<{ [key: string]: boolean }>({});
   protected readonly productosOrdenExpandida = signal<ProductoOrden[]>([]);
   protected readonly loadingOrdenProductos = signal<boolean>(false);
   protected buscarClientesForm: FormGroup;
@@ -480,15 +481,15 @@ export class DashboardProforma implements OnInit {
     this.cargarDashboard();
   }
 
-  // Manejar expansión de fila para mostrar productos de la orden
   protected onRowExpand(event: any): void {
     const detalle = event.data as DetalleVenta;
+    console.log('Expandiendo orden:', detalle.idOrden);
+
+    this.productosOrdenExpandida.set([]);
     this.loadingOrdenProductos.set(true);
 
-    // Cargar productos de la orden
     this.ordenService.obtenerPorId(detalle.idOrden).subscribe({
       next: (ordenCompleta) => {
-        // Mapear detalles de orden a ProductoOrden
         const productos: ProductoOrden[] = ordenCompleta.detalles.map(detalle => ({
           nombreProducto: `Producto #${detalle.idProducto}`,
           cantidad: detalle.cantidad,
@@ -497,11 +498,27 @@ export class DashboardProforma implements OnInit {
         }));
         this.productosOrdenExpandida.set(productos);
         this.loadingOrdenProductos.set(false);
+
+        // Actualizar expandedRows como signal
+        this.expandedRows.update(rows => ({
+          ...rows,
+          [detalle.idOrden]: true
+        }));
       },
       error: (err) => {
         console.error('Error al cargar productos de la orden:', err);
+        this.productosOrdenExpandida.set([]);
         this.loadingOrdenProductos.set(false);
       }
+    });
+  }
+
+  protected onRowCollapse(event: any): void {
+    const detalle = event.data as DetalleVenta;
+    this.expandedRows.update(rows => {
+      const newRows = { ...rows };
+      delete newRows[detalle.idOrden];
+      return newRows;
     });
   }
 }
