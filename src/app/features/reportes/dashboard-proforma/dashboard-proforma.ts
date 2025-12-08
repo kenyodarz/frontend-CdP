@@ -70,6 +70,8 @@ export class DashboardProforma implements OnInit {
 
   // Tab 4: Búsqueda Clientes
   protected readonly clientesResultados = signal<ClienteBusqueda[]>([]);
+  protected readonly clienteSeleccionado = signal<ClienteBusqueda | null>(null);
+  protected readonly detallesClienteSeleccionado = signal<DetalleVenta[]>([]);
   protected buscarClientesForm: FormGroup;
 
   // Tab 5: Búsqueda Productos
@@ -384,6 +386,24 @@ export class DashboardProforma implements OnInit {
       },
       error: (err) => {
         console.error('Error al buscar productos:', err);
+      }
+    });
+  }
+
+  // Ver detalle de cliente seleccionado
+  protected verDetalleCliente(event: any): void {
+    const cliente = event.data as ClienteBusqueda;
+    this.clienteSeleccionado.set(cliente);
+
+    // Cargar detalles de ventas del cliente
+    this.reporteService.getDetallesVentas(undefined, undefined, cliente.tipo).subscribe({
+      next: (detalles) => {
+        // Filtrar solo las ventas de este cliente
+        const detallesCliente = detalles.filter(d => d.cliente === cliente.nombre);
+        this.detallesClienteSeleccionado.set(detallesCliente);
+      },
+      error: (err) => {
+        console.error('Error al cargar detalles del cliente:', err);
       }
     });
   }

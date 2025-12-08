@@ -227,7 +227,8 @@
           </form>
 
           @if (clientesResultados().length > 0) {
-          <p-table [value]="clientesResultados()" class="mt-4">
+          <p-table [value]="clientesResultados()" class="mt-4" [tableStyle]="{'min-width': '50rem'}"
+            selectionMode="single" (onRowSelect)="verDetalleCliente($event)">
             <ng-template #header>
               <tr>
                 <th>Nombre</th>
@@ -237,7 +238,7 @@
               </tr>
             </ng-template>
             <ng-template #body let-cliente>
-              <tr>
+              <tr [pSelectableRow]="cliente" style="cursor: pointer;">
                 <td>{{ cliente.nombre }}</td>
                 <td>{{ cliente.tipo }}</td>
                 <td>{{ cliente.numCompras }}</td>
@@ -245,6 +246,28 @@
               </tr>
             </ng-template>
           </p-table>
+
+          @if (clienteSeleccionado()) {
+          <div class="mt-4">
+            <h4 class="text-lg font-bold mb-3">Detalle de Compras - {{ clienteSeleccionado()!.nombre }}</h4>
+            <p-table [value]="detallesClienteSeleccionado()" [tableStyle]="{'min-width': '50rem'}">
+              <ng-template #header>
+                <tr>
+                  <th>Fecha</th>
+                  <th># Productos</th>
+                  <th>Total</th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-detalle>
+                <tr>
+                  <td>{{ detalle.fecha | date:'dd/MM/yyyy' }}</td>
+                  <td>{{ detalle.numProductos }}</td>
+                  <td>{{ detalle.total | currency }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+          }
           }
         </p-card>
       </p-tabpanel>
