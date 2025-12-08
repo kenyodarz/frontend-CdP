@@ -16,7 +16,8 @@
       <p-tab value="2">Productos por Mes</p-tab>
       <p-tab value="3">Búsqueda de Clientes</p-tab>
       <p-tab value="4">Búsqueda de Productos</p-tab>
-      <p-tab value="5">Detalles de Ventas</p-tab>
+      <p-tab value="5">Ventas por Tipo de Cliente</p-tab>
+      <p-tab value="6">Detalles de Ventas</p-tab>
     </p-tablist>
 
     <p-tabpanels>
@@ -372,8 +373,64 @@
         </p-card>
       </p-tabpanel>
 
-      <!-- Tab 6: Detalles de Ventas -->
+      <!-- Tab 5.5: Ventas por Tipo de Cliente -->
       <p-tabpanel value="5">
+        <p-card>
+          <form [formGroup]="ventasTipoClienteForm" class="grid mb-4">
+            <div class="col-12 md:col-3">
+              <p-floatlabel>
+                <p-select id="mesTipoCliente" formControlName="mes" [options]="mesesOptions"
+                  placeholder="Seleccione un mes" styleClass="w-full" />
+                <label for="mesTipoCliente">Mes</label>
+              </p-floatlabel>
+            </div>
+            <div class="col-12 md:col-3">
+              <p-floatlabel>
+                <p-select id="anioTipoCliente" formControlName="anio" [options]="aniosOptions()"
+                  placeholder="Seleccione un año" styleClass="w-full" />
+                <label for="anioTipoCliente">Año</label>
+              </p-floatlabel>
+            </div>
+            <div class="col-12 md:col-3 flex align-items-end">
+              <p-button label="Buscar" icon="pi pi-search" (onClick)="cargarVentasPorTipoCliente()" />
+            </div>
+          </form>
+
+          @if (ventasPorTipoCliente().length > 0) {
+          <div class="grid">
+            <!-- Pie Chart -->
+            <div class="col-12 md:col-6">
+              <h3 class="text-xl font-semibold mb-3">Distribución de Ingresos</h3>
+              <p-chart type="pie" [data]="pieChartData" [options]="pieChartOptions" />
+            </div>
+
+            <!-- Table -->
+            <div class="col-12 md:col-6">
+              <h3 class="text-xl font-semibold mb-3">Detalle por Tipo de Cliente</h3>
+              <p-table [value]="ventasPorTipoCliente()" [tableStyle]="{'min-width': '30rem'}">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Tipo de Cliente</th>
+                    <th>Ventas</th>
+                    <th>Ingresos</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-venta>
+                  <tr>
+                    <td>{{ venta.tipo }}</td>
+                    <td>{{ venta.ventas }}</td>
+                    <td>{{ venta.ingresos | currency }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+          }
+        </p-card>
+      </p-tabpanel>
+
+      <!-- Tab 6: Detalles de Ventas -->
+      <p-tabpanel value="6">
         <p-card>
           <form [formGroup]="detallesVentasForm" class="grid">
             <div class="col-12 md:col-4">

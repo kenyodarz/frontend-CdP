@@ -28,6 +28,7 @@ import { ClienteBusqueda } from '../../../core/models/reporte/cliente-busqueda';
 import { ProductoBusqueda } from '../../../core/models/reporte/producto-busqueda';
 import { DetalleVenta } from '../../../core/models/reporte/detalle-venta';
 import { ProductoOrden } from '../../../core/models/reporte/producto-orden';
+import { VentaPorTipoClienteDTO } from '../../../core/models/reporte/dashboard-proforma';
 
 @Component({
   selector: 'app-dashboard-proforma',
@@ -108,6 +109,12 @@ export class DashboardProforma implements OnInit {
   protected readonly productosResultados = signal<ProductoBusqueda[]>([]);
   protected buscarProductosForm: FormGroup;
 
+  // Tab 5.5: Ventas por Tipo Cliente
+  protected readonly ventasPorTipoCliente = signal<VentaPorTipoClienteDTO[]>([]);
+  protected ventasTipoClienteForm: FormGroup;
+  protected pieChartData: any;
+  protected pieChartOptions: any;
+
   // Tab 6: Detalles Ventas
   protected readonly detallesVentas = signal<DetalleVenta[]>([]);
   protected detallesVentasForm: FormGroup;
@@ -121,6 +128,7 @@ export class DashboardProforma implements OnInit {
 
   constructor() {
     const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1; // JavaScript months are 0-indexed
 
     // Initialize forms (sin cambios)
     this.comparacionForm = this.fb.group({
@@ -144,6 +152,11 @@ export class DashboardProforma implements OnInit {
       anio: [currentYear]
     });
 
+    this.ventasTipoClienteForm = this.fb.group({
+      mes: [currentMonth],
+      anio: [currentYear]
+    });
+
     this.detallesVentasForm = this.fb.group({
       fechaDesde: [null],
       fechaHasta: [null],
@@ -153,6 +166,15 @@ export class DashboardProforma implements OnInit {
     this.overviewForm = this.fb.group({
       anio: [currentYear]
     });
+
+    // Pie chart options
+    this.pieChartOptions = {
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    };
   }
 
   ngOnInit(): void {
@@ -543,6 +565,41 @@ export class DashboardProforma implements OnInit {
         console.error('Error al cargar productos de la orden:', err);
         this.productosOrdenExpandida.set([]);
         this.loadingOrdenProductos.set(false);
+      }
+    });
+  }
+
+  // Tab 5.5: Ventas por Tipo Cliente
+  protected cargarVentasPorTipoCliente(): void {
+    const { mes, anio } = this.ventasTipoClienteForm.value;
+
+    this.loading.set(true);
+    this.reporteService.getVentasPorTipoCliente(mes, anio).subscribe({
+      next: (ventas) => {
+        this.ventasPorTipoCliente.set(ventas);
+
+        // Preparar datos para el gráfico de torta
+        this.pieChartData = {
+          labels: ventas.map(v => v.tipo),
+          datasets: [{
+            data: ventas.map(v => v.ingresos),
+            backgroundColor: [
+              '#FF6384',
+              '#36A2EB',
+              '#FFCE56',
+              '#4BC0C0',
+              '#9966FF',
+              '#FF9F40'
+            ]
+          }]
+        };
+
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error al cargar ventas por tipo de cliente:', err);
+        this.error.set('No se pudieron cargar las ventas por tipo de cliente.');
+        this.loading.set(false);
       }
     });
   }

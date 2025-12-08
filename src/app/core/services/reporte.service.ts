@@ -14,6 +14,7 @@ import { ProductoVendidoMes } from '../models/reporte/producto-vendido-mes';
 import { ClienteBusqueda } from '../models/reporte/cliente-busqueda';
 import { ProductoBusqueda } from '../models/reporte/producto-busqueda';
 import { DetalleVenta } from '../models/reporte/detalle-venta';
+import { VentaPorTipoClienteDTO } from '../models/reporte/dashboard-proforma';
 
 @Injectable({
   providedIn: 'root'
@@ -126,5 +127,15 @@ export class ReporteService {
     if (tipoCliente) params = params.set('tipoCliente', tipoCliente);
     if (nombreCliente) params = params.set('nombreCliente', nombreCliente);
     return this.http.get<DetalleVenta[]>(`${this.apiUrl}/detalles-ventas`, { params });
+  }
+
+  /**
+   * Obtiene las ventas agrupadas por tipo de cliente
+   */
+  getVentasPorTipoCliente(mes?: number, anio?: number): Observable<VentaPorTipoClienteDTO[]> {
+    let params = new HttpParams();
+    if (mes) params = params.set('mes', mes.toString());
+    if (anio) params = params.set('anio', anio.toString());
+    return this.http.get<VentaPorTipoClienteDTO[]>(`${this.apiUrl}/ventas-por-tipo-cliente`, { params });
   }
 }
