@@ -115,7 +115,7 @@
             <div class="col-12 md:col-6">
               <p-floatlabel>
                 <p-select id="producto" formControlName="productoId" [options]="productos()" optionLabel="nombre"
-                  optionValue="id" placeholder="Seleccione un producto" styleClass="w-full" />
+                  optionValue="id" [filter]="true" filterPlaceholder="Buscar producto" styleClass="w-full" />
                 <label for="producto">Producto</label>
               </p-floatlabel>
             </div>
