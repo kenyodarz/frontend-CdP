@@ -12,6 +12,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DialogModule } from 'primeng/dialog';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 import { forkJoin } from 'rxjs';
 
 import { ReporteService } from '../../../core/services/reporte.service';
@@ -50,11 +52,13 @@ import { Cliente } from '../../../core/models/cliente/cliente';
     ReactiveFormsModule,
     ProgressSpinnerModule,
     DialogModule,
+    ToastModule,
     Loading,
     ErrorMessage
   ],
   templateUrl: './dashboard-proforma.html',
   styleUrl: './dashboard-proforma.scss',
+  providers: [MessageService]
 })
 export class DashboardProforma implements OnInit {
   // Loading and error states
@@ -124,6 +128,7 @@ export class DashboardProforma implements OnInit {
   private readonly ordenService = inject(OrdenService);
   private readonly productoService = inject(ProductoService);
   private readonly clienteService = inject(ClienteService);
+  private readonly messageService = inject(MessageService);
   private readonly fb = inject(FormBuilder);
 
   constructor() {
@@ -305,6 +310,14 @@ export class DashboardProforma implements OnInit {
       next: (detalles) => {
         this.detallesClienteSeleccionado.set(detalles);
         this.loading.set(false);
+
+        if (detalles.length === 0) {
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Sin Resultados',
+            detail: 'En este periodo el cliente no tuvo compras o no se vendió nada.'
+          });
+        }
       },
       error: (err) => {
         console.error('Error al cargar detalles del cliente:', err);
