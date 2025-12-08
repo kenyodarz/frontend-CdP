@@ -118,6 +118,8 @@ export class DashboardProforma implements OnInit {
   // Tab 6: Detalles Ventas
   protected readonly detallesVentas = signal<DetalleVenta[]>([]);
   protected detallesVentasForm: FormGroup;
+  protected detalleVentaDialogVisible = signal<boolean>(false);
+  protected ventaSeleccionada = signal<DetalleVenta | null>(null);
 
   // Overview year filter
   protected overviewForm: FormGroup;
@@ -157,10 +159,13 @@ export class DashboardProforma implements OnInit {
       anio: [currentYear]
     });
 
+    // Calcular primer y último día del mes actual
+    const firstDayOfMonth = new Date(currentYear, currentMonth - 1, 1);
+    const lastDayOfMonth = new Date(currentYear, currentMonth, 0);
+
     this.detallesVentasForm = this.fb.group({
-      fechaDesde: [null],
-      fechaHasta: [null],
-      tipoCliente: [null]
+      fechaDesde: [firstDayOfMonth],
+      fechaHasta: [lastDayOfMonth]
     });
 
     this.overviewForm = this.fb.group({
@@ -448,27 +453,6 @@ export class DashboardProforma implements OnInit {
     });
   }
 
-  // Tab 6: Detalles Ventas (sin cambios)
-  protected cargarDetallesVentas(): void {
-    const { fechaDesde, fechaHasta, tipoCliente } = this.detallesVentasForm.value;
-
-    const fechaDesdeStr = fechaDesde ? fechaDesde.toISOString().split('T')[0] : undefined;
-    const fechaHastaStr = fechaHasta ? fechaHasta.toISOString().split('T')[0] : undefined;
-
-    this.loading.set(true);
-    this.reporteService.getDetallesVentas(fechaDesdeStr, fechaHastaStr, tipoCliente).subscribe({
-      next: (detalles) => {
-        this.detallesVentas.set(detalles);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Error al cargar detalles de ventas:', err);
-        this.error.set('No se pudieron cargar los detalles de ventas.');
-        this.loading.set(false);
-      }
-    });
-  }
-
   protected onRetry(): void {
     this.cargarDashboard();
   }
@@ -602,5 +586,35 @@ export class DashboardProforma implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  // Tab 6: Detalles de Ventas
+  protected cargarDetallesVentas(): void {
+    const { fechaDesde, fechaHasta } = this.detallesVentasForm.value;
+
+    if (!fechaDesde || !fechaHasta) {
+      return;
+    }
+
+    const fechaDesdeStr = fechaDesde.toISOString().split('T')[0];
+    const fechaHastaStr = fechaHasta.toISOString().split('T')[0];
+
+    this.loading.set(true);
+    this.reporteService.getDetallesVentas(fechaDesdeStr, fechaHastaStr).subscribe({
+      next: (detalles) => {
+        this.detallesVentas.set(detalles);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error al cargar detalles de ventas:', err);
+        this.error.set('No se pudieron cargar los detalles de ventas.');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  protected verDetalleVenta(venta: DetalleVenta): void {
+    this.ventaSeleccionada.set(venta);
+    this.detalleVentaDialogVisible.set(true);
   }
 }
