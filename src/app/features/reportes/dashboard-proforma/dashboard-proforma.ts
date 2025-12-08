@@ -74,12 +74,28 @@ export class DashboardProforma implements OnInit {
   protected productosMesChart: any;
 
   // Tab 4: Búsqueda Clientes
-  protected readonly clientesResultados = signal<ClienteBusqueda[]>([]);
-  protected readonly clienteSeleccionado = signal<ClienteBusqueda | null>(null);
+  protected readonly todosLosClientes = signal<ClienteBusqueda[]>([]);
+  protected readonly loadingClientes = signal<boolean>(false);
   protected readonly detallesClienteSeleccionado = signal<DetalleVenta[]>([]);
   protected readonly productosOrdenExpandida = signal<ProductoOrden[]>([]);
   protected readonly loadingOrdenProductos = signal<boolean>(false);
   protected buscarClientesForm: FormGroup;
+  protected readonly mesesOptions = [
+    { label: 'Todos', value: null },
+    { label: 'Enero', value: 1 },
+    { label: 'Febrero', value: 2 },
+    { label: 'Marzo', value: 3 },
+    { label: 'Abril', value: 4 },
+    { label: 'Mayo', value: 5 },
+    { label: 'Junio', value: 6 },
+    { label: 'Julio', value: 7 },
+    { label: 'Agosto', value: 8 },
+    { label: 'Septiembre', value: 9 },
+    { label: 'Octubre', value: 10 },
+    { label: 'Noviembre', value: 11 },
+    { label: 'Diciembre', value: 12 }
+  ];
+  protected readonly aniosOptions = signal<number[]>([]);
 
   // Tab 5: Búsqueda Productos
   protected readonly productosResultados = signal<ProductoBusqueda[]>([]);
@@ -110,7 +126,9 @@ export class DashboardProforma implements OnInit {
     });
 
     this.buscarClientesForm = this.fb.group({
-      query: ['']
+      clienteId: [null],
+      mes: [null],
+      anio: [currentYear]
     });
 
     this.buscarProductosForm = this.fb.group({
@@ -132,9 +150,11 @@ export class DashboardProforma implements OnInit {
   ngOnInit(): void {
     this.initChartOptions();
     this.initAvailableYears();
+    this.initAniosOptions();
     this.cargarDashboard();
     this.cargarProductos();
     this.cargarMesesDisponibles();
+    this.cargarTodosLosClientes();
     this.setupSearchDebounce();
     this.setupOverviewYearChange();
   }
@@ -147,6 +167,15 @@ export class DashboardProforma implements OnInit {
       years.push(currentYear - i);
     }
     this.availableYears.set(years);
+  }
+
+  private initAniosOptions(): void {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = 0; i < 5; i++) {
+      years.push(currentYear - i);
+    }
+    this.aniosOptions.set(years);
   }
 
   private setupOverviewYearChange(): void {
@@ -344,22 +373,24 @@ export class DashboardProforma implements OnInit {
     };
   }
 
-  // Tab 4 & 5: Búsquedas con debounce
-  private setupSearchDebounce(): void {
-    // Búsqueda de clientes
-    this.buscarClientesForm.get('query')?.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-      )
-      .subscribe(query => {
-        if (query && query.length >= 2) {
-          this.buscarClientesAction(query);
-        } else {
-          this.clientesResultados.set([]);
-        }
-      });
+  // Tab 4: Cargar todos los clientes
+  private cargarTodosLosClientes(): void {
+    this.loadingClientes.set(true);
+    // Buscar con query vacío para obtener todos
+    this.reporteService.buscarClientes('').subscribe({
+      next: (clientes) => {
+        this.todosLosClientes.set(clientes);
+        this.loadingClientes.set(false);
+      },
+      error: (err) => {
+        console.error('Error al cargar clientes:', err);
+        this.loadingClientes.set(false);
+      }
+    });
+  }
 
+  // Tab 5: Búsqueda de productos con debounce
+  private setupSearchDebounce(): void {
     // Búsqueda de productos
     this.buscarProductosForm.get('query')?.valueChanges
       .pipe(
@@ -375,17 +406,6 @@ export class DashboardProforma implements OnInit {
       });
   }
 
-  private buscarClientesAction(query: string): void {
-    this.reporteService.buscarClientes(query).subscribe({
-      next: (clientes) => {
-        this.clientesResultados.set(clientes);
-      },
-      error: (err) => {
-        console.error('Error al buscar clientes:', err);
-      }
-    });
-  }
-
   private buscarProductosAction(query: string): void {
     this.reporteService.buscarProductos(query).subscribe({
       next: (productos) => {
@@ -397,20 +417,40 @@ export class DashboardProforma implements OnInit {
     });
   }
 
-  // Ver detalle de cliente seleccionado
-  protected verDetalleCliente(event: any): void {
-    const cliente = event.data as ClienteBusqueda;
-    this.clienteSeleccionado.set(cliente);
+  // Buscar compras del cliente seleccionado con filtros
+  protected buscarComprasCliente(): void {
+    const { clienteId, mes, anio } = this.buscarClientesForm.value;
 
-    // Cargar detalles de ventas del cliente
-    this.reporteService.getDetallesVentas(undefined, undefined, cliente.tipo).subscribe({
+    if (!clienteId) {
+      return;
+    }
+
+    // Construir rango de fechas según mes y año
+    let fechaDesde: string | undefined;
+    let fechaHasta: string | undefined;
+
+    if (mes && anio) {
+      // Mes específico
+      const mesStr = mes.toString().padStart(2, '0');
+      fechaDesde = `${anio}-${mesStr}-01`;
+      const lastDay = new Date(anio, mes, 0).getDate();
+      fechaHasta = `${anio}-${mesStr}-${lastDay.toString().padStart(2, '0')}`;
+    } else if (anio) {
+      // Todo el año
+      fechaDesde = `${anio}-01-01`;
+      fechaHasta = `${anio}-12-31`;
+    }
+
+    this.loading.set(true);
+    // Enviar el nombre del cliente al backend para filtrar
+    this.reporteService.getDetallesVentas(fechaDesde, fechaHasta, undefined, clienteId).subscribe({
       next: (detalles) => {
-        // Filtrar solo las ventas de este cliente
-        const detallesCliente = detalles.filter(d => d.cliente === cliente.nombre);
-        this.detallesClienteSeleccionado.set(detallesCliente);
+        this.detallesClienteSeleccionado.set(detalles);
+        this.loading.set(false);
       },
       error: (err) => {
         console.error('Error al cargar detalles del cliente:', err);
+        this.loading.set(false);
       }
     });
   }

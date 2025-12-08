@@ -117,11 +117,12 @@ export class ReporteService {
   /**
    * Obtiene los detalles de ventas con filtros opcionales
    */
-  getDetallesVentas(fechaDesde?: string, fechaHasta?: string, tipoCliente?: string): Observable<DetalleVenta[]> {
+  getDetallesVentas(fechaDesde?: string, fechaHasta?: string, tipoCliente?: string, nombreCliente?: string): Observable<DetalleVenta[]> {
     let params = new HttpParams();
     if (fechaDesde) params = params.set('fechaDesde', fechaDesde);
     if (fechaHasta) params = params.set('fechaHasta', fechaHasta);
     if (tipoCliente) params = params.set('tipoCliente', tipoCliente);
+    if (nombreCliente) params = params.set('nombreCliente', nombreCliente);
     return this.http.get<DetalleVenta[]>(`${this.apiUrl}/detalles-ventas`, { params });
   }
 }
