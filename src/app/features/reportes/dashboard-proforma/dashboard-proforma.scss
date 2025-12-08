@@ -1,4 +1,4 @@
-// Minimal custom styles - rely on PrimeFlex for layout
+// Clean and simple styles for Reports module
 :host ::ng-deep {
 
   // Card styling
@@ -15,7 +15,7 @@
   }
 
   // Tab panels padding
-  .p-tabview-panels {
+  .p-tabpanels {
     padding-top: 1.5rem;
   }
 
@@ -29,5 +29,16 @@
   // Chart height
   .p-chart canvas {
     max-height: 300px;
+  }
+
+  // Table styling
+  .p-datatable {
+    .p-datatable-thead>tr>th {
+      padding: 0.75rem 1rem;
+    }
+
+    .p-datatable-tbody>tr>td {
+      padding: 0.75rem 1rem;
+    }
   }
 }
