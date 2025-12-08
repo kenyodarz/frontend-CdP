@@ -10,7 +10,8 @@ import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabelModule } from 'primeng/floatlabel';
-import { ProgressSpinner } from 'primeng/progressspinner';
+import { ProgressSpinnerModule } from 'primeng/progressspinner'; // Cambiado a Module para v21
+import { RippleModule } from 'primeng/ripple'; // Para pRipple en v21
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { ReporteService } from '../../../core/services/reporte.service';
@@ -40,9 +41,10 @@ import { ProductoOrden } from '../../../core/models/reporte/producto-orden';
     InputTextModule,
     FloatLabelModule,
     ReactiveFormsModule,
+    RippleModule, // Agregado para pRipple
+    ProgressSpinnerModule, // Corregido
     Loading,
-    ErrorMessage,
-    ProgressSpinner
+    ErrorMessage
   ],
   templateUrl: './dashboard-proforma.html',
   styleUrl: './dashboard-proforma.scss',
@@ -116,7 +118,7 @@ export class DashboardProforma implements OnInit {
   constructor() {
     const currentYear = new Date().getFullYear();
 
-    // Initialize forms
+    // Initialize forms (sin cambios)
     this.comparacionForm = this.fb.group({
       productoId: [null],
       anio: [currentYear]
@@ -142,7 +144,6 @@ export class DashboardProforma implements OnInit {
       tipoCliente: [null]
     });
 
-    // Overview year filter form
     this.overviewForm = this.fb.group({
       anio: [currentYear]
     });
@@ -160,10 +161,10 @@ export class DashboardProforma implements OnInit {
     this.setupOverviewYearChange();
   }
 
+  // Métodos privados (sin cambios, excepto initChartOptions si necesitas)
   private initAvailableYears(): void {
     const currentYear = new Date().getFullYear();
     const years = [];
-    // Last 5 years including current
     for (let i = 0; i < 5; i++) {
       years.push(currentYear - i);
     }
@@ -224,7 +225,7 @@ export class DashboardProforma implements OnInit {
     };
   }
 
-  // Tab 1: Overview
+  // Tab 1: Overview (cargarDashboard sin cambios)
   protected cargarDashboard(): void {
     this.loading.set(true);
     this.error.set(null);
@@ -251,7 +252,6 @@ export class DashboardProforma implements OnInit {
     const documentStyle = getComputedStyle(document.documentElement);
     const primaryColor = documentStyle.getPropertyValue('--primary-color') || '#3B82F6';
 
-    // Ventas Mensuales Chart
     this.ventasMensualesChart = {
       labels: data.ventasMensuales.map(v => v.mes),
       datasets: [
@@ -264,7 +264,6 @@ export class DashboardProforma implements OnInit {
       ]
     };
 
-    // Ventas por Tipo Cliente Chart (Pie)
     this.ventasTipoClienteChart = {
       labels: data.ventasPorTipoCliente.map(v => v.tipo),
       datasets: [
@@ -276,7 +275,7 @@ export class DashboardProforma implements OnInit {
     };
   }
 
-  // Tab 2: Comparación Producto
+  // Tab 2: Comparación (sin cambios mayores)
   protected cargarProductos(): void {
     this.reporteService.getProductos().subscribe({
       next: (productos) => {
@@ -326,7 +325,7 @@ export class DashboardProforma implements OnInit {
     };
   }
 
-  // Tab 3: Productos por Mes
+  // Tab 3: Productos por Mes (sin cambios)
   protected cargarMesesDisponibles(): void {
     this.reporteService.getMesesDisponibles().subscribe({
       next: (meses) => {
@@ -374,10 +373,9 @@ export class DashboardProforma implements OnInit {
     };
   }
 
-  // Tab 4: Cargar todos los clientes
+  // Tab 4: Clientes (cargarTodosLosClientes sin cambios)
   private cargarTodosLosClientes(): void {
     this.loadingClientes.set(true);
-    // Buscar con query vacío para obtener todos
     this.reporteService.buscarClientes('').subscribe({
       next: (clientes) => {
         this.todosLosClientes.set(clientes);
@@ -390,21 +388,20 @@ export class DashboardProforma implements OnInit {
     });
   }
 
-  // Tab 5: Búsqueda de productos con debounce
+  // Tab 5: Búsqueda productos (sin cambios)
   private setupSearchDebounce(): void {
-    // Búsqueda de productos
     this.buscarProductosForm.get('query')?.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-      )
-      .subscribe(query => {
-        if (query && query.length >= 2) {
-          this.buscarProductosAction(query);
-        } else {
-          this.productosResultados.set([]);
-        }
-      });
+    .pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    )
+    .subscribe(query => {
+      if (query && query.length >= 2) {
+        this.buscarProductosAction(query);
+      } else {
+        this.productosResultados.set([]);
+      }
+    });
   }
 
   private buscarProductosAction(query: string): void {
@@ -418,7 +415,6 @@ export class DashboardProforma implements OnInit {
     });
   }
 
-  // Buscar compras del cliente seleccionado con filtros
   protected buscarComprasCliente(): void {
     const { clienteId, mes, anio } = this.buscarClientesForm.value;
 
@@ -426,24 +422,20 @@ export class DashboardProforma implements OnInit {
       return;
     }
 
-    // Construir rango de fechas según mes y año
     let fechaDesde: string | undefined;
     let fechaHasta: string | undefined;
 
     if (mes && anio) {
-      // Mes específico
       const mesStr = mes.toString().padStart(2, '0');
       fechaDesde = `${anio}-${mesStr}-01`;
       const lastDay = new Date(anio, mes, 0).getDate();
       fechaHasta = `${anio}-${mesStr}-${lastDay.toString().padStart(2, '0')}`;
     } else if (anio) {
-      // Todo el año
       fechaDesde = `${anio}-01-01`;
       fechaHasta = `${anio}-12-31`;
     }
 
     this.loading.set(true);
-    // Enviar el nombre del cliente al backend para filtrar
     this.reporteService.getDetallesVentas(fechaDesde, fechaHasta, undefined, clienteId).subscribe({
       next: (detalles) => {
         this.detallesClienteSeleccionado.set(detalles);
@@ -456,7 +448,7 @@ export class DashboardProforma implements OnInit {
     });
   }
 
-  // Tab 6: Detalles Ventas
+  // Tab 6: Detalles Ventas (sin cambios)
   protected cargarDetallesVentas(): void {
     const { fechaDesde, fechaHasta, tipoCliente } = this.detallesVentasForm.value;
 
@@ -481,29 +473,30 @@ export class DashboardProforma implements OnInit {
     this.cargarDashboard();
   }
 
+  // MÉTODOS CORREGIDOS PARA EXPANSIÓN (clave del fix)
   protected onRowExpand(event: any): void {
     const detalle = event.data as DetalleVenta;
     console.log('Expandiendo orden:', detalle.idOrden);
+
+    // FIX: Actualizar signal ANTES del subscribe para expansión inmediata en v21
+    this.expandedRows.update(rows => ({
+      ...rows,
+      [detalle.idOrden]: true
+    }));
 
     this.productosOrdenExpandida.set([]);
     this.loadingOrdenProductos.set(true);
 
     this.ordenService.obtenerPorId(detalle.idOrden).subscribe({
       next: (ordenCompleta) => {
-        const productos: ProductoOrden[] = ordenCompleta.detalles.map(detalle => ({
-          nombreProducto: `Producto #${detalle.idProducto}`,
-          cantidad: detalle.cantidad,
-          precioUnitario: detalle.precioUnitario,
-          subtotal: detalle.subtotal
+        const productos: ProductoOrden[] = ordenCompleta.detalles.map(d => ({
+          nombreProducto:`Producto #${d.idProducto}`, // FIX: Usa nombre si existe
+          cantidad: d.cantidad,
+          precioUnitario: d.precioUnitario,
+          subtotal: d.subtotal
         }));
         this.productosOrdenExpandida.set(productos);
         this.loadingOrdenProductos.set(false);
-
-        // Actualizar expandedRows como signal
-        this.expandedRows.update(rows => ({
-          ...rows,
-          [detalle.idOrden]: true
-        }));
       },
       error: (err) => {
         console.error('Error al cargar productos de la orden:', err);
@@ -520,5 +513,18 @@ export class DashboardProforma implements OnInit {
       delete newRows[detalle.idOrden];
       return newRows;
     });
+  }
+
+  // BONUS: Métodos para botones Expand/Collapse (opcionales)
+  protected expandAll(): void {
+    const allExpanded = this.detallesClienteSeleccionado().reduce((acc, detalle) => {
+      acc[detalle.idOrden] = true;
+      return acc;
+    }, {} as { [key: string]: boolean });
+    this.expandedRows.set(allExpanded);
+  }
+
+  protected collapseAll(): void {
+    this.expandedRows.set({});
   }
 }

@@ -95,14 +95,14 @@
             <div class="col-12">
               <p-card header="Top Productos">
                 <p-table [value]="dashboardData()!.topProductos">
-                  <ng-template #header>
+                  <ng-template pTemplate="header">  <!-- CAMBIO: pTemplate -->
                     <tr>
                       <th>Producto</th>
                       <th>Unidades</th>
                       <th>Ingresos</th>
                     </tr>
                   </ng-template>
-                  <ng-template #body let-producto>
+                  <ng-template pTemplate="body" let-producto>  <!-- CAMBIO: pTemplate -->
                     <tr>
                       <td>{{ producto.producto }}</td>
                       <td>{{ producto.unidades }}</td>
@@ -167,7 +167,7 @@
                        class="mb-4"/>
 
               <p-table [value]="comparacionData()!.meses">
-                <ng-template #header>
+                <ng-template pTemplate="header">
                   <tr>
                     <th>Mes</th>
                     <th>Cantidad</th>
@@ -175,7 +175,7 @@
                     <th>Precio Promedio</th>
                   </tr>
                 </ng-template>
-                <ng-template #body let-mes>
+                <ng-template pTemplate="body" let-mes>
                   <tr>
                     <td>{{ mes.mes }}</td>
                     <td>{{ mes.cantidad }}</td>
@@ -212,14 +212,14 @@
                        class="mb-4"/>
 
               <p-table [value]="productosMes()">
-                <ng-template #header>
+                <ng-template pTemplate="header">
                   <tr>
                     <th>Producto</th>
                     <th>Unidades</th>
                     <th>Venta Total</th>
                   </tr>
                 </ng-template>
-                <ng-template #body let-producto>
+                <ng-template pTemplate="body" let-producto>
                   <tr>
                     <td>{{ producto.producto }}</td>
                     <td>{{ producto.unidades }}</td>
@@ -271,8 +271,16 @@
             <div class="mt-4">
               <h4 class="text-lg font-bold mb-3">Detalle de Compras - {{
                   buscarClientesForm.get('clienteId')?.value
-                }}
-              </h4>
+                }}</h4>
+
+              <!-- BONUS: Botones Expand/Collapse -->
+              <div class="flex justify-end gap-2 mb-3">
+                <p-button label="Expandir todas" icon="pi pi-plus" (onClick)="expandAll()"
+                          severity="secondary" text/>
+                <p-button label="Colapsar todas" icon="pi pi-minus" (onClick)="collapseAll()"
+                          severity="secondary" text/>
+              </div>
+
               <p-table
                 [value]="detallesClienteSeleccionado()"
                 [tableStyle]="{'min-width': '50rem'}"
@@ -280,7 +288,8 @@
                 [expandedRowKeys]="expandedRows()"
                 (onRowExpand)="onRowExpand($event)"
                 (onRowCollapse)="onRowCollapse($event)">
-                <ng-template #header>
+
+                <ng-template pTemplate="header">  <!-- CAMBIO: pTemplate -->
                   <tr>
                     <th style="width: 3rem"></th>
                     <th>Fecha</th>
@@ -288,19 +297,27 @@
                     <th>Total</th>
                   </tr>
                 </ng-template>
-                <ng-template #body let-detalle let-expanded="expanded">
+
+                <ng-template pTemplate="body" let-detalle let-expanded="expanded">
+                  <!-- CAMBIO: pTemplate -->
                   <tr>
                     <td>
-                      <p-button type="button" [pRowToggler]="detalle" [text]="true" [rounded]="true"
-                                [plain]="true"
-                                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"/>
+                      <!-- FIX: Button simplificado como en doc oficial v21 - sin [pRowToggler]="detalle" -->
+                      <p-button
+                        type="button"
+                        pRipple
+                        pRowToggler
+                        [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                        class="p-button-text p-button-rounded p-button-plain"/>
                     </td>
                     <td>{{ detalle.fecha | date:'dd/MM/yyyy' }}</td>
                     <td>{{ detalle.numProductos }}</td>
                     <td>{{ detalle.total | currency }}</td>
                   </tr>
                 </ng-template>
-                <ng-template #rowexpansion let-detalle>
+
+                <!-- CAMBIO: #rowexpansion → pTemplate="rowexpansion" -->
+                <ng-template pTemplate="rowexpansion" let-detalle>
                   <tr>
                     <td colspan="4">
                       <div class="p-3">
@@ -311,7 +328,7 @@
                         } @else if (productosOrdenExpandida().length > 0) {
                           <p-table [value]="productosOrdenExpandida()"
                                    [tableStyle]="{'min-width': '40rem'}">
-                            <ng-template #header>
+                            <ng-template pTemplate="header">
                               <tr>
                                 <th>Producto</th>
                                 <th>Cantidad</th>
@@ -319,7 +336,7 @@
                                 <th>Subtotal</th>
                               </tr>
                             </ng-template>
-                            <ng-template #body let-producto>
+                            <ng-template pTemplate="body" let-producto>
                               <tr>
                                 <td>{{ producto.nombreProducto }}</td>
                                 <td>{{ producto.cantidad }}</td>
@@ -354,7 +371,7 @@
 
           @if (productosResultados().length > 0) {
             <p-table [value]="productosResultados()" class="mt-4">
-              <ng-template #header>
+              <ng-template pTemplate="header">
                 <tr>
                   <th>Nombre</th>
                   <th>Unidades Vendidas</th>
@@ -362,7 +379,7 @@
                   <th>Precio Promedio</th>
                 </tr>
               </ng-template>
-              <ng-template #body let-producto>
+              <ng-template pTemplate="body" let-producto>
                 <tr>
                   <td>{{ producto.nombre }}</td>
                   <td>{{ producto.unidadesVendidas }}</td>
@@ -406,7 +423,7 @@
 
           @if (detallesVentas().length > 0) {
             <p-table [value]="detallesVentas()" class="mt-4" [paginator]="true" [rows]="10">
-              <ng-template #header>
+              <ng-template pTemplate="header">
                 <tr>
                   <th>Fecha</th>
                   <th>Cliente</th>
@@ -415,7 +432,7 @@
                   <th>Total</th>
                 </tr>
               </ng-template>
-              <ng-template #body let-detalle>
+              <ng-template pTemplate="body" let-detalle>
                 <tr>
                   <td>{{ detalle.fecha }}</td>
                   <td>{{ detalle.cliente }}</td>
