@@ -136,7 +136,7 @@ export class FormCliente implements OnInit {
       barrio: cliente.barrio,
       comuna: cliente.comuna,
       tipoNegocio: cliente.tipoNegocio,
-      idRuta: cliente.ruta?.idRuta,
+      idRuta: cliente.idRuta,
       tipoTarifa: cliente.tipoTarifa,
       horarioEntrega: cliente.horarioEntrega,
       estado: cliente.estado

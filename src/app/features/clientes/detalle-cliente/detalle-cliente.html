@@ -80,16 +80,16 @@
           <span class="label">Horario de Entrega:</span>
           <span class="value">{{ cli.horarioEntrega || '-' }}</span>
         </div>
-        @if (cli.ruta) {
+        @if (cli.nombreRuta) {
         <div class="info-item">
           <span class="label">Ruta Asignada:</span>
-          <p-tag [value]="cli.ruta.nombre" severity="info" />
+          <p-tag [value]="cli.nombreRuta" severity="info" />
         </div>
         }
-        @if (cli.conductor) {
+        @if (cli.nombreConductor) {
         <div class="info-item">
           <span class="label">Conductor Asignado:</span>
-          <span class="value">{{ cli.conductor.nombre }}</span>
+          <span class="value">{{ cli.nombreConductor }}</span>
         </div>
         }
       </div>

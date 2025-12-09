@@ -39,8 +39,8 @@
           <td>{{ cliente.telefono || '-' }}</td>
           <td>{{ cliente.barrio || '-' }}</td>
           <td>
-            @if (cliente.ruta) {
-            <p-tag [value]="cliente.ruta" severity="info" />
+            @if (cliente.nombreRuta) {
+            <p-tag [value]="cliente.nombreRuta" severity="info" />
             } @else {
             <span class="sin-ruta">Sin asignar</span>
             }

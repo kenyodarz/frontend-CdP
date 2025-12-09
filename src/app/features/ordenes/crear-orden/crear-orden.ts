@@ -103,7 +103,7 @@ export class CrearOrden implements OnInit {
           nombre: c.nombre,
           telefono: c.telefono,
           barrio: c.barrio,
-          ruta: c.ruta?.nombre,
+          ruta: c.nombreRuta,
           tipoTarifa: c.tipoTarifa,
           estado: c.estado
         }));
