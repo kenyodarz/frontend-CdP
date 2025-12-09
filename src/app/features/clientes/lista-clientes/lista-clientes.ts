@@ -128,6 +128,29 @@ export class ListaClientes implements OnInit {
     });
   }
 
+  protected activarCliente(cliente: Cliente): void {
+    this.confirmationService.confirm({
+      header: 'Activar Cliente',
+      message: `¿Estás seguro de que deseas activar el cliente "${cliente.nombre}"?`,
+      icon: 'pi pi-check-circle',
+      acceptLabel: 'Activar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-success',
+      accept: () => {
+        if (cliente.idCliente) {
+          this.clienteService.activar(cliente.idCliente).subscribe({
+            next: () => {
+              this.cargarClientes();
+            },
+            error: (err) => {
+              console.error('Error al activar cliente:', err);
+            }
+          });
+        }
+      }
+    });
+  }
+
   protected getTarifaLabel(tipoTarifa: string): string {
     const labels: Record<string, string> = {
       'PRECIO_0D': 'Normal',

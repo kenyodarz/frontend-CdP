@@ -63,4 +63,8 @@ export class ClienteService {
   desactivar(id: number): Observable<Cliente> {
     return this.http.patch<Cliente>(`${this.apiUrl}/${id}/desactivar`, {});
   }
+
+  activar(id: number): Observable<Cliente> {
+    return this.http.patch<Cliente>(`${this.apiUrl}/${id}/activar`, {});
+  }
 }

@@ -115,6 +115,16 @@
           }
         </div>
 
+        <!-- Ruta -->
+        <div class="field">
+          <p-floatLabel>
+            <p-select [options]="rutas()" formControlName="idRuta" optionLabel="label" optionValue="value"
+              inputId="idRuta" [style]="{'width':'100%'}" [showClear]="true" placeholder="Sin asignar" />
+            <label for="idRuta">Ruta</label>
+          </p-floatLabel>
+          <small class="hint">Opcional: Asignar ruta de entrega</small>
+        </div>
+
         <!-- Horario de Entrega -->
         <div class="field">
           <p-floatLabel>

@@ -10,6 +10,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { MessageService } from 'primeng/api';
 
 import { ClienteService } from '../../../core/services/cliente.service';
+import { RutaService } from '../../../core/services/ruta.service';
 import { Cliente } from '../../../core/models/cliente/cliente';
 import { CrearClienteDTO } from '../../../core/models/cliente/crearClienteDTO';
 import { Loading } from '../../../shared/components/loading/loading';
@@ -35,6 +36,7 @@ import { ErrorMessage } from '../../../shared/components/error-message/error-mes
 export class FormCliente implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly clienteService = inject(ClienteService);
+  private readonly rutaService = inject(RutaService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly messageService = inject(MessageService);
@@ -43,6 +45,7 @@ export class FormCliente implements OnInit {
   protected readonly error = signal<string | null>(null);
   protected readonly isEditMode = signal(false);
   protected readonly clienteId = signal<number | null>(null);
+  protected readonly rutas = signal<any[]>([]);
 
   protected clienteForm!: FormGroup;
 
@@ -63,6 +66,7 @@ export class FormCliente implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.cargarRutas();
     this.checkEditMode();
   }
 
@@ -77,8 +81,20 @@ export class FormCliente implements OnInit {
       barrio: [''],
       comuna: [''],
       tipoNegocio: [''],
+      idRuta: [null],
       tipoTarifa: ['PRECIO_0D', Validators.required],
       horarioEntrega: ['']
+    });
+  }
+
+  private cargarRutas(): void {
+    this.rutaService.obtenerTodas().subscribe({
+      next: (rutas) => {
+        this.rutas.set(rutas.map(r => ({ value: r.idRuta, label: r.nombre })));
+      },
+      error: (err) => {
+        console.error('Error al cargar rutas:', err);
+      }
     });
   }
 
@@ -119,6 +135,7 @@ export class FormCliente implements OnInit {
       barrio: cliente.barrio,
       comuna: cliente.comuna,
       tipoNegocio: cliente.tipoNegocio,
+      idRuta: cliente.ruta?.idRuta,
       tipoTarifa: cliente.tipoTarifa,
       horarioEntrega: cliente.horarioEntrega
     });
