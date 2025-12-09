@@ -74,7 +74,7 @@ export class ListaProductos implements OnInit {
     this.error.set(null);
 
     // Usar paginación del servidor
-    this.productoService.obtenerTodos(this.pageIndex(), this.pageSize()).subscribe({
+    this.productoService.listarTodos(this.pageIndex(), this.pageSize()).subscribe({
       next: (page) => {
         this.productosPage.set(page);
         this.loading.set(false);

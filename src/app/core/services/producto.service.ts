@@ -15,6 +15,14 @@ export class ProductoService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/productos`;
 
+
+  listarTodos(page: number = 0, size: number = 10): Observable<PageResponse<Producto>> {
+    const params = new HttpParams()
+    .set('page', page.toString())
+    .set('size', size.toString());
+    return this.http.get<PageResponse<Producto>>(`${this.apiUrl}/all`, { params });
+  }
+
   /**
    * Obtiene todos los productos activos de forma paginada.
    * @param page Número de página (0-based, default: 0)
