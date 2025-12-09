@@ -14,9 +14,10 @@ import { MenuItem } from 'primeng/api';
     OverlayBadgeModule
   ],
   template: `
-    <div class="navbar">
-      <span class="app-title">Sistema de Inventario</span>
-      <span class="spacer"></span>
+    <div class="navbar flex align-items-center gap-3 px-4 sticky top-0 z-5 shadow-2" style="height: 64px; background-color: #5D1F1F;">
+      <img src="assets/img/Logo-castipan.png" alt="Castillo del Pan" class="navbar-logo" style="height: 48px; width: auto;" />
+      <span class="text-lg font-medium text-white">Sistema de Inventario</span>
+      <span class="flex-1"></span>
       
       <p-overlaybadge [value]="notificationCount().toString()" severity="danger">
         <p-button 
@@ -31,6 +32,7 @@ import { MenuItem } from 'primeng/api';
         #notificationsMenu 
         [model]="notificationItems" 
         [popup]="true"
+        styleClass="navbar-menu"
         appendTo="body" />
 
       <p-button 
@@ -44,33 +46,11 @@ import { MenuItem } from 'primeng/api';
         #userMenu 
         [model]="userMenuItems" 
         [popup]="true"
+        styleClass="navbar-menu"
         appendTo="body" />
     </div>
   `,
   styles: [`
-    .navbar {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background-color: #1e40af;
-      color: white;
-      padding: 0 1.5rem;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .app-title {
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    .spacer {
-      flex: 1;
-    }
-
     :host ::ng-deep {
       .navbar-button {
         color: white !important;
@@ -93,6 +73,21 @@ import { MenuItem } from 'primeng/api';
         min-width: 1.25rem;
         height: 1.25rem;
         line-height: 1.25rem;
+      }
+
+      /* Fix menu positioning to open to the left */
+      .navbar-menu.p-menu {
+        transform: translateX(-100%) !important;
+        margin-left: 0 !important;
+        min-width: 250px;
+        max-width: 300px;
+      }
+
+      /* Ensure menu doesn't overflow screen */
+      .navbar-menu.p-menu .p-menuitem-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
   `]

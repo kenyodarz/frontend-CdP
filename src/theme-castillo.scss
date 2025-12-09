@@ -1,0 +1,235 @@
+/**
+ * Castillo del Pan - Custom PrimeNG Theme
+ * Based on PrimeNG Styled Mode
+ * Colors inspired by castillodelpan.com
+ */
+
+:root {
+  /* Primary Colors - Burgundy/Maroon from Castillo del Pan */
+  --p-primary-50: #fdf2f2;
+  --p-primary-100: #fde8e8;
+  --p-primary-200: #fbd5d5;
+  --p-primary-300: #f8b4b4;
+  --p-primary-400: #f98080;
+  --p-primary-500: #ef4444;
+  --p-primary-600: #8B1E1E;
+  --p-primary-700: #5D1F1F;
+  --p-primary-800: #4A1919;
+  --p-primary-900: #3D1414;
+  --p-primary-950: #1F0A0A;
+
+  /* Surface Colors - Warm beige/cream tones */
+  --p-surface-0: #ffffff;
+  --p-surface-50: #fafaf9;
+  --p-surface-100: #f5f5f4;
+  --p-surface-200: #e7e5e4;
+  --p-surface-300: #d6d3d1;
+  --p-surface-400: #a8a29e;
+  --p-surface-500: #78716c;
+  --p-surface-600: #57534e;
+  --p-surface-700: #44403c;
+  --p-surface-800: #292524;
+  --p-surface-900: #1c1917;
+  --p-surface-950: #0c0a09;
+
+  /* Content Colors */
+  --p-content-border-radius: 8px;
+  
+  /* Text Colors */
+  --p-text-color: #292524;
+  --p-text-color-secondary: #57534e;
+  --p-text-muted-color: #78716c;
+  
+  /* Background */
+  --p-surface-ground: #fafaf9;
+  --p-surface-section: #ffffff;
+  --p-surface-card: #ffffff;
+  --p-surface-overlay: #ffffff;
+  --p-surface-border: #e7e5e4;
+  --p-surface-hover: #f5f5f4;
+  
+  /* Component Specific */
+  --p-highlight-bg: #5D1F1F;
+  --p-highlight-text-color: #ffffff;
+  --p-focus-ring-color: #8B1E1E;
+  
+  /* Success, Warning, Danger, Info - Adjusted for bakery theme */
+  --p-green-50: #f0fdf4;
+  --p-green-500: #22c55e;
+  --p-green-600: #16a34a;
+  --p-green-700: #15803d;
+  
+  --p-yellow-50: #fefce8;
+  --p-yellow-500: #eab308;
+  --p-yellow-600: #ca8a04;
+  --p-yellow-700: #a16207;
+  
+  --p-red-50: #fef2f2;
+  --p-red-500: #ef4444;
+  --p-red-600: #dc2626;
+  --p-red-700: #b91c1c;
+  
+  --p-blue-50: #eff6ff;
+  --p-blue-500: #3b82f6;
+  --p-blue-600: #2563eb;
+  --p-blue-700: #1d4ed8;
+}
+
+/* Override PrimeNG component colors */
+.p-component {
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+/* Buttons */
+.p-button {
+  background: var(--p-primary-700);
+  border-color: var(--p-primary-700);
+  
+  &:hover {
+    background: var(--p-primary-600);
+    border-color: var(--p-primary-600);
+  }
+  
+  &:active {
+    background: var(--p-primary-800);
+    border-color: var(--p-primary-800);
+  }
+}
+
+.p-button-secondary {
+  background: var(--p-surface-500);
+  border-color: var(--p-surface-500);
+}
+
+/* Menu & Navigation */
+.p-menubar {
+  background: var(--p-primary-700);
+  border-color: var(--p-primary-800);
+  
+  .p-menuitem-link {
+    color: #ffffff;
+    
+    &:hover {
+      background: var(--p-primary-600);
+    }
+  }
+}
+
+.p-panelmenu {
+  .p-panelmenu-header-content {
+    background: var(--p-surface-50);
+    
+    &:hover {
+      background: var(--p-surface-100);
+    }
+  }
+  
+  .p-panelmenu-content {
+    background: var(--p-surface-0);
+  }
+}
+
+/* Cards */
+.p-card {
+  background: var(--p-surface-card);
+  box-shadow: 0 2px 8px rgba(93, 31, 31, 0.08);
+  border-radius: 12px;
+}
+
+/* Tables */
+.p-datatable {
+  .p-datatable-thead > tr > th {
+    background: var(--p-surface-100);
+    color: var(--p-text-color);
+    border-color: var(--p-surface-border);
+  }
+  
+  .p-datatable-tbody > tr {
+    &:hover {
+      background: var(--p-surface-50);
+    }
+    
+    &.p-highlight {
+      background: #fdf2f2;
+      color: var(--p-primary-700);
+    }
+  }
+}
+
+/* Input Fields */
+.p-inputtext {
+  border-color: var(--p-surface-300);
+  
+  &:enabled:focus {
+    border-color: var(--p-primary-600);
+    box-shadow: 0 0 0 0.2rem rgba(139, 30, 30, 0.2);
+  }
+}
+
+/* Dropdown */
+.p-dropdown {
+  border-color: var(--p-surface-300);
+  
+  &:not(.p-disabled):hover {
+    border-color: var(--p-primary-600);
+  }
+  
+  &:not(.p-disabled).p-focus {
+    border-color: var(--p-primary-600);
+    box-shadow: 0 0 0 0.2rem rgba(139, 30, 30, 0.2);
+  }
+}
+
+/* Toast/Messages */
+.p-toast {
+  .p-toast-message {
+    &.p-toast-message-success {
+      background: var(--p-green-50);
+      border-color: var(--p-green-500);
+      color: var(--p-green-700);
+    }
+    
+    &.p-toast-message-error {
+      background: var(--p-red-50);
+      border-color: var(--p-red-500);
+      color: var(--p-red-700);
+    }
+    
+    &.p-toast-message-warn {
+      background: var(--p-yellow-50);
+      border-color: var(--p-yellow-500);
+      color: var(--p-yellow-700);
+    }
+    
+    &.p-toast-message-info {
+      background: var(--p-blue-50);
+      border-color: var(--p-blue-500);
+      color: var(--p-blue-700);
+    }
+  }
+}
+
+/* Badge */
+.p-badge {
+  &.p-badge-danger {
+    background: var(--p-red-600);
+  }
+  
+  &.p-badge-success {
+    background: var(--p-green-600);
+  }
+  
+  &.p-badge-warning {
+    background: var(--p-yellow-600);
+  }
+  
+  &.p-badge-info {
+    background: var(--p-blue-600);
+  }
+}
+
+/* Sidebar */
+.p-sidebar {
+  background: var(--p-surface-0);
+  border-color: var(--p-surface-border);
+}
