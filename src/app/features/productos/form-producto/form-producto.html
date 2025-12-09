@@ -67,6 +67,15 @@
           }
         </div>
 
+        <!-- Estado -->
+        <div class="field">
+          <p-floatLabel>
+            <p-select [options]="estadosProducto()" optionLabel="label" optionValue="value" formControlName="estado"
+              inputId="estado" styleClass="full-width-input" />
+            <label for="estado">Estado *</label>
+          </p-floatLabel>
+        </div>
+
         <!-- URL de Imagen -->
         <div class="field full-width">
           <p-floatLabel>

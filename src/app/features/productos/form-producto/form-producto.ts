@@ -65,6 +65,12 @@ export class FormProducto implements OnInit {
     { id: 3, nombre: 'Paquete' }
   ]);
 
+  protected readonly estadosProducto = signal([
+    { label: 'Activo', value: 'ACTIVO' },
+    { label: 'Inactivo', value: 'INACTIVO' },
+    { label: 'Descontinuado', value: 'DESCONTINUADO' }
+  ]);
+
   ngOnInit(): void {
     this.initForm();
     this.checkEditMode();
@@ -85,7 +91,8 @@ export class FormProducto implements OnInit {
       imagenUrl: [''],
       precioBase: [0, [Validators.required, Validators.min(0)]],
       precioJM: [null, [Validators.min(0)]],
-      precioCR: [null, [Validators.min(0)]]
+      precioCR: [null, [Validators.min(0)]],
+      estado: ['ACTIVO', Validators.required]
     });
   }
 
@@ -130,7 +137,8 @@ export class FormProducto implements OnInit {
       imagenUrl: producto.imagenUrl,
       precioBase: producto.precioBase,
       precioJM: producto.precios['PRECIO_JM'] || null,
-      precioCR: producto.precios['PRECIO_CR'] || null
+      precioCR: producto.precios['PRECIO_CR'] || null,
+      estado: producto.estado
     });
   }
 
@@ -141,7 +149,36 @@ export class FormProducto implements OnInit {
       return;
     }
 
-    const productoDTO: CrearProductoDTO = this.productoForm.value;
+    const formValue = this.productoForm.value;
+
+    // Transform to backend format
+    const productoDTO: any = {
+      nombre: formValue.nombre,
+      descripcion: formValue.descripcion,
+      idCategoria: formValue.idCategoria,
+      idUnidad: formValue.idUnidad,
+      stockMinimo: formValue.stockMinimo,
+      stockMaximo: formValue.stockMaximo,
+      requiereLote: formValue.requiereLote,
+      diasVidaUtil: formValue.diasVidaUtil,
+      imagenUrl: formValue.imagenUrl,
+      estado: formValue.estado,
+      precioBase: formValue.precioBase,
+      preciosEspeciales: {}
+    };
+
+    // Add special prices if provided
+    if (formValue.precioJM != null) {
+      productoDTO.preciosEspeciales['PRECIO_JM'] = formValue.precioJM;
+    }
+    if (formValue.precioCR != null) {
+      productoDTO.preciosEspeciales['PRECIO_CR'] = formValue.precioCR;
+    }
+
+    // Only include codigo for creation
+    if (!this.isEditMode()) {
+      productoDTO.codigo = formValue.codigo;
+    }
 
     if (this.isEditMode() && this.productoId()) {
       this.actualizarProducto(this.productoId()!, productoDTO);
