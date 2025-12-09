@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit, inject } from '@angular/core';
 import { Button } from 'primeng/button';
 import { Popover } from 'primeng/popover';
 import { Badge } from 'primeng/badge';
 import { OverlayBadge } from 'primeng/overlaybadge';
+import { ReporteService } from '../../core/services/reporte.service';
 
 interface Notification {
   icon: string;
@@ -38,7 +39,7 @@ interface Notification {
             <span class="font-semibold text-900">Notificaciones</span>
           </div>
           <div class="notification-list">
-            @for (notif of notifications; track notif.text) {
+            @for (notif of notifications(); track notif.text) {
               <div
                 class="notification-item flex align-items-start gap-3 p-3 cursor-pointer hover:surface-hover"
                 (click)="onNotificationClick(notif); notificationsPopover.hide()">
@@ -156,21 +157,44 @@ interface Notification {
     }
   `]
 })
-export class Navbar {
-  protected readonly notificationCount = signal(8);
+export class Navbar implements OnInit {
+  private readonly reporteService = inject(ReporteService);
 
-  protected readonly notifications: Notification[] = [
-    {
-      icon: 'pi pi-box',
-      text: '5 productos con stock bajo',
-      severity: 'warning'
-    },
-    {
-      icon: 'pi pi-exclamation-triangle',
-      text: '3 lotes próximos a vencer',
-      severity: 'danger'
-    }
-  ];
+  protected readonly notificationCount = signal(0);
+
+  protected readonly notifications = signal<Notification[]>([]);
+
+  ngOnInit(): void {
+    this.cargarNotificaciones();
+  }
+
+  private cargarNotificaciones(): void {
+    this.reporteService.obtenerDashboard().subscribe({
+      next: (dashboard) => {
+        const notifs: Notification[] = [];
+
+        // Notificación de productos con stock bajo
+        if (dashboard.productosStockBajo > 0) {
+          notifs.push({
+            icon: 'pi pi-box',
+            text: `${dashboard.productosStockBajo} producto${dashboard.productosStockBajo > 1 ? 's' : ''} con stock bajo`,
+            severity: 'warning'
+          });
+        }
+
+        // TODO: Agregar notificación de lotes próximos a vencer cuando esté disponible en el backend
+
+        this.notifications.set(notifs);
+        this.notificationCount.set(notifs.length);
+      },
+      error: (err) => {
+        console.error('Error al cargar notificaciones:', err);
+        // Mantener notificaciones vacías en caso de error
+        this.notifications.set([]);
+        this.notificationCount.set(0);
+      }
+    });
+  }
 
   protected onNotificationClick(notification: Notification): void {
     console.log('Notificación clickeada:', notification);
