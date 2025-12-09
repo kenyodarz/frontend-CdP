@@ -83,7 +83,8 @@ export class FormCliente implements OnInit {
       tipoNegocio: [''],
       idRuta: [null],
       tipoTarifa: ['PRECIO_0D', Validators.required],
-      horarioEntrega: ['']
+      horarioEntrega: [''],
+      estado: ['ACTIVO']
     });
   }
 
@@ -137,7 +138,8 @@ export class FormCliente implements OnInit {
       tipoNegocio: cliente.tipoNegocio,
       idRuta: cliente.ruta?.idRuta,
       tipoTarifa: cliente.tipoTarifa,
-      horarioEntrega: cliente.horarioEntrega
+      horarioEntrega: cliente.horarioEntrega,
+      estado: cliente.estado
     });
   }
 
