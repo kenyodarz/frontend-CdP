@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.castillodelpan.com/api'
+  apiUrl: 'https://backend-cdp-java.onrender.com/api'
 };
