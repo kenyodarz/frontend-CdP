@@ -1,22 +1,24 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { Router } from '@angular/router';
-import { TableModule } from 'primeng/table';
-import { PaginatorModule, PaginatorState } from 'primeng/paginator';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
-import { TagModule } from 'primeng/tag';
-import { TooltipModule } from 'primeng/tooltip';
-import { MenuModule } from 'primeng/menu';
-import { ConfirmationService } from 'primeng/api';
-import { FormsModule } from '@angular/forms';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
+import {Router} from '@angular/router';
+import {TableModule} from 'primeng/table';
+import {PaginatorModule, PaginatorState} from 'primeng/paginator';
+import {Subject} from 'rxjs';
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import {ButtonModule} from 'primeng/button';
+import {InputTextModule} from 'primeng/inputtext';
+import {IconFieldModule} from 'primeng/iconfield';
+import {InputIconModule} from 'primeng/inputicon';
+import {TagModule} from 'primeng/tag';
+import {TooltipModule} from 'primeng/tooltip';
+import {MenuModule} from 'primeng/menu';
+import {ConfirmationService} from 'primeng/api';
+import {FormsModule} from '@angular/forms';
 
-import { ClienteService } from '../../../core/services/cliente.service';
-import { Cliente } from '../../../core/models/cliente/cliente';
-import { PageResponse } from '../../../core/models/common/page-response';
-import { Loading } from '../../../shared/components/loading/loading';
-import { ErrorMessage } from '../../../shared/components/error-message/error-message';
+import {ClienteService} from '../../../core/services/cliente.service';
+import {Cliente} from '../../../core/models/cliente/cliente';
+import {PageResponse} from '../../../core/models/common/page-response';
+import {Loading} from '../../../shared/components/loading/loading';
+import {ErrorMessage} from '../../../shared/components/error-message/error-message';
 
 @Component({
   selector: 'app-lista-clientes',
@@ -60,7 +62,20 @@ export class ListaClientes implements OnInit {
 
   protected readonly totalItems = computed(() => this.clientesPage()?.totalElements || 0);
 
+  // Search debounce
+  private readonly searchSubject = new Subject<string>();
+
   ngOnInit(): void {
+    // Configurar debounce para la búsqueda
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(term => {
+      this.searchTerm.set(term);
+      this.pageIndex.set(0);
+      this.cargarClientes();
+    });
+
     this.cargarClientes();
   }
 
@@ -68,7 +83,7 @@ export class ListaClientes implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.clienteService.obtenerTodos(this.pageIndex(), this.pageSize()).subscribe({
+    this.clienteService.obtenerTodos(this.pageIndex(), this.pageSize(), this.searchTerm()).subscribe({
       next: (page) => {
         this.clientesPage.set(page);
         this.loading.set(false);
@@ -83,8 +98,7 @@ export class ListaClientes implements OnInit {
 
   protected onSearch(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
-    this.searchTerm.set(value);
-    this.pageIndex.set(0);
+    this.searchSubject.next(value);
   }
 
   protected onPageChange(event: PaginatorState): void {

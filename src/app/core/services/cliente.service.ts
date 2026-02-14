@@ -1,11 +1,11 @@
-import { inject, Injectable } from "@angular/core";
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { environment } from "../../../environments/environment";
-import { Observable } from "rxjs";
-import { Cliente } from '../models/cliente/cliente';
-import { CrearClienteDTO } from '../models/cliente/crearClienteDTO';
-import { ClienteSimple } from '../models/cliente/clienteSimple';
-import { PageResponse } from '../models/common/page-response';
+import {inject, Injectable} from "@angular/core";
+import {HttpClient, HttpParams} from "@angular/common/http";
+import {environment} from "../../../environments/environment";
+import {Observable} from "rxjs";
+import {Cliente} from '../models/cliente/cliente';
+import {CrearClienteDTO} from '../models/cliente/crearClienteDTO';
+import {ClienteSimple} from '../models/cliente/clienteSimple';
+import {PageResponse} from '../models/common/page-response';
 
 @Injectable({
   providedIn: 'root'
@@ -18,12 +18,18 @@ export class ClienteService {
    * Obtiene todos los clientes activos de forma paginada.
    * @param page Número de página (0-based, default: 0)
    * @param size Tamaño de página (default: 10)
+   * @param term Término de búsqueda opcional
    * @returns Observable con la respuesta paginada de clientes
    */
-  obtenerTodos(page: number = 0, size: number = 10): Observable<PageResponse<Cliente>> {
-    const params = new HttpParams()
+  obtenerTodos(page: number = 0, size: number = 10, term?: string): Observable<PageResponse<Cliente>> {
+    let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
+
+    if (term) {
+      params = params.set('term', term);
+    }
+
     return this.http.get<PageResponse<Cliente>>(this.apiUrl, { params });
   }
 
