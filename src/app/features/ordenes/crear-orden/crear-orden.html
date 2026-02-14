@@ -36,7 +36,7 @@
       <div class="field producto-field">
         <p-floatLabel>
           <p-select [(ngModel)]="selectedProducto" [options]="productos()" optionLabel="nombre" [filter]="true"
-            filterBy="nombre" [showClear]="true" styleClass="w-full" [ngModelOptions]="{standalone: true}"
+            filterBy="codigo" [showClear]="true" styleClass="w-full" [ngModelOptions]="{standalone: true}"
             inputId="producto" />
           <label for="producto">Buscar producto</label>
         </p-floatLabel>
