@@ -1,13 +1,13 @@
-import { inject, Injectable } from "@angular/core";
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { environment } from "../../../environments/environment";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
-import { EstadoOrden } from '../models/orden/estadoOrden';
-import { OrdenDespachoSimple } from '../models/orden/ordenDespachoSimple';
-import { OrdenDespacho } from '../models/orden/ordenDespacho';
-import { CrearOrdenDTO } from '../models/orden/crearOrdenDTO';
-import { PageResponse } from '../models/common/page-response';
+import {inject, Injectable} from "@angular/core";
+import {HttpClient, HttpParams} from "@angular/common/http";
+import {environment} from "../../../environments/environment";
+import {Observable} from "rxjs";
+import {map} from "rxjs/operators";
+import {EstadoOrden} from '../models/orden/estadoOrden';
+import {OrdenDespachoSimple} from '../models/orden/ordenDespachoSimple';
+import {OrdenDespacho} from '../models/orden/ordenDespacho';
+import {CrearOrdenDTO} from '../models/orden/crearOrdenDTO';
+import {PageResponse} from '../models/common/page-response';
 
 interface ResumenOrdenes {
   totalOrdenes: number;
@@ -33,10 +33,12 @@ export class OrdenService {
    * @param estado Estado opcional para filtrar
    * @returns Observable con la respuesta paginada de órdenes
    */
-  obtenerTodas(page: number = 0, size: number = 10, fecha?: string, estado?: EstadoOrden): Observable<PageResponse<OrdenDespachoSimple>> {
+  obtenerTodas(page: number = 0, size: number = 10, term?: string, fecha?: string, estado?: EstadoOrden): Observable<PageResponse<OrdenDespachoSimple>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
+
+    if (term) params = params.set('term', term);
     if (fecha) params = params.set('fecha', fecha);
     if (estado) params = params.set('estado', estado);
 
@@ -45,7 +47,7 @@ export class OrdenService {
         const content = response.content.map((item: any) => ({
           ...item,
           cantidadProductos: item.detalles ? item.detalles.length : 0,
-          clienteNombre: item.clienteNombre || `Cliente #${item.idCliente}`
+          clienteNombre: item.nombreCliente || `Cliente #${item.idCliente}`
         }));
         return {
           ...response,

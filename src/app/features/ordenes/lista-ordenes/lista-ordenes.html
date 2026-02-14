@@ -4,20 +4,26 @@
     <p-button label="Nueva Orden" icon="pi pi-plus" (onClick)="nuevaOrden()" />
   </div>
 
-  @if (loading()) {
-  <app-loading message="Cargando órdenes..." />
-  } @else if (error()) {
-  <app-error-message [title]="'Error al cargar órdenes'" [message]="error()!" (retry)="onRetry()" />
-  } @else {
-  <div class="table-container">
-    <div class="filter-container">
-      <p-iconField iconPosition="left">
-        <p-inputIcon styleClass="pi pi-search" />
-        <input type="text" pInputText placeholder="Número de orden o cliente" (input)="onSearch($event)"
-          [value]="searchTerm()" />
-      </p-iconField>
-    </div>
+  <p-toast/>
+  <p-confirmDialog [style]="{width: '50vw'}" [baseZIndex]="10000"
+                   rejectButtonStyleClass="p-button-text"/>
 
+  <div class="filter-container">
+    <p-iconField iconPosition="left">
+      <p-inputIcon styleClass="pi pi-search"/>
+      <input type="text" pInputText placeholder="Número de orden o cliente"
+             (input)="onSearch($event)"
+             [value]="searchTerm()"/>
+    </p-iconField>
+  </div>
+
+  @if (loading()) {
+    <app-loading message="Cargando órdenes..."/>
+  } @else if (error()) {
+    <app-error-message [title]="'Error al cargar órdenes'" [message]="error()!"
+                       (retry)="onRetry()"/>
+  } @else {
+    <div class="table-container">
     <!-- Tabla -->
     <p-table [value]="ordenes()" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped">
       <ng-template pTemplate="header">
@@ -45,6 +51,12 @@
           </td>
           <td>
             <div class="action-buttons">
+              @if (orden.estado === 'DESPACHADA') {
+                <p-button icon="pi pi-check-circle" [rounded]="true" [text]="true"
+                          severity="success"
+                          (onClick)="marcarEntregada(orden, $event)"
+                          pTooltip="Marcar como Entregada" tooltipPosition="top"/>
+              }
               <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="info"
                 (onClick)="verDetalle(orden); $event.stopPropagation()" pTooltip="Ver Detalle" tooltipPosition="top" />
             </div>
