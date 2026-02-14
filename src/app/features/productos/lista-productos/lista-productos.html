@@ -4,18 +4,20 @@
     <p-button label="Nuevo Producto" icon="pi pi-plus" (onClick)="nuevoProducto()" />
   </div>
 
+  <div class="filter-container">
+    <p-iconField iconPosition="left">
+      <p-inputIcon styleClass="pi pi-search"/>
+      <input type="text" pInputText placeholder="Buscar..." (input)="onSearch($event)"/>
+    </p-iconField>
+  </div>
+
   @if (loading()) {
-  <app-loading message="Cargando productos..." />
+    <app-loading message="Cargando productos..."/>
   } @else if (error()) {
-  <app-error-message [title]="'Error al cargar productos'" [message]="error()!" (retry)="onRetry()" />
+    <app-error-message [title]="'Error al cargar productos'" [message]="error()!"
+                       (retry)="onRetry()"/>
   } @else {
-  <div class="table-container">
-    <div class="filter-container">
-      <p-iconField iconPosition="left">
-        <p-inputIcon styleClass="pi pi-search" />
-        <input type="text" pInputText placeholder="Buscar..." (input)="onSearch($event)" />
-      </p-iconField>
-    </div>
+    <div class="table-container">
 
     <!-- Tabla -->
     <p-table [value]="productos()" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped">

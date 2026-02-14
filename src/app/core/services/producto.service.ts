@@ -1,12 +1,12 @@
-import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
-import { ProductoSimple } from '../models/producto/productoSimple';
-import { Producto } from '../models/producto/producto';
-import { CrearProductoDTO } from '../models/producto/crearProductoDTO';
-import { PageResponse } from '../models/common/page-response';
+import {inject, Injectable} from '@angular/core';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {environment} from '../../../environments/environment';
+import {ProductoSimple} from '../models/producto/productoSimple';
+import {Producto} from '../models/producto/producto';
+import {CrearProductoDTO} from '../models/producto/crearProductoDTO';
+import {PageResponse} from '../models/common/page-response';
 
 @Injectable({
   providedIn: 'root'
@@ -16,10 +16,15 @@ export class ProductoService {
   private readonly apiUrl = `${environment.apiUrl}/productos`;
 
 
-  listarTodos(page: number = 0, size: number = 10): Observable<PageResponse<Producto>> {
-    const params = new HttpParams()
+  listarTodos(page: number = 0, size: number = 10, term?: string): Observable<PageResponse<Producto>> {
+    let params = new HttpParams()
     .set('page', page.toString())
     .set('size', size.toString());
+
+    if (term) {
+      params = params.set('term', term);
+    }
+
     return this.http.get<PageResponse<Producto>>(`${this.apiUrl}/all`, { params });
   }
 
