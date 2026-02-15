@@ -1,22 +1,23 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
-import { TagModule } from 'primeng/tag';
-import { TooltipModule } from 'primeng/tooltip';
-import { DatePipe } from '@angular/common';
+import {Component, inject, OnInit, signal} from '@angular/core';
+import {Router} from '@angular/router';
+import {TableModule} from 'primeng/table';
+import {ButtonModule} from 'primeng/button';
+import {InputTextModule} from 'primeng/inputtext';
+import {IconFieldModule} from 'primeng/iconfield';
+import {InputIconModule} from 'primeng/inputicon';
+import {TagModule} from 'primeng/tag';
+import {TooltipModule} from 'primeng/tooltip';
+import {CommonModule, DatePipe} from '@angular/common';
 
-import { InventarioService } from '../../../core/services/inventario.service';
-import { Lote } from '../../../core/models/inventario/lote';
-import { Loading } from '../../../shared/components/loading/loading';
-import { ErrorMessage } from '../../../shared/components/error-message/error-message';
+import {InventarioService} from '../../../core/services/inventario.service';
+import {Lote} from '../../../core/models/inventario/lote';
+import {Loading} from '../../../shared/components/loading/loading';
+import {ErrorMessage} from '../../../shared/components/error-message/error-message';
 
 @Component({
   selector: 'app-lotes',
   imports: [
+    CommonModule,
     TableModule,
     ButtonModule,
     InputTextModule,
@@ -69,9 +70,17 @@ export class Lotes implements OnInit {
   }
 
   protected getEstadoLote(lote: Lote): 'vencido' | 'proximo-vencer' | 'activo' | 'agotado' {
-    // Ahora solo verificamos el estado del lote
-    if (lote.estado === 'VENCIDO') return 'vencido';
     if (lote.estado === 'ANULADO') return 'agotado';
+
+    if (lote.fechaVencimiento) {
+      const fechaVencimiento = new Date(lote.fechaVencimiento);
+      const hoy = new Date();
+      if (fechaVencimiento < hoy) {
+        return 'vencido';
+      }
+    }
+
+    if (lote.estado === 'VENCIDO') return 'vencido';
     return 'activo';
   }
 

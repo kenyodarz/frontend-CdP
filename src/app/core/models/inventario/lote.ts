@@ -8,6 +8,7 @@ export interface Lote {
   fechaElaboracion: string;
   fechaVencimiento?: string;
   estado: 'ACTIVO' | 'VENCIDO' | 'ANULADO';
+  fechaUltimaSalida?: string;
   observaciones?: string;
   diasParaVencer?: number;
   estaProximoAVencer?: boolean;

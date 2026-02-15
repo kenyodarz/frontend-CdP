@@ -29,6 +29,10 @@
         <th pSortableColumn="fechaVencimiento">
           F. Vencimiento <p-sortIcon field="fechaVencimiento" />
         </th>
+        <th pSortableColumn="fechaUltimaSalida">
+          Última Salida
+          <p-sortIcon field="fechaUltimaSalida"/>
+        </th>
         <th pSortableColumn="estado">
           Estado <p-sortIcon field="estado" />
         </th>
@@ -38,17 +42,21 @@
     </ng-template>
 
     <ng-template pTemplate="body" let-lote>
-      <tr>
+      <tr [ngClass]="{'row-vencido': getEstadoLote(lote) === 'vencido'}">
         <td><strong>{{ lote.codigoLote }}</strong></td>
         <td>{{ lote.fechaElaboracion | date:'dd/MM/yyyy' }}</td>
         <td>
           @if (lote.fechaVencimiento) {
-          <div class="fecha-vencimiento">
+            <div class="fecha-vencimiento"
+                 [ngClass]="{'text-danger': getEstadoLote(lote) === 'vencido'}">
             {{ lote.fechaVencimiento | date:'dd/MM/yyyy' }}
           </div>
           } @else {
           <span class="sin-vencimiento">Sin vencimiento</span>
           }
+        </td>
+        <td>
+          {{ lote.fechaUltimaSalida ? (lote.fechaUltimaSalida | date:'dd/MM/yyyy HH:mm') : '-' }}
         </td>
         <td>
           <p-tag [value]="lote.estado" [severity]="getEstadoSeverity(getEstadoLote(lote))" />
