@@ -1,21 +1,25 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { TagModule } from 'primeng/tag';
-import { SelectModule } from 'primeng/select';
-import { DatePickerModule } from 'primeng/datepicker';
-import { InputTextModule } from 'primeng/inputtext';
-import { CardModule } from 'primeng/card';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ToastModule } from 'primeng/toast';
+import {Component, inject, OnInit, signal} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {Router} from '@angular/router';
+import {TableModule} from 'primeng/table';
+import {ButtonModule} from 'primeng/button';
+import {TagModule} from 'primeng/tag';
+import {SelectModule} from 'primeng/select';
+import {DatePickerModule} from 'primeng/datepicker';
+import {InputTextModule} from 'primeng/inputtext';
+import {CardModule} from 'primeng/card';
+import {ConfirmationService, MessageService} from 'primeng/api';
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
+import {ToastModule} from 'primeng/toast';
 
-import { DocumentoSalida } from '../../../core/models/documento-salida.model';
-import { EstadoDocumentoSalida, ESTADO_LABELS, ESTADO_SEVERITIES } from '../../../core/models/estado-documento-salida.enum';
-import { DocumentoSalidaService } from '../../../core/services/documento-salida.service';
+import {DocumentoSalida} from '../../../core/models/documento-salida.model';
+import {
+  ESTADO_LABELS,
+  ESTADO_SEVERITIES,
+  EstadoDocumentoSalida
+} from '../../../core/models/estado-documento-salida.enum';
+import {DocumentoSalidaService} from '../../../core/services/documento-salida.service';
 
 @Component({
   selector: 'app-documentos-salida',
@@ -106,6 +110,37 @@ export class DocumentosSalidaComponent implements OnInit {
 
   verDocumento(documento: DocumentoSalida): void {
     this.router.navigate(['/inventario/documentos-salida', documento.id]);
+  }
+
+  imprimirHojaRuta(documento: DocumentoSalida): void {
+    if (!documento.id) return;
+
+    this.loading.set(true);
+    this.documentoService.descargarHojaRuta(documento.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `hoja-ruta-${documento.numeroDocumento}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loading.set(false);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Descarga Exitosa',
+          detail: 'La hoja de ruta se ha descargado correctamente'
+        });
+      },
+      error: (err) => {
+        console.error('Error descargando hoja de ruta', err);
+        this.loading.set(false);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo generar la hoja de ruta'
+        });
+      }
+    });
   }
 
   formatCurrency(value: number): string {

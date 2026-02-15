@@ -1,11 +1,11 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { DocumentoSalida } from '../models/documento-salida.model';
-import { CrearDocumentoSalidaDTO } from '../models/crear-documento-salida-dto.model';
-import { EstadoDocumentoSalida } from '../models/estado-documento-salida.enum';
-import { ValidacionStockResult } from '../models/validacion-stock-result.model';
+import {inject, Injectable} from '@angular/core';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {environment} from '../../../environments/environment';
+import {DocumentoSalida} from '../models/documento-salida.model';
+import {CrearDocumentoSalidaDTO} from '../models/crear-documento-salida-dto.model';
+import {EstadoDocumentoSalida} from '../models/estado-documento-salida.enum';
+import {ValidacionStockResult} from '../models/validacion-stock-result.model';
 
 @Injectable({
   providedIn: 'root'
@@ -101,6 +101,14 @@ export class DocumentoSalidaService {
   descargarPdf(id: number): Observable<Blob> {
     const url = `${this.apiUrl}/${id}/pdf`;
     return this.http.get(url, { responseType: 'blob' });
+  }
+
+  /**
+   * Descargar Hoja de Ruta PDF
+   */
+  descargarHojaRuta(id: number): Observable<Blob> {
+    const url = `${this.apiUrl}/${id}/hoja-ruta`;
+    return this.http.get(url, {responseType: 'blob'});
   }
 
   /**
