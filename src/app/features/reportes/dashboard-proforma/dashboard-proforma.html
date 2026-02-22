@@ -1,6 +1,5 @@
 <div class="p-4">
   <p-toast />
-  <h1 class="text-3xl font-bold mb-4">Reportes</h1>
 
   @if (loading()) {
   <app-loading />
@@ -39,68 +38,72 @@
 
         @if (dashboardData()) {
         <!-- Resumen Cards -->
-        <div class="grid">
-          <div class="col-12 md:col-3">
-            <p-card>
-              <div class="text-center">
-                <div class="text-500 font-medium mb-2">Ingresos Totales</div>
-                <div class="text-900 font-bold text-xl">{{ dashboardData()!.resumen.ingresos | currency }}
-                </div>
+          <div class="grid mt-2">
+            <div class="col-12 sm:col-6 lg:col-3">
+              <p-card styleClass="h-full">
+                <div class="flex flex-column align-items-center justify-content-center h-full">
+                  <span class="text-secondary font-medium mb-2 text-center">Ingresos Totales</span>
+                  <span class="text-primary font-bold text-2xl lg:text-3xl text-center">
+                  {{ dashboardData()!.resumen.ingresos | currency }}
+                </span>
               </div>
             </p-card>
           </div>
-          <div class="col-12 md:col-3">
-            <p-card>
-              <div class="text-center">
-                <div class="text-500 font-medium mb-2">Ventas</div>
-                <div class="text-900 font-bold text-xl">{{ dashboardData()!.resumen.ventas }}
-                </div>
+            <div class="col-12 sm:col-6 lg:col-3">
+              <p-card styleClass="h-full">
+                <div class="flex flex-column align-items-center justify-content-center h-full">
+                  <span class="text-secondary font-medium mb-2 text-center">Ventas</span>
+                  <span class="text-primary font-bold text-2xl lg:text-3xl text-center">
+                  {{ dashboardData()!.resumen.ventas }}
+                </span>
               </div>
             </p-card>
           </div>
-          <div class="col-12 md:col-3">
-            <p-card>
-              <div class="text-center">
-                <div class="text-500 font-medium mb-2">Ticket Promedio</div>
-                <div class="text-900 font-bold text-xl">{{ dashboardData()!.resumen.ticketPromedio | currency }}
-                </div>
+            <div class="col-12 sm:col-6 lg:col-3">
+              <p-card styleClass="h-full">
+                <div class="flex flex-column align-items-center justify-content-center h-full">
+                  <span class="text-secondary font-medium mb-2 text-center">Ticket Promedio</span>
+                  <span class="text-primary font-bold text-2xl lg:text-3xl text-center">
+                  {{ dashboardData()!.resumen.ticketPromedio | currency }}
+                </span>
               </div>
             </p-card>
           </div>
-          <div class="col-12 md:col-3">
-            <p-card>
-              <div class="text-center">
-                <div class="text-500 font-medium mb-2">Productos Únicos</div>
-                <div class="text-900 font-bold text-xl">{{ dashboardData()!.resumen.productosUnicos }}
-                </div>
+            <div class="col-12 sm:col-6 lg:col-3">
+              <p-card styleClass="h-full">
+                <div class="flex flex-column align-items-center justify-content-center h-full">
+                  <span class="text-secondary font-medium mb-2 text-center">Productos Únicos</span>
+                  <span class="text-primary font-bold text-2xl lg:text-3xl text-center">
+                  {{ dashboardData()!.resumen.productosUnicos }}
+                </span>
               </div>
             </p-card>
           </div>
-
           <!-- Charts -->
-          <div class="col-12 md:col-8">
-            <p-card header="Ventas Mensuales">
+            <div class="col-12 lg:col-8">
+              <p-card header="Ventas Mensuales" styleClass="h-full">
               <p-chart type="line" [data]="ventasMensualesChart" [options]="chartOptions" height="300px" />
             </p-card>
           </div>
-          <div class="col-12 md:col-4">
-            <p-card header="Ventas por Tipo de Negocio">
-              <p-chart type="pie" [data]="ventasTipoClienteChart" height="300px" />
+            <div class="col-12 lg:col-4">
+              <p-card header="Ventas por Tipo de Negocio" styleClass="h-full">
+                <p-chart type="pie" [data]="ventasTipoClienteChart" [options]="pieChartOptions"
+                         height="300px"/>
             </p-card>
           </div>
 
           <!-- Top Productos Table -->
-          <div class="col-12">
+            <div class="col-12 mt-4">
             <p-card header="Top Productos">
-              <p-table [value]="dashboardData()!.topProductos">
-                <ng-template pTemplate="header"> <!-- CAMBIO: pTemplate -->
+              <p-table [value]="dashboardData()!.topProductos" [rows]="5" [paginator]="true">
+                <ng-template pTemplate="header">
                   <tr>
-                    <th>Producto</th>
-                    <th>Unidades</th>
-                    <th>Ingresos</th>
+                    <th scope="col">Producto</th>
+                    <th scope="col">Unidades</th>
+                    <th scope="col">Ingresos</th>
                   </tr>
                 </ng-template>
-                <ng-template pTemplate="body" let-producto> <!-- CAMBIO: pTemplate -->
+                <ng-template pTemplate="body" let-producto>
                   <tr>
                     <td>{{ producto.producto }}</td>
                     <td>{{ producto.unidades }}</td>
@@ -162,10 +165,10 @@
             <p-table [value]="comparacionData()!.meses">
               <ng-template pTemplate="header">
                 <tr>
-                  <th>Mes</th>
-                  <th>Cantidad</th>
-                  <th>Ingresos</th>
-                  <th>Precio Promedio</th>
+                  <th scope="col">Mes</th>
+                  <th scope="col">Cantidad</th>
+                  <th scope="col">Ingresos</th>
+                  <th scope="col">Precio Promedio</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-mes>
@@ -188,8 +191,8 @@
           <form [formGroup]="productosMesForm" class="grid">
             <div class="col-12 md:col-10">
               <p-floatlabel>
-                <p-select id="mes" formControlName="mes" [options]="mesesDisponibles()" placeholder="Seleccione un mes"
-                  styleClass="w-full" />
+                <p-select id="mes" formControlName="mes" [options]="mesesDisponibles()"
+                          styleClass="w-full"/>
                 <label for="mes">Mes</label>
               </p-floatlabel>
             </div>
@@ -205,9 +208,9 @@
             <p-table [value]="productosMes()">
               <ng-template pTemplate="header">
                 <tr>
-                  <th>Producto</th>
-                  <th>Unidades</th>
-                  <th>Venta Total</th>
+                  <th scope="col">Producto</th>
+                  <th scope="col">Unidades</th>
+                  <th scope="col">Venta Total</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-producto>
@@ -230,22 +233,25 @@
             <div class="col-12 md:col-5">
               <p-floatlabel>
                 <p-select id="cliente" formControlName="clienteId" [options]="clientesSelect()" optionLabel="nombre"
-                  optionValue="nombre" [filter]="true" filterPlaceholder="Buscar cliente..."
-                  placeholder="Seleccione un cliente" styleClass="w-full" [loading]="loadingClientes()" />
-                <!-- <label for="cliente">Cliente</label> -->
+                          optionValue="nombre" [filter]="true" filterPlaceholder="Buscar cliente..."
+                          styleClass="w-full"
+                          [loading]="loadingClientes()"/>
+                <label for="cliente">Cliente</label>
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-3">
               <p-floatlabel>
-                <p-select id="mes" formControlName="mes" [options]="mesesOptions" optionLabel="label"
-                  optionValue="value" placeholder="Todos" styleClass="w-full" />
-                <!-- <label for="mes">Mes</label> -->
+                <p-select id="mesCliente" formControlName="mes" [options]="mesesOptions"
+                          optionLabel="label"
+                          optionValue="value" styleClass="w-full"/>
+                <label for="mesCliente">Mes</label>
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-2">
               <p-floatlabel>
-                <p-select id="anio" formControlName="anio" [options]="aniosOptions()" styleClass="w-full" />
-                <!-- <label for="anio">Año</label> -->
+                <p-select id="anioCliente" formControlName="anio" [options]="aniosOptions()"
+                          styleClass="w-full"/>
+                <label for="anioCliente">Año</label>
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-2">
@@ -263,10 +269,10 @@
             <p-table [value]="detallesClienteSeleccionado()" [tableStyle]="{'min-width': '50rem'}">
               <ng-template pTemplate="header">
                 <tr>
-                  <th>Fecha</th>
-                  <th># Productos</th>
-                  <th>Total</th>
-                  <th style="width: 10rem">Acciones</th>
+                  <th scope="col">Fecha</th>
+                  <th scope="col"># Productos</th>
+                  <th scope="col">Total</th>
+                  <th scope="col" style="width: 10rem">Acciones</th>
                 </tr>
               </ng-template>
 
@@ -298,10 +304,10 @@
             <p-table [value]="productosOrdenExpandida()">
               <ng-template pTemplate="header">
                 <tr>
-                  <th>Producto</th>
-                  <th>Cantidad</th>
-                  <th>Precio Unitario</th>
-                  <th>Subtotal</th>
+                  <th scope="col">Producto</th>
+                  <th scope="col">Cantidad</th>
+                  <th scope="col">Precio Unitario</th>
+                  <th scope="col">Subtotal</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-producto>
@@ -335,7 +341,7 @@
             <div class="col-12 md:col-3">
               <p-floatlabel>
                 <p-select id="mesProducto" formControlName="mes" [options]="mesesOptions" optionLabel="label"
-                  optionValue="value" placeholder="Todos" styleClass="w-full" />
+                          optionValue="value" styleClass="w-full"/>
                 <label for="mesProducto">Mes</label>
               </p-floatlabel>
             </div>
@@ -355,10 +361,10 @@
           <p-table [value]="productosResultados()" class="mt-4">
             <ng-template pTemplate="header">
               <tr>
-                <th>Nombre</th>
-                <th>Unidades Vendidas</th>
-                <th>Ingresos</th>
-                <th>Precio Promedio</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Unidades Vendidas</th>
+                <th scope="col">Ingresos</th>
+                <th scope="col">Precio Promedio</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-producto>
@@ -381,14 +387,14 @@
             <div class="col-12 md:col-3">
               <p-floatlabel>
                 <p-select id="mesTipoCliente" formControlName="mes" [options]="mesesOptions"
-                  placeholder="Seleccione un mes" styleClass="w-full" />
+                          styleClass="w-full"/>
                 <label for="mesTipoCliente">Mes</label>
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-3">
               <p-floatlabel>
                 <p-select id="anioTipoCliente" formControlName="anio" [options]="aniosOptions()"
-                  placeholder="Seleccione un año" styleClass="w-full" />
+                          styleClass="w-full"/>
                 <label for="anioTipoCliente">Año</label>
               </p-floatlabel>
             </div>
@@ -411,9 +417,9 @@
               <p-table [value]="ventasPorTipoCliente()" [tableStyle]="{'min-width': '30rem'}">
                 <ng-template pTemplate="header">
                   <tr>
-                    <th>Tipo de Cliente</th>
-                    <th>Ventas</th>
-                    <th>Ingresos</th>
+                    <th scope="col">Tipo de Cliente</th>
+                    <th scope="col">Ventas</th>
+                    <th scope="col">Ingresos</th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-venta>
@@ -455,12 +461,12 @@
           <p-table [value]="detallesVentas()" class="mt-4" [paginator]="true" [rows]="10">
             <ng-template pTemplate="header">
               <tr>
-                <th>Fecha</th>
-                <th>Cliente</th>
-                <th>Tipo de Negocio</th>
-                <th># Productos</th>
-                <th>Total</th>
-                <th>Acciones</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">Tipo de Negocio</th>
+                <th scope="col"># Productos</th>
+                <th scope="col">Total</th>
+                <th scope="col">Acciones</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-detalle>
@@ -509,10 +515,10 @@
                 <p-table [value]="productosVentaSeleccionada()" [tableStyle]="{'min-width': '30rem'}">
                   <ng-template pTemplate="header">
                     <tr>
-                      <th>Producto</th>
-                      <th>Cantidad</th>
-                      <th>Precio Unit.</th>
-                      <th>Subtotal</th>
+                      <th scope="col">Producto</th>
+                      <th scope="col">Cantidad</th>
+                      <th scope="col">Precio Unit.</th>
+                      <th scope="col">Subtotal</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-producto>

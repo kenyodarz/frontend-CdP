@@ -8,25 +8,25 @@
   <p-card header="Filtros" styleClass="filtros-card">
     <form [formGroup]="filtrosForm" class="filtros-form">
       <div class="field">
-        <p-floatLabel>
+        <p-floatlabel>
           <p-datepicker formControlName="fechaInicio" [showIcon]="true" inputId="fechaInicio" dateFormat="yy-mm-dd" />
           <label for="fechaInicio">Fecha Inicio</label>
-        </p-floatLabel>
+        </p-floatlabel>
       </div>
 
       <div class="field">
-        <p-floatLabel>
+        <p-floatlabel>
           <p-datepicker formControlName="fechaFin" [showIcon]="true" inputId="fechaFin" dateFormat="yy-mm-dd" />
           <label for="fechaFin">Fecha Fin</label>
-        </p-floatLabel>
+        </p-floatlabel>
       </div>
 
       <div class="field">
-        <p-floatLabel>
+        <p-floatlabel>
           <p-select [options]="periodos" formControlName="periodo" optionLabel="label" optionValue="value"
             inputId="periodo" [style]="{'width':'100%'}" />
           <label for="periodo">Período</label>
-        </p-floatLabel>
+        </p-floatlabel>
       </div>
 
       <div class="actions">

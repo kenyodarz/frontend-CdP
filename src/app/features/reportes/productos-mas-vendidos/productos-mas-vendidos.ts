@@ -1,18 +1,20 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { CurrencyPipe } from '@angular/common';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { SelectModule } from 'primeng/select';
-import { ChartModule } from 'primeng/chart';
-import { FloatLabelModule } from 'primeng/floatlabel';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {CurrencyPipe} from '@angular/common';
+import {CardModule} from 'primeng/card';
+import {ButtonModule} from 'primeng/button';
+import {SelectModule} from 'primeng/select';
+import {ChartModule} from 'primeng/chart';
+import {FloatLabelModule} from 'primeng/floatlabel';
 
-import { ReporteService } from '../../../core/services/reporte.service';
-import { Loading } from '../../../shared/components/loading/loading';
-import { ErrorMessage } from '../../../shared/components/error-message/error-message';
+import {ReporteService} from '../../../core/services/reporte.service';
+import {Loading} from '../../../shared/components/loading/loading';
+import {ErrorMessage} from '../../../shared/components/error-message/error-message';
 
 // Usando la interfaz del servicio
-import { ProductoVendido as ProductoVendidoModel } from '../../../core/models/reporte/productoVendido';
+import {
+  ProductoVendido as ProductoVendidoModel
+} from '../../../core/models/reporte/productoVendido';
 
 interface ProductoVendido {
   idProducto: number;
@@ -127,13 +129,12 @@ export class ProductosMasVendidos implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    // Usar fechas de ejemplo (último mes)
+    // Usar fechas del mes en curso
     const hoy = new Date();
-    const hace30Dias = new Date();
-    hace30Dias.setDate(hoy.getDate() - 30);
+    const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
 
     this.reporteService.productosMasVendidos(
-      hace30Dias.toISOString().split('T')[0],
+      inicioMes.toISOString().split('T')[0],
       hoy.toISOString().split('T')[0],
       this.limite()
     ).subscribe({

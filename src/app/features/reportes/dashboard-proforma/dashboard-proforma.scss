@@ -1,44 +1,121 @@
 // Clean and simple styles for Reports module
 :host ::ng-deep {
+  .p-tabs {
+    background: transparent;
+    border: none;
+  }
+
+  .p-tablist {
+    background: transparent !important;
+    border-bottom: 2px solid var(--surface-border);
+    margin-bottom: 1rem;
+  }
+
+  .p-tab {
+    padding: 1rem 1.5rem !important;
+    font-weight: 600 !important;
+    color: var(--text-color-secondary) !important;
+    transition: all 0.2s;
+
+    &.p-tab-active {
+      color: var(--primary-color) !important;
+      border-bottom-color: var(--primary-color) !important;
+    }
+
+    &:hover:not(.p-tab-active) {
+      background: var(--surface-hover);
+    }
+  }
 
   // Card styling
   .p-card {
-    height: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--surface-border);
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
 
     .p-card-body {
-      padding: 1.25rem;
+      padding: 1.5rem !important;
+    }
+
+    .p-card-header {
+      padding: 1rem 1.5rem 0 !important;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border-bottom: none;
     }
 
     .p-card-content {
-      padding: 0;
+      padding: 0 !important;
     }
+  }
+
+  // Value scaling for summary cards
+  .text-primary {
+    color: var(--primary-color) !important;
+    line-height: 1.2;
+  }
+
+  .text-secondary {
+    color: var(--text-color-secondary) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
   }
 
   // Tab panels padding
   .p-tabpanels {
-    padding-top: 1.5rem;
+    padding: 1rem 0 !important;
+    background: transparent !important;
   }
 
-  // Ensure full width for form controls
+  // Ensure full width and modern look for form controls
   .p-select,
   .p-datepicker,
-  .p-inputtext {
+  .p-inputtext,
+  .p-floatlabel {
     width: 100%;
   }
 
-  // Chart height
-  .p-chart canvas {
-    max-height: 300px;
+  .p-floatlabel label {
+    font-size: 0.9rem;
+  }
+
+  // Chart responsiveness
+  .p-chart {
+    position: relative;
+    width: 100%;
+
+    canvas {
+      max-height: 350px !important;
+      width: 100% !important;
+    }
   }
 
   // Table styling
   .p-datatable {
+    .p-datatable-header {
+      background: transparent !important;
+      border: none !important;
+      padding: 0 0 1rem 0 !important;
+    }
+
     .p-datatable-thead>tr>th {
-      padding: 0.75rem 1rem;
+      background: var(--surface-section) !important;
+      padding: 1rem !important;
+      font-weight: 600 !important;
+      color: var(--text-color) !important;
+      border-bottom: 2px solid var(--surface-border) !important;
     }
 
     .p-datatable-tbody>tr>td {
-      padding: 0.75rem 1rem;
+      padding: 1rem !important;
+      border-bottom: 1px solid var(--surface-border) !important;
     }
   }
 }

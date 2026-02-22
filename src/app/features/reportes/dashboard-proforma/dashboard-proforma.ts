@@ -1,40 +1,39 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { TabsModule } from 'primeng/tabs';
-import { TableModule } from 'primeng/table';
-import { ChartModule } from 'primeng/chart';
-import { SelectModule } from 'primeng/select';
-import { DatePickerModule } from 'primeng/datepicker';
-import { InputTextModule } from 'primeng/inputtext';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { DialogModule } from 'primeng/dialog';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
-import { forkJoin } from 'rxjs';
+import {Component, inject, OnInit, signal} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {CardModule} from 'primeng/card';
+import {ButtonModule} from 'primeng/button';
+import {TabsModule} from 'primeng/tabs';
+import {TableModule} from 'primeng/table';
+import {ChartModule} from 'primeng/chart';
+import {SelectModule} from 'primeng/select';
+import {DatePickerModule} from 'primeng/datepicker';
+import {InputTextModule} from 'primeng/inputtext';
+import {FloatLabelModule} from 'primeng/floatlabel';
+import {ProgressSpinnerModule} from 'primeng/progressspinner';
+import {DialogModule} from 'primeng/dialog';
+import {ToastModule} from 'primeng/toast';
+import {MessageService} from 'primeng/api';
+import {forkJoin} from 'rxjs';
 
-import { ReporteService } from '../../../core/services/reporte.service';
-import { OrdenService } from '../../../core/services/orden.service';
-import { ProductoService } from '../../../core/services/producto.service';
-import { ClienteService } from '../../../core/services/cliente.service';
-import { Loading } from '../../../shared/components/loading/loading';
-import { ErrorMessage } from '../../../shared/components/error-message/error-message';
+import {ReporteService} from '../../../core/services/reporte.service';
+import {OrdenService} from '../../../core/services/orden.service';
+import {ProductoService} from '../../../core/services/producto.service';
+import {ClienteService} from '../../../core/services/cliente.service';
+import {Loading} from '../../../shared/components/loading/loading';
+import {ErrorMessage} from '../../../shared/components/error-message/error-message';
 import {
   DashboardProformaResponse,
   VentaPorTipoClienteDTO
 } from '../../../core/models/reporte/dashboard-proforma';
-import { ClienteSimple } from '../../../core/models/cliente/clienteSimple';
-import { ProductoSimple } from '../../../core/models/reporte/producto-simple';
-import { ComparacionProducto } from '../../../core/models/reporte/comparacion-producto';
-import { ProductoVendidoMes } from '../../../core/models/reporte/producto-vendido-mes';
-import { ClienteBusqueda } from '../../../core/models/reporte/cliente-busqueda';
-import { ProductoBusqueda } from '../../../core/models/reporte/producto-busqueda';
-import { DetalleVenta } from '../../../core/models/reporte/detalle-venta';
-import { ProductoOrden } from '../../../core/models/reporte/producto-orden';
-import { Cliente } from '../../../core/models/cliente/cliente';
+import {ProductoSimple} from '../../../core/models/reporte/producto-simple';
+import {ComparacionProducto} from '../../../core/models/reporte/comparacion-producto';
+import {ProductoVendidoMes} from '../../../core/models/reporte/producto-vendido-mes';
+import {ClienteBusqueda} from '../../../core/models/reporte/cliente-busqueda';
+import {ProductoBusqueda} from '../../../core/models/reporte/producto-busqueda';
+import {DetalleVenta} from '../../../core/models/reporte/detalle-venta';
+import {ProductoOrden} from '../../../core/models/reporte/producto-orden';
+import {Cliente} from '../../../core/models/cliente/cliente';
 
 @Component({
   selector: 'app-dashboard-proforma',
@@ -177,9 +176,29 @@ export class DashboardProforma implements OnInit {
 
     // Pie chart options
     this.pieChartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: 'bottom'
+          position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            padding: 20
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: (context: any) => {
+              const label = context.label || '';
+              const value = context.parsed || 0;
+              const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+              const percentage = ((value / total) * 100).toFixed(1);
+              return `${label}: ${new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP'
+              }).format(value)} (${percentage}%)`;
+            }
+          }
         }
       }
     };
@@ -567,19 +586,29 @@ export class DashboardProforma implements OnInit {
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
     this.chartOptions = {
+      responsive: true,
       maintainAspectRatio: false,
-      aspectRatio: 0.6,
       plugins: {
         legend: {
+          display: true,
+          position: 'top',
           labels: {
-            color: textColor
+            color: textColor,
+            usePointStyle: true
           }
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false
         }
       },
       scales: {
         x: {
           ticks: {
-            color: textColorSecondary
+            color: textColorSecondary,
+            font: {
+              size: 11
+            }
           },
           grid: {
             color: surfaceBorder,
@@ -587,8 +616,17 @@ export class DashboardProforma implements OnInit {
           }
         },
         y: {
+          beginAtZero: true,
           ticks: {
-            color: textColorSecondary
+            color: textColorSecondary,
+            font: {
+              size: 11
+            },
+            callback: (value: any) => {
+              if (value >= 1000000) return '$' + (value / 1000000).toFixed(1) + 'M';
+              if (value >= 1000) return '$' + (value / 1000).toFixed(0) + 'k';
+              return '$' + value;
+            }
           },
           grid: {
             color: surfaceBorder,
@@ -602,6 +640,7 @@ export class DashboardProforma implements OnInit {
   private actualizarGraficasOverview(data: DashboardProformaResponse): void {
     const documentStyle = getComputedStyle(document.documentElement);
     const primaryColor = documentStyle.getPropertyValue('--primary-color') || '#3B82F6';
+    const primaryColorLight = primaryColor + '22'; // 22 is ~13% opacity in hex
 
     this.ventasMensualesChart = {
       labels: data.ventasMensuales.map(v => v.mes),
@@ -610,7 +649,12 @@ export class DashboardProforma implements OnInit {
           label: 'Ingresos',
           data: data.ventasMensuales.map(v => v.ingresos),
           borderColor: primaryColor,
-          tension: 0.4
+          backgroundColor: primaryColorLight,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: primaryColor
         }
       ]
     };
@@ -620,7 +664,15 @@ export class DashboardProforma implements OnInit {
       datasets: [
         {
           data: data.ventasPorTipoCliente.map(v => v.ingresos),
-          backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#AB47BC']
+          backgroundColor: [
+            '#3B82F6', // Blue
+            '#10B981', // Green
+            '#F59E0B', // Amber
+            '#8B5CF6', // Violet
+            '#EC4899', // Pink
+            '#6366F1'  // Indigo
+          ],
+          hoverOffset: 20
         }
       ]
     };
