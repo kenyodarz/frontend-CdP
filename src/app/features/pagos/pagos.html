@@ -1,0 +1,75 @@
+<p-card>
+  <ng-template pTemplate="header">
+    <div class="flex justify-content-between align-items-center mb-3">
+      <div class="flex align-items-center gap-2 text-2xl font-bold">
+        <i class="pi pi-money-bill text-4xl text-primary"></i>
+        <span>Seguimiento de Pagos</span>
+      </div>
+      <p-button icon="pi pi-refresh" label="Actualizar" (onClick)="cargarOrdenesEntregadas()"
+                styleClass="p-button-outlined" [loading]="loading()"></p-button>
+    </div>
+    <p class="text-color-secondary m-0">Órdenes entregadas pendientes de pago ({{
+        "total: " + ordenes().length
+      }})</p>
+  </ng-template>
+
+  <p-table [value]="ordenes()" [loading]="loading()" [paginator]="true" [rows]="10"
+           [rowsPerPageOptions]="[10, 20, 50]"
+           [showCurrentPageReport]="true"
+           currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} órdenes"
+           styleClass="p-datatable-sm" [globalFilterFields]="['numeroOrden', 'clienteNombre']">
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th scope="col" pSortableColumn="numeroOrden">
+          Número
+          <p-sortIcon field="numeroOrden"></p-sortIcon>
+        </th>
+        <th scope="col" pSortableColumn="clienteNombre">
+          Cliente
+          <p-sortIcon field="clienteNombre"></p-sortIcon>
+        </th>
+        <th scope="col" pSortableColumn="fechaOrden">
+          Fecha
+          <p-sortIcon field="fechaOrden"></p-sortIcon>
+        </th>
+        <th scope="col" pSortableColumn="total">
+          Valor Total
+          <p-sortIcon field="total"></p-sortIcon>
+        </th>
+        <th scope="col" class="text-center">Estado</th>
+        <th scope="col" class="text-center">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-orden>
+      <tr>
+        <td class="font-bold">{{ orden.numeroOrden }}</td>
+        <td>{{ orden.clienteNombre }}</td>
+        <td>{{ formatDate(orden.fechaOrden) }}</td>
+        <td class="font-bold text-green-600">{{ formatCurrency(orden.total) }}</td>
+        <td class="text-center">
+          <p-tag value="Entregada" severity="warn"></p-tag>
+        </td>
+        <td class="text-center">
+          <p-button icon="pi pi-check-circle" label="Marcar Pagada"
+                    (onClick)="marcarComoPagada(orden)"
+                    styleClass="p-button-success p-button-sm"
+                    pTooltip="Registrar pago completado"></p-button>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6" class="text-center p-5">
+          <i class="pi pi-check text-5xl text-gray-400 mb-3 block"></i>
+          <p class="text-lg text-gray-600 m-0">No hay órdenes pendientes de cobro.</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

@@ -95,27 +95,8 @@ export const routes: Routes = [
     loadComponent: () => import('./features/reportes/dashboard-proforma/dashboard-proforma').then(m => m.DashboardProforma)
   },
   {
-    path: 'supervision',
-    loadComponent: () => import('./features/supervision/supervision').then(m => m.Supervision),
-    children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      {
-        path: 'dashboard',
-        loadComponent: () => import('./features/supervision/dashboard/dashboard').then(m => m.Dashboard)
-      },
-      {
-        path: 'ordenes',
-        loadComponent: () => import('./features/supervision/ordenes/ordenes').then(m => m.Ordenes)
-      },
-      {
-        path: 'despachos',
-        loadComponent: () => import('./features/supervision/despachos/despachos').then(m => m.Despachos)
-      },
-      {
-        path: 'rutas',
-        loadComponent: () => import('./features/supervision/rutas/rutas').then(m => m.Rutas)
-      }
-    ]
+    path: 'pagos',
+    loadComponent: () => import('./features/pagos/pagos').then(m => m.PagosComponent)
   },
   { path: '**', redirectTo: '/dashboard' }
 ];

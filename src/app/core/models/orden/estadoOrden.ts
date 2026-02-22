@@ -4,5 +4,6 @@ export enum EstadoOrden {
   LISTA = 'LISTA',
   DESPACHADA = 'DESPACHADA',
   ENTREGADA = 'ENTREGADA',
+  PAGADA = 'PAGADA',
   CANCELADA = 'CANCELADA'
 }
