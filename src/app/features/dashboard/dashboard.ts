@@ -27,7 +27,7 @@ import {CurrencyPipe} from '@angular/common';
       } @else if (data()) {
         <div class="stats-grid">
           <!-- Ventas del Día -->
-          <p-card styleClass="stat-card ventas">
+          <p-card class="stat-card ventas">
             <ng-template pTemplate="header">
               <div class="card-header">
                 <i class="pi pi-dollar"></i>
@@ -38,7 +38,7 @@ import {CurrencyPipe} from '@angular/common';
           </p-card>
 
           <!-- Órdenes Pendientes -->
-          <p-card styleClass="stat-card ordenes">
+          <p-card class="stat-card ordenes">
             <ng-template pTemplate="header">
               <div class="card-header">
                 <i class="pi pi-clock"></i>
@@ -52,7 +52,7 @@ import {CurrencyPipe} from '@angular/common';
           </p-card>
 
           <!-- Órdenes por Pagar -->
-          <p-card styleClass="stat-card por-pagar">
+          <p-card class="stat-card por-pagar">
             <ng-template pTemplate="header">
               <div class="card-header">
                 <i class="pi pi-money-bill"></i>
@@ -69,7 +69,7 @@ import {CurrencyPipe} from '@angular/common';
           </p-card>
 
           <!-- Clientes Activos -->
-          <p-card styleClass="stat-card clientes">
+          <p-card class="stat-card clientes">
             <ng-template pTemplate="header">
               <div class="card-header">
                 <i class="pi pi-users"></i>
@@ -81,7 +81,7 @@ import {CurrencyPipe} from '@angular/common';
         </div>
 
         <!-- Resumen de Órdenes -->
-        <p-card styleClass="ordenes-resumen">
+        <p-card class="ordenes-resumen">
           <ng-template pTemplate="header">
             <span class="card-title">Estado de Órdenes</span>
           </ng-template>

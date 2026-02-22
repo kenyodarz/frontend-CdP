@@ -14,7 +14,8 @@
         <div class="field full-width">
           <p-floatLabel>
             <p-select formControlName="idCliente" [options]="clientes()" optionLabel="nombre" optionValue="idCliente"
-              [filter]="true" filterBy="nombre" [showClear]="true" styleClass="w-full" inputId="cliente" />
+                      [filter]="true" filterBy="nombre" [showClear]="true" class="w-full"
+                      inputId="cliente"/>
             <label for="cliente">Cliente *</label>
           </p-floatLabel>
         </div>
@@ -30,13 +31,14 @@
     </p-card>
   </form>
 
-  <p-card header="Productos" styleClass="mt-6">
+    <p-card header="Productos" class="mt-6">
     <!-- Selector de productos -->
     <div class="producto-selector">
       <div class="field producto-field">
         <p-floatLabel>
           <p-select [(ngModel)]="selectedProducto" [options]="productos()" optionLabel="nombre" [filter]="true"
-            filterBy="codigo" [showClear]="true" styleClass="w-full" [ngModelOptions]="{standalone: true}"
+                    filterBy="codigo" [showClear]="true" class="w-full"
+                    [ngModelOptions]="{standalone: true}"
             inputId="producto" />
           <label for="producto">Buscar producto</label>
         </p-floatLabel>
@@ -58,7 +60,7 @@
 
     <!-- Tabla de productos agregados -->
     @if (productosOrden().length > 0) {
-    <p-table [value]="productosOrden()" styleClass="p-datatable-sm mt-4">
+      <p-table [value]="productosOrden()" class="p-datatable-sm mt-4">
       <ng-template pTemplate="header">
         <tr>
           <th>Producto</th>

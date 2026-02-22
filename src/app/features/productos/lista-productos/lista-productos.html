@@ -6,7 +6,7 @@
 
   <div class="filter-container">
     <p-iconField iconPosition="left">
-      <p-inputIcon styleClass="pi pi-search"/>
+      <p-inputIcon class="pi pi-search"/>
       <input type="text" pInputText placeholder="Buscar..." (input)="onSearch($event)"/>
     </p-iconField>
   </div>
@@ -20,7 +20,8 @@
     <div class="table-container">
 
     <!-- Tabla -->
-    <p-table [value]="productos()" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped">
+      <p-table [value]="productos()" [tableStyle]="{ 'min-width': '50rem' }"
+               class="p-datatable-striped">
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="codigo">Código <p-sortIcon field="codigo" /></th>

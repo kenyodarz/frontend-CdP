@@ -47,7 +47,7 @@
         <div class="field">
           <p-floatLabel>
             <p-select [options]="categorias()" optionLabel="nombre" optionValue="id" formControlName="idCategoria"
-              inputId="idCategoria" styleClass="full-width-input" />
+                      inputId="idCategoria" class="full-width-input"/>
             <label for="idCategoria">Categoría *</label>
           </p-floatLabel>
           @if (productoForm.get('idCategoria')?.hasError('required') && productoForm.get('idCategoria')?.touched) {
@@ -59,7 +59,7 @@
         <div class="field">
           <p-floatLabel>
             <p-select [options]="unidadesMedida()" optionLabel="nombre" optionValue="id" formControlName="idUnidad"
-              inputId="idUnidad" styleClass="full-width-input" />
+                      inputId="idUnidad" class="full-width-input"/>
             <label for="idUnidad">Unidad de Medida *</label>
           </p-floatLabel>
           @if (productoForm.get('idUnidad')?.hasError('required') && productoForm.get('idUnidad')?.touched) {
@@ -71,7 +71,7 @@
         <div class="field">
           <p-floatLabel>
             <p-select [options]="estadosProducto()" optionLabel="label" optionValue="value" formControlName="estado"
-              inputId="estado" styleClass="full-width-input" />
+                      inputId="estado" class="full-width-input"/>
             <label for="estado">Estado *</label>
           </p-floatLabel>
         </div>

@@ -5,7 +5,7 @@
   <app-error-message [title]="'Error'" [message]="error()!" (retry)="onRetry()" />
   } @else {
   <!-- Controles -->
-  <p-card styleClass="controles-card">
+    <p-card class="controles-card">
     <div class="controles">
       <div class="field">
         <p-floatLabel>
@@ -21,7 +21,7 @@
 
   <!-- Resumen -->
   <div class="resumen-grid">
-    <p-card styleClass="stat-card">
+      <p-card class="stat-card">
       <div class="stat-content">
         <div class="stat-icon ventas">
           <i class="pi pi-shopping-cart"></i>
@@ -47,14 +47,14 @@
   </div>
 
   <!-- Gráfica -->
-  <p-card [header]="'Top ' + limite() + ' Productos Más Vendidos'" styleClass="chart-card">
+    <p-card [header]="'Top ' + limite() + ' Productos Más Vendidos'" class="chart-card">
     <div class="chart-container">
-      <p-chart type="bar" [data]="barChartData" [options]="barChartOptions" height="400px" />
+      <p-chart type="bar" [data]="barChartData" [options]="barChartOptions" height="350px"/>
     </div>
   </p-card>
 
   <!-- Ranking -->
-  <p-card header="Ranking Detallado" styleClass="ranking-card">
+    <p-card header="Ranking Detallado" class="ranking-card">
     <div class="ranking-list">
       @for (producto of topProductos(); track $index; let i = $index) {
       <div class="ranking-item">

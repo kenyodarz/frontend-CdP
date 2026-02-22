@@ -28,11 +28,11 @@ interface Notification {
           icon="pi pi-bell"
           [text]="true"
           [rounded]="true"
-          styleClass="navbar-button"
+          class="navbar-button"
           (onClick)="notificationsPopover.toggle($event)" />
       </p-overlayBadge>
 
-      <p-popover #notificationsPopover styleClass="notifications-popover">
+      <p-popover #notificationsPopover class="notifications-popover">
         <div class="notifications-container">
           <div class="notification-header px-3 py-2 border-bottom-1 surface-border">
             <span class="font-semibold text-900">Notificaciones</span>
@@ -61,7 +61,7 @@ interface Notification {
         styleClass="navbar-button"
         (onClick)="userPopover.toggle($event)" />
 
-      <p-popover #userPopover styleClass="user-popover">
+      <p-popover #userPopover class="user-popover">
         <div class="user-menu-container">
           <div
             class="menu-item flex align-items-center gap-3 p-3 cursor-pointer hover:surface-hover"

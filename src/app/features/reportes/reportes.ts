@@ -9,9 +9,9 @@ import {TabsModule} from 'primeng/tabs';
     <div class="reportes-container">
       <p-tabs value="0">
         <p-tablist>
-          <p-tab value="0" routerLink="/reportes/dashboard-proforma">Reportes</p-tab>
-            <p-tab value="1" routerLink="/reportes/ventas">Ventas</p-tab>
-            <p-tab value="3" routerLink="/reportes/productos-mas-vendidos">Productos Más Vendidos</p-tab>
+          <p-tab value="0" routerLink="/reportes/ventas">Ventas</p-tab>
+          <p-tab value="1" routerLink="/reportes/productos-mas-vendidos">Productos</p-tab>
+          <p-tab value="2" routerLink="/reportes/dashboard-proforma">Reportes</p-tab>
         </p-tablist>
       </p-tabs>
 
@@ -26,7 +26,7 @@ import {TabsModule} from 'primeng/tabs';
     }
 
     .report-content {
-      padding: 1.5rem;
+      padding: 0;
     }
   `]
 })

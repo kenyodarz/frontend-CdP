@@ -49,7 +49,7 @@
     <p-card header="Inventario">
       <div class="info-grid">
 
-      <div class="info-item">
+        <div class="info-item">
           <span class="label">Requiere Lote:</span>
           <span class="value">{{ prod.requiereLote ? 'Sí' : 'No' }}</span>
         </div>
@@ -63,7 +63,7 @@
     </p-card>
 
     <!-- Precios -->
-    <p-card header="Precios por Tipo de Tarifa" styleClass="full-width">
+    <p-card header="Precios por Tipo de Tarifa" class="full-width">
       <div class="precios-grid">
         @for (precio of preciosArray(); track precio.tipoTarifa) {
         <div class="precio-card">

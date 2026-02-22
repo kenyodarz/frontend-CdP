@@ -5,7 +5,7 @@
   <app-error-message [title]="'Error'" [message]="error()!" (retry)="onRetry()" />
   } @else {
   <!-- Filtros -->
-  <p-card header="Filtros" styleClass="filtros-card">
+    <p-card header="Filtros" class="filtros-card">
     <form [formGroup]="filtrosForm" class="filtros-form">
       <div class="field">
         <p-floatlabel>
@@ -38,7 +38,7 @@
 
   <!-- Resumen -->
   <div class="resumen-grid">
-    <p-card styleClass="stat-card">
+      <p-card class="stat-card">
       <div class="stat-content">
         <div class="stat-icon valor">
           <i class="pi pi-dollar"></i>
@@ -50,7 +50,7 @@
       </div>
     </p-card>
 
-    <p-card styleClass="stat-card">
+      <p-card class="stat-card">
       <div class="stat-content">
         <div class="stat-icon promedio">
           <i class="pi pi-chart-line"></i>
@@ -76,9 +76,9 @@
   </div>
 
   <!-- Gráfica -->
-  <p-card header="Evolución de Ventas" styleClass="chart-card">
+    <p-card header="Evolución de Ventas" class="chart-card">
     <div class="chart-container">
-      <p-chart type="line" [data]="lineChartData" [options]="lineChartOptions" height="400px" />
+      <p-chart type="line" [data]="lineChartData" [options]="lineChartOptions" height="350px"/>
     </div>
   </p-card>
   }

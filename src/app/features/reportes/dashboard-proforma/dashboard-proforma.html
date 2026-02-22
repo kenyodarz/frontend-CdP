@@ -1,4 +1,4 @@
-<div class="p-4">
+<div class="p-1">
   <p-toast />
 
   @if (loading()) {
@@ -29,7 +29,7 @@
             <div class="col-12 md:col-3">
               <p-floatlabel>
                 <p-select id="anioOverview" formControlName="anio" [options]="availableYears()"
-                  placeholder="Seleccione un año" styleClass="w-full" />
+                          class="w-full"/>
                 <label for="anioOverview">Año</label>
               </p-floatlabel>
             </div>
@@ -40,7 +40,7 @@
         <!-- Resumen Cards -->
           <div class="grid mt-2">
             <div class="col-12 sm:col-6 lg:col-3">
-              <p-card styleClass="h-full">
+              <p-card class="h-full">
                 <div class="flex flex-column align-items-center justify-content-center h-full">
                   <span class="text-secondary font-medium mb-2 text-center">Ingresos Totales</span>
                   <span class="text-primary font-bold text-2xl lg:text-3xl text-center">
@@ -50,7 +50,7 @@
             </p-card>
           </div>
             <div class="col-12 sm:col-6 lg:col-3">
-              <p-card styleClass="h-full">
+              <p-card class="h-full">
                 <div class="flex flex-column align-items-center justify-content-center h-full">
                   <span class="text-secondary font-medium mb-2 text-center">Ventas</span>
                   <span class="text-primary font-bold text-2xl lg:text-3xl text-center">
@@ -60,7 +60,7 @@
             </p-card>
           </div>
             <div class="col-12 sm:col-6 lg:col-3">
-              <p-card styleClass="h-full">
+              <p-card class="h-full">
                 <div class="flex flex-column align-items-center justify-content-center h-full">
                   <span class="text-secondary font-medium mb-2 text-center">Ticket Promedio</span>
                   <span class="text-primary font-bold text-2xl lg:text-3xl text-center">
@@ -81,12 +81,12 @@
           </div>
           <!-- Charts -->
             <div class="col-12 lg:col-8">
-              <p-card header="Ventas Mensuales" styleClass="h-full">
+              <p-card header="Ventas Mensuales" class="h-full">
               <p-chart type="line" [data]="ventasMensualesChart" [options]="chartOptions" height="300px" />
             </p-card>
           </div>
             <div class="col-12 lg:col-4">
-              <p-card header="Ventas por Tipo de Negocio" styleClass="h-full">
+              <p-card header="Ventas por Tipo de Negocio" class="h-full">
                 <p-chart type="pie" [data]="ventasTipoClienteChart" [options]="pieChartOptions"
                          height="300px"/>
             </p-card>
@@ -234,7 +234,7 @@
               <p-floatlabel>
                 <p-select id="cliente" formControlName="clienteId" [options]="clientesSelect()" optionLabel="nombre"
                           optionValue="nombre" [filter]="true" filterPlaceholder="Buscar cliente..."
-                          styleClass="w-full"
+                          class="w-full"
                           [loading]="loadingClientes()"/>
                 <label for="cliente">Cliente</label>
               </p-floatlabel>
@@ -255,7 +255,7 @@
               </p-floatlabel>
             </div>
             <div class="col-12 md:col-2">
-              <p-button label="Buscar" (onClick)="buscarComprasCliente()" styleClass="w-full"
+              <p-button label="Buscar" (onClick)="buscarComprasCliente()" class="w-full"
                 [disabled]="!buscarClientesForm.get('clienteId')?.value" />
             </div>
           </form>
@@ -298,7 +298,7 @@
 
             @if (loadingOrdenProductos()) {
             <div class="flex justify-center p-4">
-              <p-progressSpinner styleClass="w-4rem h-4rem" />
+              <p-progressSpinner class="w-4rem h-4rem"/>
             </div>
             } @else if (productosOrdenExpandida().length > 0) {
             <p-table [value]="productosOrdenExpandida()">
@@ -333,8 +333,7 @@
           <form [formGroup]="buscarProductosForm" class="grid">
             <div class="col-12 md:col-5">
               <p-floatlabel>
-                <input pInputText id="buscarProducto" formControlName="query" placeholder="Buscar producto..."
-                  class="w-full" />
+                <input pInputText id="buscarProducto" formControlName="query" class="w-full"/>
                 <label for="buscarProducto">Buscar Producto</label>
               </p-floatlabel>
             </div>

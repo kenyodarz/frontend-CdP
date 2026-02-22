@@ -1,13 +1,13 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {CardModule} from 'primeng/card';
+import {ButtonModule} from 'primeng/button';
 
 @Component({
   selector: 'app-error-message',
   imports: [CardModule, ButtonModule],
   template: `
     <div class="error-container">
-      <p-card styleClass="error-card">
+      <p-card class="error-card">
         <div class="error-content">
           <i class="pi pi-exclamation-circle error-icon"></i>
           <h3 class="error-title">{{ title }}</h3>

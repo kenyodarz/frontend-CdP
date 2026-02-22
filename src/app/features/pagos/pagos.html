@@ -6,7 +6,8 @@
         <span>Seguimiento de Pagos</span>
       </div>
       <p-button icon="pi pi-refresh" label="Actualizar" (onClick)="cargarOrdenesEntregadas()"
-                styleClass="p-button-outlined" [loading]="loading()"></p-button>
+                class="p-button-outlined"
+                [loading]="loading()"></p-button>
     </div>
     <p class="text-color-secondary m-0">Órdenes entregadas pendientes de pago ({{
         "total: " + ordenes().length
@@ -17,7 +18,7 @@
            [rowsPerPageOptions]="[10, 20, 50]"
            [showCurrentPageReport]="true"
            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} órdenes"
-           styleClass="p-datatable-sm" [globalFilterFields]="['numeroOrden', 'clienteNombre']">
+           class="p-datatable-sm" [globalFilterFields]="['numeroOrden', 'clienteNombre']">
 
     <ng-template pTemplate="header">
       <tr>
@@ -54,7 +55,7 @@
         <td class="text-center">
           <p-button icon="pi pi-check-circle" label="Marcar Pagada"
                     (onClick)="marcarComoPagada(orden)"
-                    styleClass="p-button-success p-button-sm"
+                    class="p-button-success p-button-sm"
                     pTooltip="Registrar pago completado"></p-button>
         </td>
       </tr>
