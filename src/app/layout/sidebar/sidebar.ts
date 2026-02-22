@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import {Component} from '@angular/core';
+import {RouterLink, RouterLinkActive} from '@angular/router';
 
 interface MenuItem {
   label: string;
@@ -16,9 +16,9 @@ interface MenuItem {
   template: `
     <nav class="sidebar">
       @for (item of menuItems; track item.route) {
-        <a 
-          [routerLink]="item.route" 
-          routerLinkActive="active" 
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
           class="menu-item">
           <i [class]="'pi ' + item.icon"></i>
           <span>{{ item.label }}</span>
@@ -78,7 +78,7 @@ export class Sidebar {
     { label: 'Productos', icon: 'pi-box', route: '/productos' },
     { label: 'Clientes', icon: 'pi-users', route: '/clientes' },
     { label: 'Órdenes', icon: 'pi-file', route: '/ordenes' },
-    { label: 'Inventario', icon: 'pi-warehouse', route: '/inventario' },
+    {label: 'Despachos', icon: 'pi-truck', route: '/inventario'},
     { label: 'Supervisión', icon: 'pi-shield', route: '/supervision' },
     { label: 'Reportes', icon: 'pi-chart-bar', route: '/reportes' }
   ];

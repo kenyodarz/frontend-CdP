@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -75,31 +75,7 @@ export const routes: Routes = [
     path: 'inventario',
     loadComponent: () => import('./features/inventario/inventario').then(m => m.Inventario),
     children: [
-      { path: '', redirectTo: 'existencias', pathMatch: 'full' },
-      {
-        path: 'lotes',
-        loadComponent: () => import('./features/inventario/lotes/lotes').then(m => m.Lotes)
-      },
-      {
-        path: 'documentos',
-        loadComponent: () => import('./features/inventario/listar-documentos/listar-documentos').then(m => m.ListarDocumentos)
-      },
-      {
-        path: 'existencias',
-        loadComponent: () => import('./features/inventario/existencias/existencias').then(m => m.Existencias)
-      },
-      {
-        path: 'crear-lote',
-        loadComponent: () => import('./features/inventario/crear-lote/crear-lote').then(m => m.CrearLote)
-      },
-      {
-        path: 'registrar-entrada',
-        loadComponent: () => import('./features/inventario/registrar-entrada/registrar-entrada').then(m => m.RegistrarEntrada)
-      },
-      {
-        path: 'registrar-salida',
-        loadComponent: () => import('./features/inventario/registrar-salida/registrar-salida').then(m => m.RegistrarSalida)
-      },
+      {path: '', redirectTo: 'documentos-salida', pathMatch: 'full'},
       {
         path: 'documentos-salida',
         loadComponent: () => import('./features/inventario/documentos-salida/documentos-salida').then(m => m.DocumentosSalidaComponent)
@@ -111,14 +87,6 @@ export const routes: Routes = [
       {
         path: 'documentos-salida/:id',
         loadComponent: () => import('./features/inventario/documentos-salida/ver-documento/ver-documento').then(m => m.VerDocumentoComponent)
-      },
-      {
-        path: 'cierres',
-        loadComponent: () => import('./features/inventario/cierres/cierres').then(m => m.CierresComponent)
-      },
-      {
-        path: 'recalcular-stock',
-        loadComponent: () => import('./features/inventario/recalcular-stock/recalcular-stock').then(m => m.RecalcularStockComponent)
       }
     ]
   },
@@ -146,10 +114,6 @@ export const routes: Routes = [
       {
         path: 'rutas',
         loadComponent: () => import('./features/supervision/rutas/rutas').then(m => m.Rutas)
-      },
-      {
-        path: 'inventario',
-        loadComponent: () => import('./features/supervision/inventario/inventario').then(m => m.InventarioSupervision)
       }
     ]
   },
