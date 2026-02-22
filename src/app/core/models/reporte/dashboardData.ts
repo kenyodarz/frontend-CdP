@@ -5,7 +5,7 @@ export interface DashboardData {
   ordenesListas: number;
   ordenesDespachadas: number;
   ventasHoy: number;
-  productosStockBajo: number;
+  ordenesPendientesPorPagar: number;
   totalProductos: number;
   clientesActivos: number;
 }

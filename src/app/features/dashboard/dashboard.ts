@@ -1,11 +1,11 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { RouterLink } from '@angular/router';
-import { ReporteService } from '../../core/services/reporte.service';
-import { DashboardData } from '../../core/models/reporte/dashboardData';
-import { CurrencyPipe, DecimalPipe } from '@angular/common';
+import {Component, inject, OnInit, signal} from '@angular/core';
+import {CardModule} from 'primeng/card';
+import {ButtonModule} from 'primeng/button';
+import {ProgressSpinnerModule} from 'primeng/progressspinner';
+import {RouterLink} from '@angular/router';
+import {ReporteService} from '../../core/services/reporte.service';
+import {DashboardData} from '../../core/models/reporte/dashboardData';
+import {CurrencyPipe} from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
@@ -51,20 +51,20 @@ import { CurrencyPipe, DecimalPipe } from '@angular/common';
             </div>
           </p-card>
 
-          <!-- Stock Bajo -->
-          <p-card styleClass="stat-card stock">
+          <!-- Órdenes por Pagar -->
+          <p-card styleClass="stat-card por-pagar">
             <ng-template pTemplate="header">
               <div class="card-header">
-                <i class="pi pi-exclamation-triangle"></i>
-                <span class="card-title">Stock Bajo</span>
+                <i class="pi pi-money-bill"></i>
+                <span class="card-title">Por Pagar</span>
               </div>
             </ng-template>
-            <div class="stat-value">{{ data()!.productosStockBajo }}</div>
+            <div class="stat-value">{{ data()!.ordenesPendientesPorPagar }}</div>
             <div class="stat-detail">
-              de {{ data()!.totalProductos }} productos
+              órdenes entregadas
             </div>
             <ng-template pTemplate="footer">
-              <p-button label="Ver Productos" [link]="true" routerLink="/productos" severity="danger" />
+              <p-button label="Ir a Pagos" [link]="true" routerLink="/pagos" severity="warn" />
             </ng-template>
           </p-card>
 
@@ -173,9 +173,9 @@ import { CurrencyPipe, DecimalPipe } from '@angular/common';
           .stat-value { color: #ff9800; }
         }
 
-        &.stock {
-          i { color: #f44336; }
-          .stat-value { color: #f44336; }
+        &.por-pagar {
+          i { color: #f59e0b; }
+          .stat-value { color: #f59e0b; }
         }
 
         &.clientes {

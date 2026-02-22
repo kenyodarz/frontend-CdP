@@ -1,9 +1,8 @@
-import { Component, signal, OnInit, inject } from '@angular/core';
-import { Button } from 'primeng/button';
-import { Popover } from 'primeng/popover';
-import { Badge } from 'primeng/badge';
-import { OverlayBadge } from 'primeng/overlaybadge';
-import { ReporteService } from '../../core/services/reporte.service';
+import {Component, inject, OnInit, signal} from '@angular/core';
+import {Button} from 'primeng/button';
+import {Popover} from 'primeng/popover';
+import {OverlayBadge} from 'primeng/overlaybadge';
+import {ReporteService} from '../../core/services/reporte.service';
 
 interface Notification {
   icon: string;
@@ -173,11 +172,11 @@ export class Navbar implements OnInit {
       next: (dashboard) => {
         const notifs: Notification[] = [];
 
-        // Notificación de productos con stock bajo
-        if (dashboard.productosStockBajo > 0) {
+        // Notificación de órdenes pendientes por pagar
+        if (dashboard.ordenesPendientesPorPagar > 0) {
           notifs.push({
-            icon: 'pi pi-box',
-            text: `${dashboard.productosStockBajo} producto${dashboard.productosStockBajo > 1 ? 's' : ''} con stock bajo`,
+            icon: 'pi pi-money-bill',
+            text: `${dashboard.ordenesPendientesPorPagar} orden${dashboard.ordenesPendientesPorPagar > 1 ? 'es' : ''} pendiente${dashboard.ordenesPendientesPorPagar > 1 ? 's' : ''} por pagar`,
             severity: 'warning'
           });
         }
