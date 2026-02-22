@@ -40,7 +40,8 @@ import { MessageService } from 'primeng/api';
     .main-content {
       flex: 1;
       overflow-y: auto;
-      background-color: #f5f5f5;
+      background-color: var(--p-content-background);
+      color: var(--p-text-color);
       padding: 20px;
     }
   `]

@@ -1,8 +1,8 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
-import {Button} from 'primeng/button';
-import {Popover} from 'primeng/popover';
-import {OverlayBadge} from 'primeng/overlaybadge';
-import {ReporteService} from '../../core/services/reporte.service';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { Button } from 'primeng/button';
+import { Popover } from 'primeng/popover';
+import { OverlayBadge } from 'primeng/overlaybadge';
+import { ReporteService } from '../../core/services/reporte.service';
 
 interface Notification {
   icon: string;
@@ -20,7 +20,7 @@ interface Notification {
   template: `
     <div class="navbar flex align-items-center gap-3 px-4 sticky top-0 z-5 shadow-2" style="height: 64px; background-color: #5D1F1F;">
       <img src="assets/img/Logo-castipan.png" alt="Castillo del Pan" class="navbar-logo" style="height: 48px; width: auto;" />
-      <span class="text-lg font-medium text-white">Sistema de Inventario</span>
+      <span class="text-lg font-medium text-white">Sistema de Gestion de Compras</span>
       <span class="flex-1"></span>
 
       <p-overlayBadge [value]="notificationCount().toString()" severity="danger">
@@ -31,6 +31,13 @@ interface Notification {
           class="navbar-button"
           (onClick)="notificationsPopover.toggle($event)" />
       </p-overlayBadge>
+
+      <p-button
+        [icon]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
+        [text]="true"
+        [rounded]="true"
+        class="navbar-button"
+        (onClick)="toggleDarkMode()" />
 
       <p-popover #notificationsPopover class="notifications-popover">
         <div class="notifications-container">
@@ -54,30 +61,6 @@ interface Notification {
         </div>
       </p-popover>
 
-      <p-button
-        icon="pi pi-user"
-        [text]="true"
-        [rounded]="true"
-        styleClass="navbar-button"
-        (onClick)="userPopover.toggle($event)" />
-
-      <p-popover #userPopover class="user-popover">
-        <div class="user-menu-container">
-          <div
-            class="menu-item flex align-items-center gap-3 p-3 cursor-pointer hover:surface-hover"
-            (click)="onSettingsClick(); userPopover.hide()">
-            <i class="pi pi-cog text-lg"></i>
-            <span class="text-900">Configuración</span>
-          </div>
-          <div class="border-top-1 surface-border"></div>
-          <div
-            class="menu-item flex align-items-center gap-3 p-3 cursor-pointer hover:surface-hover"
-            (click)="onLogoutClick(); userPopover.hide()">
-            <i class="pi pi-sign-out text-lg text-red-500"></i>
-            <span class="text-900">Cerrar Sesión</span>
-          </div>
-        </div>
-      </p-popover>
     </div>
   `,
   styles: [`
@@ -163,6 +146,8 @@ export class Navbar implements OnInit {
 
   protected readonly notifications = signal<Notification[]>([]);
 
+  protected readonly isDarkMode = signal(false);
+
   ngOnInit(): void {
     this.cargarNotificaciones();
   }
@@ -208,5 +193,13 @@ export class Navbar implements OnInit {
   protected onLogoutClick(): void {
     console.log('Cerrar sesión');
     // TODO: Implementar logout
+  }
+
+  protected toggleDarkMode(): void {
+    const element = document.querySelector('html');
+    if (element) {
+      element.classList.toggle('my-app-dark');
+      this.isDarkMode.set(element.classList.contains('my-app-dark'));
+    }
   }
 }

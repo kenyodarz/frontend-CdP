@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {RouterLink, RouterLinkActive} from '@angular/router';
+import { Component } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 interface MenuItem {
   label: string;
@@ -30,8 +30,8 @@ interface MenuItem {
     .sidebar {
       width: 260px;
       height: 100%;
-      background-color: #ffffff;
-      border-right: 1px solid #e5e7eb;
+      background-color: var(--p-content-background);
+      border-right: 1px solid var(--p-content-border-color);
       display: flex;
       flex-direction: column;
       padding: 1rem 0;
@@ -42,7 +42,7 @@ interface MenuItem {
       align-items: center;
       gap: 0.75rem;
       padding: 0.875rem 1.5rem;
-      color: #6b7280;
+      color: var(--p-text-muted-color);
       text-decoration: none;
       transition: all 0.2s;
       border-left: 3px solid transparent;
@@ -57,18 +57,18 @@ interface MenuItem {
     }
 
     .menu-item:hover {
-      background-color: #f3f4f6;
-      color: #374151;
+      background-color: var(--p-content-hover-background);
+      color: var(--p-text-color);
     }
 
     .menu-item.active {
-      background-color: #eff6ff;
-      color: #2563eb;
-      border-left-color: #2563eb;
+      background-color: var(--p-highlight-background);
+      color: var(--p-highlight-color);
+      border-left-color: var(--p-primary-color);
     }
 
     .menu-item.active i {
-      color: #2563eb;
+      color: var(--p-primary-color);
     }
   `]
 })
@@ -78,8 +78,8 @@ export class Sidebar {
     { label: 'Productos', icon: 'pi-box', route: '/productos' },
     { label: 'Clientes', icon: 'pi-users', route: '/clientes' },
     { label: 'Órdenes', icon: 'pi-file', route: '/ordenes' },
-    {label: 'Despachos', icon: 'pi-truck', route: '/inventario'},
-    {label: 'Pagos', icon: 'pi-money-bill', route: '/pagos'},
+    { label: 'Despachos', icon: 'pi-truck', route: '/inventario' },
+    { label: 'Pagos', icon: 'pi-money-bill', route: '/pagos' },
     { label: 'Reportes', icon: 'pi-chart-bar', route: '/reportes' }
   ];
 }
