@@ -63,9 +63,6 @@ export class ProductoService {
     return this.http.get<ProductoSimple[]>(`${this.apiUrl}/buscar`, { params });
   }
 
-  obtenerConStockBajo(): Observable<ProductoSimple[]> {
-    return this.http.get<ProductoSimple[]>(`${this.apiUrl}/stock-bajo`);
-  }
 
   crear(producto: CrearProductoDTO): Observable<Producto> {
     return this.http.post<Producto>(this.apiUrl, producto);
@@ -75,12 +72,6 @@ export class ProductoService {
     return this.http.put<Producto>(`${this.apiUrl}/${id}`, producto);
   }
 
-  ajustarStock(id: number, nuevaCantidad: number, motivo: string): Observable<Producto> {
-    return this.http.patch<Producto>(`${this.apiUrl}/${id}/ajustar-stock`, {
-      nuevaCantidad,
-      motivo
-    });
-  }
 
   listarExistencias(): Observable<Producto[]> {
     return this.http.get<Producto[]>(`${this.apiUrl}/existencias`);

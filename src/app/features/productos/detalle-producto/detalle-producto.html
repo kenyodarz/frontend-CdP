@@ -48,19 +48,8 @@
     <!-- Inventario -->
     <p-card header="Inventario">
       <div class="info-grid">
-        <div class="info-item">
-          <span class="label">Stock Actual:</span>
-          <p-tag [value]="prod.stockActual.toString()" [severity]="getStockSeverity()" />
-        </div>
-        <div class="info-item">
-          <span class="label">Stock Mínimo:</span>
-          <span class="value">{{ prod.stockMinimo }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">Stock Máximo:</span>
-          <span class="value">{{ prod.stockMaximo || '-' }}</span>
-        </div>
-        <div class="info-item">
+
+      <div class="info-item">
           <span class="label">Requiere Lote:</span>
           <span class="value">{{ prod.requiereLote ? 'Sí' : 'No' }}</span>
         </div>

@@ -1,27 +1,27 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
-import { TableModule } from 'primeng/table';
-import { ToastModule } from 'primeng/toast';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { TextareaModule } from 'primeng/textarea';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { MessageService } from 'primeng/api';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Router} from '@angular/router';
+import {CardModule} from 'primeng/card';
+import {ButtonModule} from 'primeng/button';
+import {InputTextModule} from 'primeng/inputtext';
+import {SelectModule} from 'primeng/select';
+import {TableModule} from 'primeng/table';
+import {ToastModule} from 'primeng/toast';
+import {InputNumberModule} from 'primeng/inputnumber';
+import {TextareaModule} from 'primeng/textarea';
+import {IconFieldModule} from 'primeng/iconfield';
+import {InputIconModule} from 'primeng/inputicon';
+import {FloatLabelModule} from 'primeng/floatlabel';
+import {MessageService} from 'primeng/api';
+import {CommonModule, CurrencyPipe} from '@angular/common';
 
-import { OrdenService } from '../../../core/services/orden.service';
-import { ClienteService } from '../../../core/services/cliente.service';
-import { ProductoService } from '../../../core/services/producto.service';
-import { CrearOrdenDTO } from '../../../core/models/orden/crearOrdenDTO';
-import { ClienteSimple } from '../../../core/models/cliente/clienteSimple';
-import { ProductoSimple } from '../../../core/models/producto/productoSimple';
-import { Loading } from '../../../shared/components/loading/loading';
+import {OrdenService} from '../../../core/services/orden.service';
+import {ClienteService} from '../../../core/services/cliente.service';
+import {ProductoService} from '../../../core/services/producto.service';
+import {CrearOrdenDTO} from '../../../core/models/orden/crearOrdenDTO';
+import {ClienteSimple} from '../../../core/models/cliente/clienteSimple';
+import {ProductoSimple} from '../../../core/models/producto/productoSimple';
+import {Loading} from '../../../shared/components/loading/loading';
 
 interface ProductoOrden {
   idProducto: number;
@@ -122,12 +122,9 @@ export class CrearOrden implements OnInit {
           idProducto: p.idProducto,
           codigo: p.codigo,
           nombre: p.nombre,
-          stockActual: p.stockActual,
-          stockMinimo: p.stockMinimo,
           precioBase: p.precioBase,
           categoria: p.nombreCategoria || '',
           unidad: p.abreviaturaUnidad || '',
-          stockBajo: p.stockActual <= p.stockMinimo,
           diasVidaUtil: p.diasVidaUtil,
           estado: p.estado
         }));

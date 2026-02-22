@@ -125,11 +125,6 @@ export class ListaProductos implements OnInit {
     this.router.navigate(['/productos/nuevo']);
   }
 
-  protected getStockSeverity(producto: Producto): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
-    if (producto.stockActual <= producto.stockMinimo) return 'warn';
-    if (producto.stockActual === 0) return 'danger';
-    return 'success';
-  }
 
   protected getEstadoSeverity(estado: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
     switch (estado) {

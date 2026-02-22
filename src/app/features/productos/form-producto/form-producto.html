@@ -88,32 +88,7 @@
 
     <p-card header="Inventario">
       <div class="form-grid">
-        <!-- Stock Actual -->
-        <div class="field">
-          <p-floatLabel>
-            <input pInputText type="number" id="stockActual" formControlName="stockActual" min="0" />
-            <label for="stockActual">Stock Actual</label>
-          </p-floatLabel>
-        </div>
 
-        <!-- Stock Mínimo -->
-        <div class="field">
-          <p-floatLabel>
-            <input pInputText type="number" id="stockMinimo" formControlName="stockMinimo" min="0" />
-            <label for="stockMinimo">Stock Mínimo *</label>
-          </p-floatLabel>
-          @if (productoForm.get('stockMinimo')?.hasError('required') && productoForm.get('stockMinimo')?.touched) {
-          <small class="p-error">El stock mínimo es requerido</small>
-          }
-        </div>
-
-        <!-- Stock Máximo -->
-        <div class="field">
-          <p-floatLabel>
-            <input pInputText type="number" id="stockMaximo" formControlName="stockMaximo" min="0" />
-            <label for="stockMaximo">Stock Máximo</label>
-          </p-floatLabel>
-        </div>
 
         <!-- Requiere Lote -->
         <div class="field-checkbox">

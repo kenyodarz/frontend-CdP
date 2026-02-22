@@ -1,20 +1,22 @@
-import { inject, Injectable } from "@angular/core";
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { environment } from "../../../environments/environment";
-import { Observable } from "rxjs";
-import { DashboardData } from '../models/reporte/dashboardData';
-import { ReporteVentas } from '../models/reporte/reporteVentas';
-import { ProductoVendido } from '../models/reporte/productoVendido';
-import { ClienteTop } from '../models/reporte/clienteTop';
-import { ReporteInventario } from '../models/reporte/reporteInventario';
-import { DashboardProformaResponse } from '../models/reporte/dashboard-proforma';
-import { ProductoSimple } from '../models/reporte/producto-simple';
-import { ComparacionProducto } from '../models/reporte/comparacion-producto';
-import { ProductoVendidoMes } from '../models/reporte/producto-vendido-mes';
-import { ClienteBusqueda } from '../models/reporte/cliente-busqueda';
-import { ProductoBusqueda } from '../models/reporte/producto-busqueda';
-import { DetalleVenta } from '../models/reporte/detalle-venta';
-import { VentaPorTipoClienteDTO } from '../models/reporte/dashboard-proforma';
+import {inject, Injectable} from "@angular/core";
+import {HttpClient, HttpParams} from "@angular/common/http";
+import {environment} from "../../../environments/environment";
+import {Observable} from "rxjs";
+import {DashboardData} from '../models/reporte/dashboardData';
+import {ReporteVentas} from '../models/reporte/reporteVentas';
+import {ProductoVendido} from '../models/reporte/productoVendido';
+import {ClienteTop} from '../models/reporte/clienteTop';
+import {
+  DashboardProformaResponse,
+  VentaPorTipoClienteDTO
+} from '../models/reporte/dashboard-proforma';
+import {ProductoSimple} from '../models/reporte/producto-simple';
+import {ComparacionProducto} from '../models/reporte/comparacion-producto';
+import {ProductoVendidoMes} from '../models/reporte/producto-vendido-mes';
+import {ClienteBusqueda} from '../models/reporte/cliente-busqueda';
+import {ProductoBusqueda} from '../models/reporte/producto-busqueda';
+import {DetalleVenta} from '../models/reporte/detalle-venta';
+
 
 @Injectable({
   providedIn: 'root'
@@ -61,10 +63,6 @@ export class ReporteService {
       .set('fechaFin', fechaFin)
       .set('limite', limite.toString());
     return this.http.get<ClienteTop[]>(`${this.apiUrl}/clientes-top`, { params });
-  }
-
-  inventarioValorizado(): Observable<ReporteInventario> {
-    return this.http.get<ReporteInventario>(`${this.apiUrl}/inventario-valorizado`);
   }
 
   /**

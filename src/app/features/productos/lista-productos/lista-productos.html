@@ -25,8 +25,7 @@
         <tr>
           <th pSortableColumn="codigo">Código <p-sortIcon field="codigo" /></th>
           <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre" /></th>
-          <th pSortableColumn="stockActual">Stock Actual <p-sortIcon field="stockActual" /></th>
-          <th pSortableColumn="stockMinimo">Stock Mínimo <p-sortIcon field="stockMinimo" /></th>
+
           <th pSortableColumn="precioBase">Precio <p-sortIcon field="precioBase" /></th>
           <th pSortableColumn="estado">Estado <p-sortIcon field="estado" /></th>
           <th>Acciones</th>
@@ -36,10 +35,7 @@
         <tr (click)="verDetalle(producto)" class="table-row">
           <td>{{ producto.codigo || '-' }}</td>
           <td><strong>{{ producto.nombre }}</strong></td>
-          <td>
-            <p-tag [value]="producto.stockActual.toString()" [severity]="getStockSeverity(producto)" />
-          </td>
-          <td>{{ producto.stockMinimo }}</td>
+
           <td>{{ producto.precioBase | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
           <td>
             <p-tag [value]="producto.estado" [severity]="getEstadoSeverity(producto.estado)" />
@@ -58,7 +54,7 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="7">
+          <td colspan="5">
             <div class="no-data">
               <i class="pi pi-box no-data-icon"></i>
               <p>No se encontraron productos</p>

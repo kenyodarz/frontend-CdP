@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
-import { TabsModule } from 'primeng/tabs';
-import { MenuItem } from 'primeng/api';
+import {Component} from '@angular/core';
+import {Router, RouterLink, RouterOutlet} from '@angular/router';
+import {TabsModule} from 'primeng/tabs';
 
 @Component({
   selector: 'app-reportes',
@@ -14,7 +13,7 @@ import { MenuItem } from 'primeng/api';
         <p-tablist>
             <p-tab value="0" routerLink="/reportes/dashboard-proforma">Dashboard Proforma 2025</p-tab>
             <p-tab value="1" routerLink="/reportes/ventas">Ventas</p-tab>
-            <p-tab value="2" routerLink="/reportes/inventario-valorizado">Inventario Valorizado</p-tab>
+
             <p-tab value="3" routerLink="/reportes/productos-mas-vendidos">Productos Más Vendidos</p-tab>
         </p-tablist>
       </p-tabs>
@@ -30,10 +29,7 @@ import { MenuItem } from 'primeng/api';
     }
   `]
 })
-export class Reportes implements OnInit {
-  constructor(private router: Router) { }
-
-  ngOnInit() {
-    // No specific logic needed for basic routing tabs
+export class Reportes {
+  constructor(protected readonly router: Router) {
   }
 }

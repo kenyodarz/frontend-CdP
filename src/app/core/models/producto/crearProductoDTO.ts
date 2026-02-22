@@ -4,9 +4,6 @@ export interface CrearProductoDTO {
   descripcion?: string;
   idCategoria: number;
   idUnidad: number;
-  stockActual?: number;
-  stockMinimo: number;
-  stockMaximo?: number;
   requiereLote: boolean;
   diasVidaUtil?: number;
   imagenUrl?: string;

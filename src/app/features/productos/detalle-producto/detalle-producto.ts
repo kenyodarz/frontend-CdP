@@ -1,15 +1,15 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { TagModule } from 'primeng/tag';
-import { DividerModule } from 'primeng/divider';
-import { CurrencyPipe } from '@angular/common';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {CardModule} from 'primeng/card';
+import {ButtonModule} from 'primeng/button';
+import {TagModule} from 'primeng/tag';
+import {DividerModule} from 'primeng/divider';
+import {CurrencyPipe} from '@angular/common';
 
-import { ProductoService } from '../../../core/services/producto.service';
-import { Producto } from '../../../core/models/producto/producto';
-import { Loading } from '../../../shared/components/loading/loading';
-import { ErrorMessage } from '../../../shared/components/error-message/error-message';
+import {ProductoService} from '../../../core/services/producto.service';
+import {Producto} from '../../../core/models/producto/producto';
+import {Loading} from '../../../shared/components/loading/loading';
+import {ErrorMessage} from '../../../shared/components/error-message/error-message';
 
 @Component({
   selector: 'app-detalle-producto',
@@ -87,17 +87,7 @@ export class DetalleProducto implements OnInit {
   }
   */
 
-  protected getStockSeverity(): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
-    const producto = this.producto();
-    if (!producto) return 'info';
 
-    if (producto.stockActual <= producto.stockMinimo) return 'warn';
-    if (producto.stockMaximo && producto.stockActual >= producto.stockMaximo * 0.8) return 'success'; // Alto stock is good? Or bad? Assuming good or normal.
-    // If stock is 0, danger
-    if (producto.stockActual === 0) return 'danger';
-
-    return 'info'; // Normal
-  }
 
   protected getEstadoSeverity(estado: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
     switch (estado) {

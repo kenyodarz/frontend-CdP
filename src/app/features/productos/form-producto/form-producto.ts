@@ -1,22 +1,22 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { CheckboxModule } from 'primeng/checkbox';
-import { SelectModule } from 'primeng/select';
-import { DividerModule } from 'primeng/divider';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { TextareaModule } from 'primeng/textarea';
-import { MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
+import {Component, inject, OnInit, signal} from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {InputTextModule} from 'primeng/inputtext';
+import {ButtonModule} from 'primeng/button';
+import {CardModule} from 'primeng/card';
+import {CheckboxModule} from 'primeng/checkbox';
+import {SelectModule} from 'primeng/select';
+import {DividerModule} from 'primeng/divider';
+import {FloatLabelModule} from 'primeng/floatlabel';
+import {TextareaModule} from 'primeng/textarea';
+import {MessageService} from 'primeng/api';
+import {ToastModule} from 'primeng/toast';
 
-import { ProductoService } from '../../../core/services/producto.service';
-import { Producto } from '../../../core/models/producto/producto';
-import { CrearProductoDTO } from '../../../core/models/producto/crearProductoDTO';
-import { Loading } from '../../../shared/components/loading/loading';
-import { ErrorMessage } from '../../../shared/components/error-message/error-message';
+import {ProductoService} from '../../../core/services/producto.service';
+import {Producto} from '../../../core/models/producto/producto';
+import {CrearProductoDTO} from '../../../core/models/producto/crearProductoDTO';
+import {Loading} from '../../../shared/components/loading/loading';
+import {ErrorMessage} from '../../../shared/components/error-message/error-message';
 
 @Component({
   selector: 'app-form-producto',
@@ -83,9 +83,7 @@ export class FormProducto implements OnInit {
       descripcion: [''],
       idCategoria: [null, Validators.required],
       idUnidad: [null, Validators.required],
-      stockActual: [0, [Validators.min(0)]],
-      stockMinimo: [0, [Validators.required, Validators.min(0)]],
-      stockMaximo: [null, [Validators.min(0)]],
+
       requiereLote: [false],
       diasVidaUtil: [null, [Validators.min(1)]],
       imagenUrl: [''],
@@ -129,9 +127,7 @@ export class FormProducto implements OnInit {
       descripcion: producto.descripcion,
       idCategoria: producto.idCategoria,
       idUnidad: producto.idUnidad,
-      stockActual: producto.stockActual,
-      stockMinimo: producto.stockMinimo,
-      stockMaximo: producto.stockMaximo,
+
       requiereLote: producto.requiereLote,
       diasVidaUtil: producto.diasVidaUtil,
       imagenUrl: producto.imagenUrl,
@@ -157,8 +153,7 @@ export class FormProducto implements OnInit {
       descripcion: formValue.descripcion,
       idCategoria: formValue.idCategoria,
       idUnidad: formValue.idUnidad,
-      stockMinimo: formValue.stockMinimo,
-      stockMaximo: formValue.stockMaximo,
+
       requiereLote: formValue.requiereLote,
       diasVidaUtil: formValue.diasVidaUtil,
       imagenUrl: formValue.imagenUrl,
